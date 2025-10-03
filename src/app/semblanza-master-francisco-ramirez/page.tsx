@@ -181,7 +181,7 @@ export default function SemblanzaMaster() {
                   Experiencia
                 </h3>
                 <ul className="space-y-2 text-gray-700">
-                  <li>• Más de 25 años en artes marciales</li>
+                  <li>• Más de 25 años de experiencia en artes marciales</li>
                   <li>• 15 años enseñando defensa personal</li>
                   <li>• Entrenador de Jiu Jitsu en UFC GYM</li>
                   <li>• Esquina en peleadores de MMA Pro</li>

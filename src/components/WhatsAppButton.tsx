@@ -1,19 +1,19 @@
 "use client";
 
-import { FloatingWhatsApp } from "react-floating-whatsapp";
-
 export default function WhatsAppButton() {
   return (
-    <FloatingWhatsApp
-      phoneNumber="5613701366"
-      accountName="The Klan"
-      avatar="/Logo.jpeg"
-      statusMessage="Normalmente responde en 1 hora"
-      chatMessage="¡Hola! 👋 \n\n¿Cómo podemos ayudarte?"
-      placeholder="Escribe un mensaje..."
-      allowClickAway
-      notification
-      notificationSound
-    />
+    <a
+      href="https://wa.me/525613701366?text=Hola%20The%20Klan,%20quiero%20agendar%20mi%20clase%20gratis!"
+      target="_blank"
+      rel="noopener noreferrer"
+      style={{
+        position: "fixed",
+        bottom: "20px",
+        right: "20px",
+        zIndex: 9999,
+      }}
+    >
+      <img src="/WhatsApp.svg.png" alt="WhatsApp" width={60} />
+    </a>
   );
 }

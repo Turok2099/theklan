@@ -1,5 +1,5 @@
 import { Geist, Geist_Mono } from "next/font/google";
-import { metadata } from "@/components/seometadata";
+import { metadata } from "@/components/seoMetadata";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
