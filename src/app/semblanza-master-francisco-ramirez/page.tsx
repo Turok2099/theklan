@@ -87,13 +87,23 @@ export default function SemblanzaMaster() {
                 <li className="flex items-start">
                   <span className="text-red-600 mr-3 text-xl">●</span>
                   <span className="text-gray-700">
-                    Representante de International Ward Kenpo en CDMX
+                    Cinta negra IBJJF 318063
                   </span>
                 </li>
                 <li className="flex items-start">
                   <span className="text-red-600 mr-3 text-xl">●</span>
                   <span className="text-gray-700">
-                    Representante en México de MATS (Utrecht, Holanda)
+                    Curso de arbitraje IBJJF
+                  </span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-red-600 mr-3 text-xl">●</span>
+                  <span className="text-gray-700">Curso de ética IBJJF</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-red-600 mr-3 text-xl">●</span>
+                  <span className="text-gray-700">
+                    International ward kenpo # WK-MX-01 May 2019
                   </span>
                 </li>
                 <li className="flex items-start">
@@ -171,7 +181,7 @@ export default function SemblanzaMaster() {
                   Experiencia
                 </h3>
                 <ul className="space-y-2 text-gray-700">
-                  <li>• Más de 20 años en artes marciales</li>
+                  <li>• Más de 25 años en artes marciales</li>
                   <li>• 15 años enseñando defensa personal</li>
                   <li>• Entrenador de Jiu Jitsu en UFC GYM</li>
                   <li>• Esquina en peleadores de MMA Pro</li>
