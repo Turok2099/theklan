@@ -37,7 +37,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "es_MX",
-    url: "https://theklan.com",
+    url: "https://theklanbjj.com.mx",
     siteName: "The Klan BJJ",
     title: "The Klan - Jiu Jitsu Brasileño en CDMX | BJJ Del Valle",
     description:
@@ -61,7 +61,7 @@ export const metadata: Metadata = {
     ],
   },
   alternates: {
-    canonical: "https://theklan.com",
+    canonical: "https://theklanbjj.com.mx",
   },
   verification: {
     // TODO: Reemplazar con tu código real de Google Search Console

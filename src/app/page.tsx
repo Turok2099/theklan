@@ -6,7 +6,7 @@ export default function Home() {
   const jsonLdBusiness = {
     "@context": "https://schema.org",
     "@type": ["LocalBusiness", "SportsActivityLocation", "ExerciseGym"],
-    "@id": "https://theklan.com/#business",
+    "@id": "https://theklanbjj.com.mx/#business",
     name: "The Klan BJJ",
     alternateName: "The Klan - Jiu Jitsu Brasileño",
     description:
@@ -18,7 +18,7 @@ export default function Home() {
       height: 630,
       caption: "The Klan - Jiu Jitsu Brasileño en CDMX",
     },
-    url: "https://theklan.com",
+    url: "https://theklanbjj.com.mx",
     telephone: "+52-56-1370-1366",
     email: "contacto@theklan.com",
     address: {
@@ -88,9 +88,9 @@ export default function Home() {
   const jsonLdOrganization = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "@id": "https://theklan.com/#organization",
+    "@id": "https://theklanbjj.com.mx/#organization",
     name: "The Klan BJJ",
-    url: "https://theklan.com",
+    url: "https://theklanbjj.com.mx",
     logo: {
       "@type": "ImageObject",
       url: "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759427147/The%20Klan/Logo.jpeg",

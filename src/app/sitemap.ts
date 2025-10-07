@@ -1,7 +1,7 @@
 import { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://theklan.com";
+  const baseUrl = "https://theklanbjj.com.mx";
   const currentDate = new Date();
 
   return [

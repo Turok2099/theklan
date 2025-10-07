@@ -1,11 +1,11 @@
 # robots.txt para The Klan BJJ
-# https://theklan.com/robots.txt
+# https://theklanbjj.com.mx/robots.txt
 
 User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://theklan.com/sitemap.xml
+Sitemap: https://theklanbjj.com.mx/sitemap.xml
 
 # Páginas específicas
 Allow: /contacto
