@@ -20,7 +20,7 @@ export default function Home() {
     },
     url: "https://theklanbjj.com.mx",
     telephone: "+52-56-1370-1366",
-    email: "contacto@theklan.com",
+    email: "contacto@theklanbjj.com.mx",
     address: {
       "@type": "PostalAddress",
       streetAddress: "Colonia Del Valle",
