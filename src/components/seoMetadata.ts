@@ -64,6 +64,12 @@ export const metadata: Metadata = {
     canonical: "https://theklan.com",
   },
   verification: {
+    // TODO: Reemplazar con tu código real de Google Search Console
+    // Pasos para obtenerlo:
+    // 1. Ve a https://search.google.com/search-console
+    // 2. Agrega tu propiedad (https://theklan.com)
+    // 3. Selecciona el método de verificación "Etiqueta HTML"
+    // 4. Copia el código y pégalo aquí
     google: "your-google-verification-code",
   },
 };

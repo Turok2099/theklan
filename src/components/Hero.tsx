@@ -17,7 +17,7 @@ export const Hero = () => {
       <div className="absolute inset-0 bg-black/70 z-10" />
 
       <div className="relative z-20 flex flex-col items-center justify-center h-full px-4">
-        <h2
+        <h1
           className="
             font-black tracking-tight drop-shadow-xl text-white mb-6
             text-[7rem]              /* Tamaño base (móvil) */
@@ -30,7 +30,7 @@ export const Hero = () => {
         >
           <span className="block">THE</span>
           <span className="block">KLAN</span>
-        </h2>
+        </h1>
       </div>
 
       <div className="absolute bottom-0 left-0 w-full z-20">

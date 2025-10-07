@@ -1,0 +1,23 @@
+# robots.txt para The Klan BJJ
+# https://theklan.com/robots.txt
+
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://theklan.com/sitemap.xml
+
+# Páginas específicas
+Allow: /contacto
+Allow: /costos-y-horarios
+Allow: /nuestros-entrenadores
+Allow: /semblanza-master-francisco-ramirez
+
+# Bloquear archivos sensibles (por seguridad)
+Disallow: /api/
+Disallow: /_next/
+Disallow: /node_modules/
+
+# Crawl-delay (opcional, para no sobrecargar el servidor)
+Crawl-delay: 0
+
