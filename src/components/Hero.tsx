@@ -11,6 +11,8 @@ export const Hero = () => {
         alt="The Klan - Jiu Jitsu Brasileño en CDMX"
         fill
         priority
+        fetchPriority="high"
+        sizes="100vw"
         className="object-cover object-center"
       />
 
