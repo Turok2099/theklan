@@ -38,7 +38,7 @@ export default function SemblanzaMaster() {
 
         {/* Contenido */}
         <div className="relative z-10 h-full flex flex-col items-center justify-center px-6 md:px-12 lg:px-24 text-center text-white">
-          <p className="text-red-500 font-bold text-sm md:text-base uppercase tracking-wider mb-4">
+          <p className="text-red-600 font-bold text-sm md:text-base uppercase tracking-wider mb-4">
             HEAD COACH & FUNDADOR
           </p>
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6">
@@ -129,27 +129,27 @@ export default function SemblanzaMaster() {
             <div className="max-w-4xl mx-auto">
               <ul className="space-y-4">
                 <li className="text-lg md:text-xl">
-                  <span className="text-red-500 font-bold">→</span> Grand Master
+                  <span className="text-red-600 font-bold">→</span> Grand Master
                   Ed Parker
                 </li>
                 <li className="text-lg md:text-xl pl-8">
-                  <span className="text-red-500 font-bold">→</span> Senior
+                  <span className="text-red-600 font-bold">→</span> Senior
                   Master Ed Parker Jr.
                 </li>
                 <li className="text-lg md:text-xl pl-16">
-                  <span className="text-red-500 font-bold">→</span> Master Frank
+                  <span className="text-red-600 font-bold">→</span> Master Frank
                   Soto
                 </li>
                 <li className="text-lg md:text-xl pl-8">
-                  <span className="text-red-500 font-bold">→</span> Master Jhon
+                  <span className="text-red-600 font-bold">→</span> Master Jhon
                   Ward (Cinturón Negro 10° grado, Dublin, Irlanda)
                 </li>
                 <li className="text-lg md:text-xl">
-                  <span className="text-red-500 font-bold">→</span> Maestre
+                  <span className="text-red-600 font-bold">→</span> Maestre
                   Juarez Soares (Cinturón Negro 6° grado)
                 </li>
                 <li className="text-lg md:text-xl">
-                  <span className="text-red-500 font-bold">→</span> Maestre
+                  <span className="text-red-600 font-bold">→</span> Maestre
                   Wilson Feu (Cinturón Negro 3° grado)
                 </li>
               </ul>
@@ -273,7 +273,7 @@ export default function SemblanzaMaster() {
                 key={index}
                 className="bg-gradient-to-br from-gray-900 to-black text-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition-shadow"
               >
-                <p className="text-red-500 font-bold text-sm mb-2">
+                <p className="text-red-600 font-bold text-sm mb-2">
                   {trophy.year}
                 </p>
                 <h3 className="text-lg font-bold mb-2">{trophy.achievement}</h3>
@@ -378,7 +378,7 @@ export default function SemblanzaMaster() {
             </div>
           </div>
 
-          <div className="mt-8 bg-gradient-to-r from-red-600 to-red-700 text-white p-8 rounded-xl text-center">
+          <div className="mt-8 bg-gradient-to-r from-red-600 to-red-600 text-white p-8 rounded-xl text-center">
             <p className="text-xl font-bold">
               Participación en la película &quot;El Negocio&quot; (Bogotá,
               Colombia)

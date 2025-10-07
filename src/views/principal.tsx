@@ -66,7 +66,7 @@ export const Principal = () => {
           {/* Título principal */}
           <h2 className="text-4xl md:text-5xl font-black text-white mb-6 leading-tight">
             Jiu Jitsu Brasileño
-            <span className="block text-red-500 mt-2">en CDMX</span>
+            <span className="block text-red-600 mt-2">en CDMX</span>
           </h2>
 
           {/* Línea decorativa */}
@@ -80,9 +80,9 @@ export const Principal = () => {
           <p className="text-base md:text-lg text-gray-300 leading-relaxed max-w-4xl mx-auto mb-8">
             Descubre el arte del Jiu Jitsu Brasileño en CDMX, una disciplina que
             combina
-            <span className="text-red-500 font-semibold"> técnica</span>,
-            <span className="text-red-500 font-semibold"> estrategia </span>y{" "}
-            <span className="text-red-500 font-semibold">
+            <span className="text-red-600 font-semibold"> técnica</span>,
+            <span className="text-red-600 font-semibold"> estrategia </span>y{" "}
+            <span className="text-red-600 font-semibold">
               resistencia física
             </span>{" "}
             para alcanzar el máximo rendimiento.
@@ -101,7 +101,7 @@ export const Principal = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <a
               href="/nuestros-entrenadores"
-              className="inline-flex items-center justify-center bg-red-600 text-white font-bold px-8 py-4 rounded-full hover:bg-red-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
+              className="inline-flex items-center justify-center bg-red-600 text-white font-bold px-8 py-4 rounded-full hover:bg-red-600/90 transition-all duration-300 transform hover:scale-105 shadow-lg"
             >
               Conoce a nuestros entrenadores
             </a>
@@ -116,7 +116,7 @@ export const Principal = () => {
           {/* Estadísticas */}
           <div className="grid grid-cols-3 gap-6 mt-12 pt-12 border-t border-gray-700">
             <div>
-              <p className="text-4xl md:text-5xl font-black text-red-500 mb-2">
+              <p className="text-4xl md:text-5xl font-black text-red-600 mb-2">
                 +20
               </p>
               <p className="text-sm md:text-base text-gray-400 uppercase tracking-wide">
@@ -124,7 +124,7 @@ export const Principal = () => {
               </p>
             </div>
             <div>
-              <p className="text-4xl md:text-5xl font-black text-red-500 mb-2">
+              <p className="text-4xl md:text-5xl font-black text-red-600 mb-2">
                 4
               </p>
               <p className="text-sm md:text-base text-gray-400 uppercase tracking-wide">
@@ -132,7 +132,7 @@ export const Principal = () => {
               </p>
             </div>
             <div>
-              <p className="text-4xl md:text-5xl font-black text-red-500 mb-2">
+              <p className="text-4xl md:text-5xl font-black text-red-600 mb-2">
                 100%
               </p>
               <p className="text-sm md:text-base text-gray-400 uppercase tracking-wide">

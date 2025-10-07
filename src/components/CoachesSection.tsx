@@ -8,7 +8,7 @@ export const CoachesSection = () => {
       name: "Francisco Ramírez",
       title: "HEAD COACH",
       description:
-        "Fundador y Head Coach. Más de 20 años de experiencia en Artes Marciales, Instructor de kickboxing (Dingolfing, Alemania) Avalado por WAKO Baviera Germany Full-contact, Kung Fu, American Kenpo, Kenpo Kinetico, Jiu-jitsu Brazileño, Universal Submission, Combativs (Alemania), Muay Thai, Boxeo Amateur y Profesional, Especialista en Striking.",
+        "Fundador y Head Coach. Más de 25 años de experiencia en Artes Marciales, Instructor de kickboxing (Dingolfing, Alemania) Avalado por WAKO Baviera Germany Full-contact, Kung Fu, American Kenpo, Kenpo Kinetico, Jiu-jitsu Brazileño, Universal Submission, Combativs (Alemania), Muay Thai, Boxeo Amateur y Profesional, Especialista en Striking.",
       teaches: ["JIU-JITSU BRASILEÑO", "STRIKING"],
       images: [
         "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759429787/The%20Klan/coaches/francisco-ramirez/1.png",
@@ -89,7 +89,7 @@ export const CoachesSection = () => {
               {/* Header del entrenador */}
               <div className="bg-black px-8 py-10 md:px-12 md:py-12">
                 <div className="max-w-4xl">
-                  <p className="text-red-500 font-bold text-sm md:text-base mb-3 uppercase tracking-wider">
+                  <p className="text-red-600 font-bold text-sm md:text-base mb-3 uppercase tracking-wider">
                     {coach.title}
                   </p>
                   <h3 className="text-3xl md:text-4xl font-bold text-white mb-6">
@@ -110,7 +110,7 @@ export const CoachesSection = () => {
                   {coach.teaches.map((subject) => (
                     <span
                       key={subject}
-                      className="inline-flex items-center bg-red-600 text-white px-5 py-2 rounded-full font-semibold text-sm shadow-md hover:bg-red-700 transition-colors"
+                      className="inline-flex items-center bg-red-600 text-white px-5 py-2 rounded-full font-semibold text-sm shadow-md hover:bg-red-600/90 transition-colors"
                     >
                       {subject}
                     </span>

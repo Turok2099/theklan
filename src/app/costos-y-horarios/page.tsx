@@ -107,7 +107,7 @@ export default function CostosYHorarios() {
               <div className="grid grid-cols-5 gap-6">
                 {order.map((day) => (
                   <div key={`desk-${day}`}>
-                    <h3 className="text-xl font-bold text-red-500 mb-4 text-center">
+                    <h3 className="text-xl font-bold text-red-600 mb-4 text-center">
                       {day}
                     </h3>
                     <ul className="space-y-2">

@@ -1,7 +1,5 @@
 "use client";
 
-"use client";
-
 import Image from "next/image";
 
 export default function Contacto() {
@@ -74,7 +72,7 @@ export default function Contacto() {
 
         {/* Formulario con fondo (transparente) */}
         <section className="mt-16">
-          <div className="relative w-full h-[520px] md:h-[640px] overflow-hidden rounded-2xl shadow-2xl">
+          <div className="relative w-full min-h-[600px] md:min-h-[640px] rounded-2xl shadow-2xl overflow-hidden">
             {/* Fondo */}
             <Image
               src="/contacto.jpg"
@@ -86,7 +84,7 @@ export default function Contacto() {
             <div className="absolute inset-0 bg-black/60" />
 
             {/* Formulario */}
-            <div className="relative z-10 h-full flex items-center justify-center p-4">
+            <div className="relative z-10 flex items-center justify-center py-8 px-4 md:py-12">
               <form
                 onSubmit={(e) => e.preventDefault()}
                 className="w-full max-w-2xl bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 md:p-8 text-white"
@@ -142,7 +140,7 @@ export default function Contacto() {
                 <div className="mt-6 flex justify-center">
                   <button
                     type="submit"
-                    className="inline-flex items-center justify-center bg-red-600 hover:bg-red-700 transition-colors font-bold px-8 py-3 rounded-full shadow-lg"
+                    className="inline-flex items-center justify-center bg-red-600 hover:bg-red-600/90 transition-colors font-bold px-8 py-3 rounded-full shadow-lg"
                   >
                     Enviar mensaje
                   </button>

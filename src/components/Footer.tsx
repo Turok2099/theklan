@@ -16,13 +16,13 @@ export const Footer = () => {
           <div className="flex flex-col md:flex-row gap-4 md:gap-8 justify-center">
             <Link
               href="/privacy"
-              className="text-gray-300 hover:text-red-500 transition-colors text-sm md:text-base"
+              className="text-gray-300 hover:text-red-600 transition-colors text-sm md:text-base"
             >
               Aviso de Privacidad
             </Link>
             <Link
               href="/contacto"
-              className="text-gray-300 hover:text-red-500 transition-colors text-sm md:text-base"
+              className="text-gray-300 hover:text-red-600 transition-colors text-sm md:text-base"
             >
               Contacto
             </Link>
@@ -35,7 +35,7 @@ export const Footer = () => {
               href="https://www.instagram.com/the_klanmx/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-300 hover:text-red-500 transition-colors"
+              className="text-gray-300 hover:text-red-600 transition-colors"
               aria-label="Instagram"
             >
               <svg
@@ -53,7 +53,7 @@ export const Footer = () => {
               href="https://www.facebook.com/theklanmartialarts"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-300 hover:text-red-500 transition-colors"
+              className="text-gray-300 hover:text-red-600 transition-colors"
               aria-label="Facebook"
             >
               <svg
@@ -71,7 +71,7 @@ export const Footer = () => {
               href="https://www.tiktok.com/@theklanmx"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-300 hover:text-red-500 transition-colors"
+              className="text-gray-300 hover:text-red-600 transition-colors"
               aria-label="TikTok"
             >
               <svg

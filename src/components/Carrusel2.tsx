@@ -104,7 +104,7 @@ export const Carrusel2 = () => {
           {/* Botón cerrar */}
           <button
             onClick={() => setSelectedImage(null)}
-            className="absolute top-4 right-4 text-white hover:text-red-500 transition-colors z-10"
+            className="absolute top-4 right-4 text-white hover:text-red-600 transition-colors z-10"
           >
             <XMarkIcon className="w-8 h-8 md:w-10 md:h-10" />
           </button>
@@ -115,7 +115,7 @@ export const Carrusel2 = () => {
               e.stopPropagation();
               handlePrevious();
             }}
-            className="absolute left-4 text-white hover:text-red-500 transition-colors z-10"
+            className="absolute left-4 text-white hover:text-red-600 transition-colors z-10"
           >
             <ChevronLeftIcon className="w-8 h-8 md:w-12 md:h-12" />
           </button>
@@ -140,7 +140,7 @@ export const Carrusel2 = () => {
               e.stopPropagation();
               handleNext();
             }}
-            className="absolute right-4 text-white hover:text-red-500 transition-colors z-10"
+            className="absolute right-4 text-white hover:text-red-600 transition-colors z-10"
           >
             <ChevronRightIcon className="w-8 h-8 md:w-12 md:h-12" />
           </button>

@@ -66,7 +66,7 @@ export const TeamPreview = () => {
 
               {/* Info */}
               <div className="absolute bottom-0 left-0 right-0 p-6 text-white transform translate-y-0 transition-transform duration-300">
-                <p className="text-red-500 font-bold text-sm uppercase tracking-wider mb-1">
+                <p className="text-red-600 font-bold text-sm uppercase tracking-wider mb-1">
                   {member.role}
                 </p>
                 <h3 className="text-lg md:text-xl font-bold">{member.name}</h3>
@@ -79,7 +79,7 @@ export const TeamPreview = () => {
         <div className="text-center mt-12">
           <Link
             href="/nuestros-entrenadores"
-            className="inline-flex items-center justify-center bg-red-600 text-white font-bold px-8 py-4 rounded-full hover:bg-red-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
+            className="inline-flex items-center justify-center bg-red-600 text-white font-bold px-8 py-4 rounded-full hover:bg-red-600/90 transition-all duration-300 transform hover:scale-105 shadow-lg"
           >
             Ver equipo completo
           </Link>
@@ -88,4 +88,3 @@ export const TeamPreview = () => {
     </section>
   );
 };
-
