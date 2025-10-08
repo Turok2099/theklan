@@ -2,6 +2,7 @@ import { Carrusel2 } from "@/components/Carrusel2";
 import { FeaturesSection } from "@/components/FeaturesSection";
 import { TeamPreview } from "@/components/TeamPreview";
 import { HeadCoach } from "@/components/HeadCoach";
+import { GoogleReviews } from "@/components/GoogleReviews";
 import Image from "next/image";
 
 export const Principal = () => {
@@ -147,6 +148,8 @@ export const Principal = () => {
       <div className="mt-18">
         <Carrusel2 />
       </div>
+
+      <GoogleReviews />
     </section>
   );
 };
