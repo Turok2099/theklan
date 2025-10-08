@@ -261,7 +261,7 @@ export const GoogleReviews = () => {
         {/* Botón Ver Más en Google */}
         <div className="text-center mt-10">
           <a
-            href="https://www.google.com/maps/place/?q=place_id:ChIJAQCvlqf_0YURBLR8XJf5JSg"
+            href="https://www.google.com/maps/place/The+Klan/@19.3839507,-99.1584908,17z/data=!4m18!1m9!3m8!1s0x85d1ffa796af0001:0x2825f997c5e4c604!2sThe+Klan!8m2!3d19.3839507!4d-99.1584908!9m1!1b1!16s%2Fg%2F11j4svv45s!3m7!1s0x85d1ffa796af0001:0x2825f997c5e4c604!8m2!3d19.3839507!4d-99.1584908!9m1!1b1!16s%2Fg%2F11j4svv45s?entry=ttu&g_ep=EgoyMDI1MTAwNi4wIKXMDSoASAFQAw%3D%3D"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 bg-white border-2 border-gray-300 text-gray-900 font-bold px-8 py-4 rounded-full hover:bg-gray-50 transition-all duration-300 transform hover:scale-105 shadow-md"
