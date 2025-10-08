@@ -129,13 +129,7 @@ export default function Home() {
 
   return (
     <>
-      {/* Preload de imagen Hero para optimizar LCP */}
-      <link
-        rel="preload"
-        as="image"
-        href="https://res.cloudinary.com/dxbtafe9u/image/upload/v1759430135/The%20Klan/hero-image.jpg"
-        fetchPriority="high"
-      />
+      {/* next/image manejará prioridad del LCP en Hero */}
       {/* Schema.org para LocalBusiness/SportsActivityLocation */}
       <script
         type="application/ld+json"

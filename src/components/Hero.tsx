@@ -13,6 +13,7 @@ export const Hero = () => {
         priority
         fetchPriority="high"
         sizes="100vw"
+        quality={65}
         className="object-cover object-center"
       />
 

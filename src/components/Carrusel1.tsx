@@ -1,3 +1,5 @@
+import styles from "@/styles/animations.module.css";
+
 export const TextMarquee = () => {
   const items = [
     "BOX",
@@ -9,7 +11,7 @@ export const TextMarquee = () => {
 
   return (
     <div className="overflow-hidden whitespace-nowrap w-full bg-red-600 py-4">
-      <div className="animate-marquee inline-block">
+      <div className={`${styles.marquee} inline-block`}>
         {items.map((text, index) => (
           <span
             key={index}

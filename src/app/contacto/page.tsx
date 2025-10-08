@@ -78,6 +78,8 @@ export default function Contacto() {
               src="/contacto.jpg"
               alt="The Klan - Contacto"
               fill
+              sizes="100vw"
+              quality={60}
               className="absolute inset-0 object-cover"
               priority
             />

@@ -141,6 +141,8 @@ export default function CostosYHorarios() {
                 alt="Costos - The Klan BJJ"
                 width={1600}
                 height={1200}
+                sizes="(max-width: 768px) 100vw, 800px"
+                quality={60}
                 className="w-full h-auto rounded-xl shadow-lg"
                 priority
               />

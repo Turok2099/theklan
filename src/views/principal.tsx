@@ -29,7 +29,8 @@ export const Principal = () => {
             alt="Entrenamiento de Jiu Jitsu"
             fill
             className="object-cover rounded-lg shadow-lg"
-            priority
+            sizes="(max-width: 768px) 100vw, 50vw"
+            quality={60}
           />
         </div>
       </div>

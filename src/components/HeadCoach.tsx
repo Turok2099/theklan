@@ -15,7 +15,8 @@ export const HeadCoach = () => {
               alt="Francisco Ramírez - Head Coach"
               fill
               className="object-cover"
-              priority
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              quality={60}
             />
           </div>
 
