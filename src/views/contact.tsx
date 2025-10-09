@@ -1,8 +1,61 @@
 "use client";
 
 import Image from "next/image";
+import { useState, FormEvent } from "react";
 
 export const Contact = () => {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    message: "",
+  });
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setStatus("loading");
+    setErrorMessage("");
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Error al enviar el mensaje");
+      }
+
+      setStatus("success");
+      // Limpiar formulario
+      setFormData({ name: "", email: "", phone: "", message: "" });
+      
+      // Reset status después de 5 segundos
+      setTimeout(() => setStatus("idle"), 5000);
+    } catch (error) {
+      setStatus("error");
+      setErrorMessage(
+        error instanceof Error ? error.message : "Error al enviar el mensaje"
+      );
+    }
+  };
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
   return (
     <main className="min-h-screen bg-white py-16 px-6 md:px-12 lg:px-24">
       <div className="max-w-7xl mx-auto">
@@ -88,22 +141,43 @@ export const Contact = () => {
             {/* Formulario */}
             <div className="relative z-10 flex items-center justify-center py-8 px-4 md:py-12">
               <form
-                onSubmit={(e) => e.preventDefault()}
+                onSubmit={handleSubmit}
                 className="w-full max-w-2xl bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 md:p-8 text-white"
               >
                 <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center">
                   Envíanos un mensaje
                 </h2>
+
+                {/* Mensaje de éxito */}
+                {status === "success" && (
+                  <div className="mb-6 p-4 bg-green-500/20 border border-green-500/50 rounded-lg text-center">
+                    <p className="font-semibold">✅ ¡Mensaje enviado con éxito!</p>
+                    <p className="text-sm mt-1">Te contactaremos pronto.</p>
+                  </div>
+                )}
+
+                {/* Mensaje de error */}
+                {status === "error" && (
+                  <div className="mb-6 p-4 bg-red-500/20 border border-red-500/50 rounded-lg text-center">
+                    <p className="font-semibold">❌ Error al enviar</p>
+                    <p className="text-sm mt-1">{errorMessage}</p>
+                  </div>
+                )}
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm text-gray-200 mb-1">
-                      Nombre
+                      Nombre *
                     </label>
                     <input
                       type="text"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleChange}
                       required
+                      disabled={status === "loading"}
                       placeholder="Tu nombre"
-                      className="w-full px-4 py-3 rounded-md bg-white/10 border border-white/20 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-red-600"
+                      className="w-full px-4 py-3 rounded-md bg-white/10 border border-white/20 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-red-600 disabled:opacity-50 disabled:cursor-not-allowed text-white"
                     />
                   </div>
                   <div>
@@ -112,39 +186,78 @@ export const Contact = () => {
                     </label>
                     <input
                       type="tel"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      disabled={status === "loading"}
                       placeholder="Tu teléfono"
-                      className="w-full px-4 py-3 rounded-md bg-white/10 border border-white/20 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-red-600"
+                      className="w-full px-4 py-3 rounded-md bg-white/10 border border-white/20 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-red-600 disabled:opacity-50 disabled:cursor-not-allowed text-white"
                     />
                   </div>
                   <div className="md:col-span-2">
                     <label className="block text-sm text-gray-200 mb-1">
-                      Email
+                      Email *
                     </label>
                     <input
                       type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
                       required
+                      disabled={status === "loading"}
                       placeholder="tu@email.com"
-                      className="w-full px-4 py-3 rounded-md bg-white/10 border border-white/20 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-red-600"
+                      className="w-full px-4 py-3 rounded-md bg-white/10 border border-white/20 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-red-600 disabled:opacity-50 disabled:cursor-not-allowed text-white"
                     />
                   </div>
                   <div className="md:col-span-2">
                     <label className="block text-sm text-gray-200 mb-1">
-                      Mensaje
+                      Mensaje *
                     </label>
                     <textarea
+                      name="message"
+                      value={formData.message}
+                      onChange={handleChange}
                       rows={5}
                       required
+                      disabled={status === "loading"}
                       placeholder="Cuéntanos en qué podemos ayudarte"
-                      className="w-full px-4 py-3 rounded-md bg-white/10 border border-white/20 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-red-600"
+                      className="w-full px-4 py-3 rounded-md bg-white/10 border border-white/20 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-red-600 disabled:opacity-50 disabled:cursor-not-allowed text-white"
                     />
                   </div>
                 </div>
                 <div className="mt-6 flex justify-center">
                   <button
                     type="submit"
-                    className="inline-flex items-center justify-center bg-red-600 hover:bg-red-600/90 transition-colors font-bold px-8 py-3 rounded-full shadow-lg"
+                    disabled={status === "loading"}
+                    className="inline-flex items-center justify-center bg-red-600 hover:bg-red-600/90 transition-colors font-bold px-8 py-3 rounded-full shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Enviar mensaje
+                    {status === "loading" ? (
+                      <>
+                        <svg
+                          className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          ></path>
+                        </svg>
+                        Enviando...
+                      </>
+                    ) : (
+                      "Enviar mensaje"
+                    )}
                   </button>
                 </div>
               </form>
