@@ -45,3 +45,7 @@ next-env.d.ts
 # scripts with credentials
 upload-*.js
 optimize-*.js
+
+# Cloudinary local config (if created)
+.env.cloudinary
+cloudinary.config.js
