@@ -137,12 +137,12 @@ export const Cost = () => {
           <div className="max-w-4xl mx-auto">
             <div className="relative w-full h-[auto]">
               <Image
-                src="/Costos.jpeg"
+                src="https://res.cloudinary.com/dxbtafe9u/image/upload/f_auto,q_auto:eco/The%20Klan/static/costos.jpg"
                 alt="Costos - The Klan BJJ"
                 width={1600}
                 height={1200}
                 sizes="(max-width: 768px) 100vw, 800px"
-                quality={60}
+                quality={75}
                 className="w-full h-auto rounded-xl shadow-lg"
                 priority
               />

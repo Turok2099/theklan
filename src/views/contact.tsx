@@ -75,11 +75,11 @@ export const Contact = () => {
           <div className="relative w-full min-h-[600px] md:min-h-[640px] rounded-2xl shadow-2xl overflow-hidden">
             {/* Fondo */}
             <Image
-              src="/contacto.jpg"
+              src="https://res.cloudinary.com/dxbtafe9u/image/upload/f_auto,q_auto:eco/The%20Klan/static/contacto.jpg"
               alt="The Klan - Contacto"
               fill
               sizes="100vw"
-              quality={60}
+              quality={75}
               className="absolute inset-0 object-cover"
               priority
             />

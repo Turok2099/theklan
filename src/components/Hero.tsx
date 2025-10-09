@@ -7,13 +7,13 @@ export const Hero = () => {
   return (
     <div className="relative w-full h-screen overflow-hidden">
       <Image
-        src="https://res.cloudinary.com/dxbtafe9u/image/upload/v1759430135/The%20Klan/hero-image.jpg"
+        src="https://res.cloudinary.com/dxbtafe9u/image/upload/f_auto,q_auto:eco,w_1920/The%20Klan/hero-image.jpg"
         alt="The Klan - Jiu Jitsu Brasileño en CDMX"
         fill
         priority
         fetchPriority="high"
         sizes="100vw"
-        quality={65}
+        quality={75}
         className="object-cover object-center"
       />
 

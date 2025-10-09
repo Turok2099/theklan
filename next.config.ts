@@ -12,7 +12,20 @@ const nextConfig: NextConfig = {
         hostname: "res.cloudinary.com",
         pathname: "/dxbtafe9u/**",
       },
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+        pathname: "/**",
+      },
     ],
+  },
+  // Optimización de compilación
+  compiler: {
+    removeConsole: process.env.NODE_ENV === "production",
+  },
+  // Optimización de CSS
+  experimental: {
+    optimizeCss: true,
   },
 };
 

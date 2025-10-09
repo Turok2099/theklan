@@ -26,12 +26,12 @@ export const Principal = () => {
 
         <div className="relative w-full h-64 md:h-96 lg:h-[500px] order-first md:order-last">
           <Image
-            src="https://res.cloudinary.com/dxbtafe9u/image/upload/v1759430135/The%20Klan/hero-image.jpg"
+            src="https://res.cloudinary.com/dxbtafe9u/image/upload/f_auto,q_auto:eco,w_800/The%20Klan/hero-image.jpg"
             alt="Entrenamiento de Jiu Jitsu"
             fill
             className="object-cover rounded-lg shadow-lg"
             sizes="(max-width: 768px) 100vw, 50vw"
-            quality={60}
+            quality={75}
           />
         </div>
       </div>
