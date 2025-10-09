@@ -5,7 +5,7 @@ import Link from "next/link";
 
 export const HeadCoach = () => {
   return (
-    <section className="w-full py-16 px-6 md:px-12 lg:px-24">
+    <section className="w-full py-16 px-3 md:px-12 lg:px-24">
       <div className="max-w-7xl mx-auto bg-black rounded-3xl shadow-2xl overflow-hidden p-10 md:p-16">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Imagen */}

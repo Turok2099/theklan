@@ -31,7 +31,7 @@ export const FeaturesSection = () => {
   ];
 
   return (
-    <section className="w-full bg-gray-50 py-16 px-6 md:px-12 lg:px-24">
+    <section className="w-full bg-gray-50 py-16 px-3 md:px-12 lg:px-24">
       {/* Título sección */}
       <div className="max-w-4xl mx-auto text-center mb-16">
         <div className="bg-red-600 text-white px-6 py-4 rounded-2xl mb-6 inline-block">

@@ -110,7 +110,7 @@ export const GoogleReviews = () => {
 
   if (isLoading) {
     return (
-      <section className="py-16 px-6 md:px-12 lg:px-24 bg-gray-50">
+      <section className="py-16 px-3 md:px-12 lg:px-24 bg-gray-50">
         <div className="max-w-7xl mx-auto text-center">
           <p className="text-gray-600">Cargando reseñas...</p>
         </div>
@@ -123,7 +123,7 @@ export const GoogleReviews = () => {
   }
 
   return (
-    <section className="w-full py-16 px-6 md:px-12 lg:px-24">
+    <section className="w-full py-16 px-3 md:px-12 lg:px-24">
       <div className="max-w-7xl mx-auto bg-black rounded-3xl shadow-2xl overflow-hidden p-10 md:p-16">
         {/* Título y Rating General */}
         <div className="text-center mb-16">

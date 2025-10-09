@@ -69,7 +69,7 @@ export const CoachesSection = () => {
   ];
 
   return (
-    <section className="w-full bg-gradient-to-b from-gray-50 to-white py-16 px-6 md:px-12 lg:px-24">
+    <section className="w-full bg-gradient-to-b from-gray-50 to-white py-16 px-3 md:px-12 lg:px-24">
       <div className="max-w-7xl mx-auto">
         {/* Título de sección */}
         <div className="text-center mb-20">

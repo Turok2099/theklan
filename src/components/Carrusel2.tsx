@@ -49,7 +49,7 @@ export const Carrusel2 = () => {
   };
 
   return (
-    <section className="w-full bg-white py-16 px-6 md:px-12 lg:px-24">
+    <section className="w-full bg-white py-16 px-3 md:px-12 lg:px-24">
       {/* Título */}
       <div className="text-center mb-16">
         <div className="bg-red-600 text-white px-6 py-4 rounded-2xl mb-6 inline-block">
@@ -72,7 +72,7 @@ export const Carrusel2 = () => {
             <div
               key={i}
               onClick={() => setSelectedImage(i)}
-              className="flex-shrink-0 w-56 sm:w-72 md:w-80 lg:w-96 h-60 sm:h-72 md:h-80 lg:h-96 relative mx-3 cursor-pointer group"
+              className="flex-shrink-0 w-56 sm:w-72 md:w-80 lg:w-96 h-80 sm:h-96 md:h-[28rem] lg:h-[32rem] relative mx-3 cursor-pointer group"
             >
               <Image
                 src={src}
@@ -90,7 +90,7 @@ export const Carrusel2 = () => {
             <div
               key={`dup-${i}`}
               onClick={() => setSelectedImage(i)}
-              className="flex-shrink-0 w-56 sm:w-72 md:w-80 lg:w-96 h-60 sm:h-72 md:h-80 lg:h-96 relative mx-3 cursor-pointer group"
+              className="flex-shrink-0 w-56 sm:w-72 md:w-80 lg:w-96 h-80 sm:h-96 md:h-[28rem] lg:h-[32rem] relative mx-3 cursor-pointer group"
             >
               <Image
                 src={src}

@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export const IntroSection = () => {
   return (
-    <section className="w-full bg-white py-16 px-6 md:px-12 lg:px-24">
+    <section className="w-full bg-white py-16 px-3 md:px-12 lg:px-24">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
         <div className="order-last md:order-first">
           <h2 className="text-hero-title font-black mb-8 text-gray-900">

@@ -1,6 +1,6 @@
 export const JiuJitsuSection = () => {
   return (
-    <section className="w-full py-16 px-6 md:px-12 lg:px-24">
+    <section className="w-full py-16 px-3 md:px-12 lg:px-24">
       <div className="relative overflow-hidden bg-gradient-to-br from-gray-900 via-black to-gray-900 rounded-3xl shadow-2xl p-10 md:p-16 max-w-7xl mx-auto">
         {/* Patrón de fondo */}
         <div className="absolute inset-0 opacity-5">
@@ -45,7 +45,7 @@ export const JiuJitsuSection = () => {
           </p>
 
           {/* Estadísticas */}
-          <div className="grid grid-cols-3 gap-8 mt-16 pt-12 border-t-2 border-gray-700">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16 pt-12 border-t-2 border-gray-700">
             <div className="group">
               <p className="text-5xl md:text-6xl lg:text-7xl font-black text-red-600 mb-3 group-hover:scale-110 transition-transform duration-300">
                 +20
