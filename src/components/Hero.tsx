@@ -17,23 +17,32 @@ export const Hero = () => {
         className="object-cover object-center"
       />
 
-      <div className="absolute inset-0 bg-black/70 z-10" />
+      {/* Gradiente más oscuro para mayor contraste */}
+      <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/70 to-black/50 z-10" />
 
-      <div className="relative z-20 flex flex-col items-center justify-center h-full px-4">
+      {/* Contenedor principal alineado a la izquierda */}
+      <div className="relative z-20 flex flex-col justify-center h-full px-6 sm:px-8 md:px-12 lg:px-20 xl:px-24">
         <h1
           className="
-            font-black tracking-tight drop-shadow-xl text-white mb-6
-            text-[7rem]              /* Tamaño base (móvil) */
-            sm:text-[8rem]           /* a partir de 640px */
-            md:text-[12rem]          /* a partir de 768px */
-            lg:text-[16rem]          /* a partir de 1024px */
-            leading-none             /* sin espacio extra entre líneas */
-            text-center
+            !font-black !tracking-tighter drop-shadow-2xl !text-white
+            !text-[3.5rem]            /* Móvil: 56px (30% menor) */
+            sm:!text-[5rem]           /* Tablet: 80px */
+            md:!text-[7rem]           /* Tablet grande: 112px */
+            lg:!text-[10rem]          /* Desktop: 160px */
+            xl:!text-[12.5rem]        /* Desktop grande: 200px */
+            2xl:!text-[14rem]         /* Extra grande: 224px */
+            !leading-[0.85]           /* Muy compacto entre líneas */
+            -mb-4
           "
         >
-          <span className="block">THE</span>
-          <span className="block">KLAN</span>
+          <span className="block text-left">THE</span>
+          <span className="block text-left !text-red-600">KLAN</span>
         </h1>
+
+        {/* Subtítulo opcional */}
+        <p className="!text-white !text-lg sm:!text-xl md:!text-2xl lg:!text-3xl !font-bold mt-8 !tracking-wide drop-shadow-lg max-w-2xl">
+          Jiu Jitsu Brasileño en CDMX
+        </p>
       </div>
 
       <div className="absolute bottom-0 left-0 w-full z-20">

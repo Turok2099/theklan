@@ -41,7 +41,7 @@ export default function RootLayout({
           href="https://res.cloudinary.com"
           crossOrigin="anonymous"
         />
-        
+
         {/* CSS Crítico Inline para Above-the-Fold */}
         <style
           dangerouslySetInnerHTML={{
@@ -49,7 +49,7 @@ export default function RootLayout({
               *,::before,::after{box-sizing:border-box;border-width:0;border-style:solid;border-color:currentColor}
               html{line-height:1.5;-webkit-text-size-adjust:100%;tab-size:4;font-family:var(--font-geist-sans),system-ui,sans-serif}
               body{margin:0;line-height:inherit;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
-              h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}
+              h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}
               a{color:inherit;text-decoration:inherit}
               img,svg,video{display:block;max-width:100%;height:auto}
               button{background-color:transparent;background-image:none;padding:0;cursor:pointer}
