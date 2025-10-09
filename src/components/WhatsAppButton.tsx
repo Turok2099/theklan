@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import styles from "@/styles/animations.module.css";
 
 // Declarar tipo para dataLayer de GTM
 declare global {
@@ -51,13 +50,13 @@ const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({
   return (
     <button
       onClick={handleClick}
-      className={`fixed bottom-6 right-6 z-50 bg-green-500 hover:bg-green-600 text-white rounded-full p-4 shadow-lg transition-all duration-300 transform hover:scale-110 ${styles.bounceSlow}`}
+      className="fixed bottom-6 right-6 z-50 bg-whatsapp text-white rounded-full p-4 md:p-6 shadow-lg transition-all duration-300 transform hover:scale-110 animate-bounce-slow"
       aria-label="Contactar por WhatsApp"
       title="Contactar por WhatsApp"
     >
       {/* Icono de WhatsApp SVG */}
       <svg
-        className="w-8 h-8"
+        className="w-8 h-8 md:w-12 md:h-12"
         fill="currentColor"
         viewBox="0 0 24 24"
         xmlns="http://www.w3.org/2000/svg"
@@ -66,7 +65,7 @@ const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({
       </svg>
 
       {/* Badge de indicador de mensaje */}
-      <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
+      <div className="absolute -top-1 -right-1 md:-top-2 md:-right-2 bg-red-500 text-white text-xs md:text-sm rounded-full h-5 w-5 md:h-6 md:w-6 flex items-center justify-center animate-pulse font-bold">
         !
       </div>
     </button>

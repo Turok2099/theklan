@@ -78,10 +78,7 @@ export async function POST(request: Request) {
       `,
     });
 
-    return NextResponse.json(
-      { success: true, data },
-      { status: 200 }
-    );
+    return NextResponse.json({ success: true, data }, { status: 200 });
   } catch (error) {
     console.error("Error enviando email:", error);
     return NextResponse.json(
@@ -90,4 +87,3 @@ export async function POST(request: Request) {
     );
   }
 }
-

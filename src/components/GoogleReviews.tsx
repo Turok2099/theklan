@@ -123,27 +123,23 @@ export const GoogleReviews = () => {
   }
 
   return (
-    <section className="py-16 px-6 md:px-12 lg:px-24 bg-gray-50">
-      <div className="max-w-7xl mx-auto">
+    <section className="w-full py-16 px-6 md:px-12 lg:px-24">
+      <div className="max-w-7xl mx-auto bg-black rounded-3xl shadow-2xl overflow-hidden p-10 md:p-16">
         {/* Título y Rating General */}
-        <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            Lo que Dicen Nuestros Alumnos
+        <div className="text-center mb-16">
+          <h2 className="text-hero-title font-black mb-8 text-white">
+            Google Reviews
           </h2>
+          <div className="w-32 h-1.5 bg-red-600 mx-auto mb-6"></div>
           {placeInfo && (
-            <div className="flex items-center justify-center gap-3 mb-2">
-              <div className="flex items-center gap-2">
-                <span className="text-5xl font-bold text-gray-900">
+            <div className="flex items-center justify-center gap-4 mb-4">
+              <div className="flex items-center gap-3">
+                <span className="text-6xl md:text-7xl font-black text-red-600">
                   {placeInfo.rating.toFixed(1)}
                 </span>
                 {renderStars(Math.round(placeInfo.rating))}
               </div>
             </div>
-          )}
-          {placeInfo && (
-            <p className="text-gray-600">
-              Basado en {placeInfo.user_ratings_total} reseñas de Google
-            </p>
           )}
         </div>
 
@@ -161,27 +157,27 @@ export const GoogleReviews = () => {
             >
               {reviews.map((review, index) => (
                 <div key={index} className="w-full flex-shrink-0 px-3">
-                  <div className="bg-white rounded-xl shadow-lg p-6 h-full flex flex-col">
+                  <div className="bg-white rounded-2xl shadow-lg p-6 h-full flex flex-col border-t-4 border-red-600">
                     {/* Header con foto y nombre */}
-                    <div className="flex items-center gap-3 mb-4">
+                    <div className="flex items-center gap-4 mb-4">
                       {review.author_photo_url ? (
                         <Image
                           src={review.author_photo_url}
                           alt={review.author_name}
                           width={48}
                           height={48}
-                          className="rounded-full"
+                          className="rounded-full ring-2 ring-red-100"
                         />
                       ) : (
-                        <div className="w-12 h-12 rounded-full bg-red-600 flex items-center justify-center text-white font-bold">
+                        <div className="w-12 h-12 rounded-full bg-red-600 flex items-center justify-center text-white font-black text-lg">
                           {review.author_name.charAt(0)}
                         </div>
                       )}
                       <div>
-                        <p className="font-bold text-gray-900">
+                        <p className="font-bold text-lg text-gray-900">
                           {review.author_name}
                         </p>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-xs md:text-sm text-gray-500 font-light">
                           {review.relative_time_description}
                         </p>
                       </div>
@@ -191,7 +187,7 @@ export const GoogleReviews = () => {
                     <div className="mb-3">{renderStars(review.rating)}</div>
 
                     {/* Texto de la reseña */}
-                    <p className="text-gray-700 leading-relaxed flex-grow line-clamp-6">
+                    <p className="text-gray-700 text-sm md:text-base leading-relaxed flex-grow line-clamp-6 font-light">
                       {review.text}
                     </p>
                   </div>
@@ -203,11 +199,11 @@ export const GoogleReviews = () => {
           {/* Controles de Navegación */}
           <button
             onClick={prevReview}
-            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 bg-white rounded-full p-3 shadow-lg hover:bg-gray-100 transition-colors z-10"
+            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 bg-white rounded-full p-3 shadow-lg hover:bg-red-600 hover:text-white transition-all z-10"
             aria-label="Reseña anterior"
           >
             <svg
-              className="w-6 h-6 text-gray-900"
+              className="w-6 h-6"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -223,11 +219,11 @@ export const GoogleReviews = () => {
 
           <button
             onClick={nextReview}
-            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 bg-white rounded-full p-3 shadow-lg hover:bg-gray-100 transition-colors z-10"
+            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 bg-white rounded-full p-3 shadow-lg hover:bg-red-600 hover:text-white transition-all z-10"
             aria-label="Siguiente reseña"
           >
             <svg
-              className="w-6 h-6 text-gray-900"
+              className="w-6 h-6"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -251,7 +247,7 @@ export const GoogleReviews = () => {
               className={`h-2 rounded-full transition-all ${
                 index === currentIndex
                   ? "w-8 bg-red-600"
-                  : "w-2 bg-gray-300 hover:bg-gray-400"
+                  : "w-2 bg-gray-500 hover:bg-gray-400"
               }`}
               aria-label={`Ir a grupo de reseñas ${index + 1}`}
             />
@@ -264,7 +260,7 @@ export const GoogleReviews = () => {
             href="https://www.google.com/maps/place/The+Klan/@19.3839507,-99.1584908,17z/data=!4m18!1m9!3m8!1s0x85d1ffa796af0001:0x2825f997c5e4c604!2sThe+Klan!8m2!3d19.3839507!4d-99.1584908!9m1!1b1!16s%2Fg%2F11j4svv45s!3m7!1s0x85d1ffa796af0001:0x2825f997c5e4c604!8m2!3d19.3839507!4d-99.1584908!9m1!1b1!16s%2Fg%2F11j4svv45s?entry=ttu&g_ep=EgoyMDI1MTAwNi4wIKXMDSoASAFQAw%3D%3D"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 bg-white border-2 border-gray-300 text-gray-900 font-bold px-8 py-4 rounded-full hover:bg-gray-50 transition-all duration-300 transform hover:scale-105 shadow-md"
+            className="inline-flex items-center gap-2 bg-white border-2 border-white text-gray-900 font-bold px-8 py-4 rounded-full hover:bg-red-600 hover:text-white hover:border-red-600 transition-all duration-300 transform hover:scale-105 shadow-md"
           >
             <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
               <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />

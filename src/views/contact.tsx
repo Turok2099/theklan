@@ -10,7 +10,9 @@ export const Contact = () => {
     phone: "",
     message: "",
   });
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [status, setStatus] = useState<
+    "idle" | "loading" | "success" | "error"
+  >("idle");
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -36,7 +38,7 @@ export const Contact = () => {
       setStatus("success");
       // Limpiar formulario
       setFormData({ name: "", email: "", phone: "", message: "" });
-      
+
       // Reset status después de 5 segundos
       setTimeout(() => setStatus("idle"), 5000);
     } catch (error) {
@@ -151,7 +153,9 @@ export const Contact = () => {
                 {/* Mensaje de éxito */}
                 {status === "success" && (
                   <div className="mb-6 p-4 bg-green-500/20 border border-green-500/50 rounded-lg text-center">
-                    <p className="font-semibold">✅ ¡Mensaje enviado con éxito!</p>
+                    <p className="font-semibold">
+                      ✅ ¡Mensaje enviado con éxito!
+                    </p>
                     <p className="text-sm mt-1">Te contactaremos pronto.</p>
                   </div>
                 )}
