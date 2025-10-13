@@ -4,6 +4,7 @@ import { metadata } from "@/components/seoMetadata";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import GoogleAnalytics from "@/components/GoogleAnalytics";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -70,6 +71,7 @@ export default function RootLayout({
           />
         </noscript>
 
+        <GoogleAnalytics gtmId="GTM-N7LP9GLV" />
         <Navbar />
         {children}
         <Footer />

@@ -15,7 +15,7 @@ export const Footer = () => {
           {/* Enlaces */}
           <div className="flex flex-col md:flex-row gap-4 md:gap-8 justify-center">
             <Link
-              href="/privacy"
+              href="/politica-de-privacidad"
               className="text-gray-300 hover:text-red-600 transition-colors text-sm md:text-base"
             >
               Aviso de Privacidad
