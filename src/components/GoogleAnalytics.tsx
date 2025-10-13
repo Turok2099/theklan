@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 
 // Declarar tipo para dataLayer
 declare global {
@@ -14,7 +14,7 @@ interface GoogleAnalyticsProps {
   gtmId: string;
 }
 
-export default function GoogleAnalytics({ gtmId }: GoogleAnalyticsProps) {
+function GoogleAnalyticsComponent({ gtmId }: GoogleAnalyticsProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
@@ -43,5 +43,13 @@ export default function GoogleAnalytics({ gtmId }: GoogleAnalyticsProps) {
   }, [pathname, searchParams, gtmId]);
 
   return null;
+}
+
+export default function GoogleAnalytics({ gtmId }: GoogleAnalyticsProps) {
+  return (
+    <Suspense fallback={null}>
+      <GoogleAnalyticsComponent gtmId={gtmId} />
+    </Suspense>
+  );
 }
 
