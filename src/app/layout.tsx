@@ -5,6 +5,7 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
+import { AuthProvider } from "@/contexts/AuthContext";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -72,10 +73,12 @@ export default function RootLayout({
         </noscript>
 
         <GoogleAnalytics gtmId="GTM-N7LP9GLV" />
-        <Navbar />
-        {children}
-        <Footer />
-        <WhatsAppButton phoneNumber="525613701366" />
+        <AuthProvider>
+          <Navbar />
+          {children}
+          <Footer />
+          <WhatsAppButton phoneNumber="525613701366" />
+        </AuthProvider>
 
         {/* 📊 Google Tag Manager */}
         <Script

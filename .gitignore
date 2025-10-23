@@ -49,3 +49,11 @@ optimize-*.js
 # Cloudinary local config (if created)
 .env.cloudinary
 cloudinary.config.js
+
+# Documentation files (except README)
+*.md
+!README.md
+
+
+# Scripts de desarrollo local
+scripts/

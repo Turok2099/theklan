@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import { useAuth } from "@/contexts/AuthContext";
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { user, loading, signOut } = useAuth();
 
   const navLinks = [
     { href: "/", label: "INICIO" },
@@ -15,8 +17,20 @@ export const Navbar = () => {
       label: "MASTER FRANCISCO",
     },
     { href: "/costos-y-horarios", label: "COSTOS Y HORARIOS" },
-    { href: "/contacto", label: "CONTACTO" },
   ];
+
+  const handleSignOut = async () => {
+    try {
+      console.log("🚪 Iniciando proceso de logout...");
+      await signOut();
+      console.log("✅ Logout completado");
+      setIsOpen(false);
+      // Redirigir al home después del logout
+      window.location.href = "/";
+    } catch (error) {
+      console.error("❌ Error durante logout:", error);
+    }
+  };
 
   // Bloquear scroll cuando el menú está abierto
   useEffect(() => {
@@ -42,7 +56,7 @@ export const Navbar = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex space-x-8">
+          <div className="hidden md:flex items-center space-x-8">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
@@ -52,6 +66,35 @@ export const Navbar = () => {
                 {link.label}
               </Link>
             ))}
+
+            {/* Auth Section */}
+            <div className="flex items-center space-x-4 ml-4 pl-4 border-l border-white/20">
+              {loading ? (
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+              ) : user ? (
+                <div className="flex items-center space-x-3">
+                  <Link
+                    href="/dashboard"
+                    className="text-white hover:text-red-600 transition-colors duration-200 font-semibold text-sm"
+                  >
+                    MI CUENTA
+                  </Link>
+                  <button
+                    onClick={handleSignOut}
+                    className="text-white hover:text-red-600 transition-colors duration-200 font-semibold text-sm"
+                  >
+                    SALIR
+                  </button>
+                </div>
+              ) : (
+                <Link
+                  href="/auth/login"
+                  className="text-white hover:text-red-600 transition-colors duration-200 font-semibold text-sm"
+                >
+                  INICIAR SESIÓN
+                </Link>
+              )}
+            </div>
           </div>
 
           {/* Mobile menu button */}
@@ -101,6 +144,60 @@ export const Navbar = () => {
               {link.label}
             </Link>
           ))}
+
+          {/* Auth Section Mobile */}
+          <div className="mt-6 pt-6 border-t border-white/20">
+            {loading ? (
+              <div className="flex justify-center">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+              </div>
+            ) : user ? (
+              <div className="space-y-4">
+                <Link
+                  href="/dashboard"
+                  onClick={() => setIsOpen(false)}
+                  className="block text-white hover:text-black transition-colors duration-200 font-bold text-base py-4 border-b border-white/20"
+                  style={{
+                    animation: isOpen
+                      ? `slideInRight 0.3s ease-out ${
+                          navLinks.length * 0.1
+                        }s both`
+                      : "none",
+                  }}
+                >
+                  MI CUENTA
+                </Link>
+                <button
+                  onClick={handleSignOut}
+                  className="block w-full text-left text-white hover:text-black transition-colors duration-200 font-bold text-base py-4"
+                  style={{
+                    animation: isOpen
+                      ? `slideInRight 0.3s ease-out ${
+                          (navLinks.length + 1) * 0.1
+                        }s both`
+                      : "none",
+                  }}
+                >
+                  SALIR
+                </button>
+              </div>
+            ) : (
+              <Link
+                href="/auth/login"
+                onClick={() => setIsOpen(false)}
+                className="block text-white hover:text-black transition-colors duration-200 font-bold text-base py-4"
+                style={{
+                  animation: isOpen
+                    ? `slideInRight 0.3s ease-out ${
+                        navLinks.length * 0.1
+                      }s both`
+                    : "none",
+                }}
+              >
+                INICIAR SESIÓN
+              </Link>
+            )}
+          </div>
         </div>
       </div>
 
