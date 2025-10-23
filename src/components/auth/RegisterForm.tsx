@@ -57,23 +57,6 @@ export const RegisterForm = ({ onSuccess, onError }: RegisterFormProps) => {
         console.log("✅ Usuario registrado exitosamente");
         console.log("📧 Email de verificación enviado");
 
-        // Crear registro en tabla users personalizada
-        const { error: userError } = await supabase.from("users").insert([
-          {
-            id: authData.user.id,
-            email: data.email,
-            password_hash: "", // No necesitamos guardar hash, Supabase lo maneja
-            email_verified: false,
-            role: "student",
-            is_active: true,
-          },
-        ]);
-
-        if (userError) {
-          console.warn("⚠️ Error creando registro en users:", userError);
-          // No lanzamos error aquí porque el usuario ya está registrado en auth
-        }
-
         setSubmitSuccess(true);
         reset();
 

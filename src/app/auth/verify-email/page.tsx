@@ -34,16 +34,6 @@ function VerifyEmailContent() {
           } else if (data.user) {
             console.log("Email verificado exitosamente");
 
-            // Actualizar estado de verificación en tabla users
-            // Las políticas RLS automáticamente filtran por auth.uid()
-            const { error: updateError } = await supabase
-              .from("users")
-              .update({ email_verified: true });
-
-            if (updateError) {
-              console.warn("Error actualizando verificación:", updateError);
-            }
-
             setStatus("success");
             setMessage(
               "¡Email verificado exitosamente! Ya puedes iniciar sesión."

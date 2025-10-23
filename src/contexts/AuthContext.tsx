@@ -70,49 +70,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             authUser.email
           );
 
-          // Consultar solo el estado de verificación de la tabla personalizada
-          try {
-            const { data: userData, error: userError } = await supabase
-              .from("users")
-              .select("email_verified")
-              .eq("id", authUser.id)
-              .single();
-
-            if (userError) {
-              console.error("❌ AuthContext: Error obteniendo estado de verificación:", userError);
-              throw userError;
-            }
-
-            const emailVerified = userData?.email_verified ?? false;
-
-            console.log("✅ AuthContext: Estado de verificación obtenido:", emailVerified);
-
-            setUser({
-              id: authUser.id,
-              email: authUser.email || "",
-              email_verified: emailVerified, // Usar el estado de tu tabla personalizada
-              role: "student",
-              is_active: true,
-              created_at: authUser.created_at || new Date().toISOString(),
-              updated_at: authUser.updated_at || new Date().toISOString(),
-              last_login: undefined,
-              profile_data: undefined,
-            });
-          } catch (error) {
-            console.error("❌ AuthContext: Error obteniendo estado de verificación:", error);
-            // Fallback usando auth.users
-            setUser({
-              id: authUser.id,
-              email: authUser.email || "",
-              email_verified: !!authUser.email_confirmed_at,
-              role: "student",
-              is_active: true,
-              created_at: authUser.created_at || new Date().toISOString(),
-              updated_at: authUser.updated_at || new Date().toISOString(),
-              last_login: undefined,
-              profile_data: undefined,
-            });
-          }
+          // Usar solo datos de auth.users (sin consultar tabla personalizada)
+          // Esto evita problemas con políticas RLS y consultas 406
+          setUser({
+            id: authUser.id,
+            email: authUser.email || "",
+            email_verified: !!authUser.email_confirmed_at, // Usar estado de Supabase Auth
+            role: "student", // Valor por defecto
+            is_active: true,  // Valor por defecto
+            created_at: authUser.created_at || new Date().toISOString(),
+            updated_at: authUser.updated_at || new Date().toISOString(),
+            last_login: undefined,
+            profile_data: undefined,
+          });
         } else {
           console.log("👤 AuthContext: No hay usuario autenticado");
           setUser(null);
