@@ -51,10 +51,10 @@ export const LoginForm = ({ onSuccess, onError }: LoginFormProps) => {
         console.log("✅ Usuario logueado exitosamente");
 
         // Actualizar último login en tabla users
+        // Las políticas RLS automáticamente filtran por auth.uid()
         const { error: updateError } = await supabase
           .from("users")
-          .update({ last_login: new Date().toISOString() })
-          .eq("id", authData.user.id);
+          .update({ last_login: new Date().toISOString() });
 
         if (updateError) {
           console.warn("⚠️ Error actualizando último login:", updateError);

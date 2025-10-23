@@ -35,10 +35,10 @@ function VerifyEmailContent() {
             console.log("Email verificado exitosamente");
 
             // Actualizar estado de verificación en tabla users
+            // Las políticas RLS automáticamente filtran por auth.uid()
             const { error: updateError } = await supabase
               .from("users")
-              .update({ email_verified: true })
-              .eq("id", data.user.id);
+              .update({ email_verified: true });
 
             if (updateError) {
               console.warn("Error actualizando verificación:", updateError);
