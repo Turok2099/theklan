@@ -70,63 +70,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             authUser.email
           );
 
-          // Solo consultar la tabla users si el usuario está autenticado
-          try {
-            // Obtener datos adicionales del usuario desde nuestra tabla users
-            // Las políticas RLS automáticamente filtran por auth.uid()
-            const { data: userData, error: userError } = await supabase
-              .from("users")
-              .select("*")
-              .single();
-
-            if (userError) {
-              console.error(
-                "❌ AuthContext: Error obteniendo datos del usuario:",
-                userError
-              );
-              // Si hay error, usar datos básicos del auth user
-              setUser({
-                id: authUser.id,
-                email: authUser.email || "",
-                email_verified: !!authUser.email_confirmed_at,
-                role: "student",
-                is_active: true,
-                created_at: authUser.created_at || new Date().toISOString(),
-                updated_at: authUser.updated_at || new Date().toISOString(),
-                last_login: undefined,
-                profile_data: undefined,
-              });
-            } else {
-              console.log(
-                "✅ AuthContext: Datos de usuario obtenidos exitosamente"
-              );
-              setUser({
-                id: userData.id,
-                email: userData.email,
-                email_verified: userData.email_verified,
-                role: userData.role,
-                is_active: userData.is_active,
-                created_at: userData.created_at,
-                updated_at: userData.updated_at,
-                last_login: userData.last_login,
-                profile_data: userData.profile_data,
-              });
-            }
-          } catch (error) {
-            console.error("❌ AuthContext: Error en consulta users:", error);
-            // Fallback a datos básicos del auth user
-            setUser({
-              id: authUser.id,
-              email: authUser.email || "",
-              email_verified: !!authUser.email_confirmed_at,
-              role: "student",
-              is_active: true,
-              created_at: authUser.created_at || new Date().toISOString(),
-              updated_at: authUser.updated_at || new Date().toISOString(),
-              last_login: undefined,
-              profile_data: undefined,
-            });
-          }
+          // Usar solo datos de auth.users (sin consultar tabla personalizada)
+          // Esto evita problemas con políticas RLS y consultas 406
+          setUser({
+            id: authUser.id,
+            email: authUser.email || "",
+            email_verified: !!authUser.email_confirmed_at,
+            role: "student", // Valor por defecto
+            is_active: true,  // Valor por defecto
+            created_at: authUser.created_at || new Date().toISOString(),
+            updated_at: authUser.updated_at || new Date().toISOString(),
+            last_login: undefined,
+            profile_data: undefined,
+          });
         } else {
           console.log("👤 AuthContext: No hay usuario autenticado");
           setUser(null);
