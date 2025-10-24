@@ -90,6 +90,17 @@ export const Contact = () => {
                 <a
                   href="tel:5613701366"
                   className="text-red-600 font-semibold hover:underline"
+                  style={{
+                    color: "#dc2626", // red-600
+                    fontWeight: "600",
+                    textDecoration: "none",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.textDecoration = "underline";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.textDecoration = "none";
+                  }}
                 >
                   56-1370-1366
                 </a>
@@ -102,6 +113,17 @@ export const Contact = () => {
                 <a
                   href="mailto:contacto@theklanbjj.com.mx"
                   className="text-red-600 font-semibold hover:underline"
+                  style={{
+                    color: "#dc2626", // red-600
+                    fontWeight: "600",
+                    textDecoration: "none",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.textDecoration = "underline";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.textDecoration = "none";
+                  }}
                 >
                   contacto@theklanbjj.com.mx
                 </a>
@@ -234,6 +256,24 @@ export const Contact = () => {
                     type="submit"
                     disabled={status === "loading"}
                     className="inline-flex items-center justify-center bg-red-600 hover:bg-red-600/90 transition-colors font-bold px-8 py-3 rounded-full shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                    style={{
+                      backgroundColor: "#dc2626", // red-600
+                      color: "#ffffff", // white
+                      fontWeight: "700",
+                      padding: "0.75rem 2rem",
+                      borderRadius: "9999px",
+                      boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+                    }}
+                    onMouseEnter={(e) => {
+                      if (status !== "loading") {
+                        e.currentTarget.style.backgroundColor = "#b91c1c"; // red-700
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (status !== "loading") {
+                        e.currentTarget.style.backgroundColor = "#dc2626"; // red-600
+                      }
+                    }}
                   >
                     {status === "loading" ? (
                       <>

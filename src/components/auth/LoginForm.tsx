@@ -122,9 +122,15 @@ export const LoginForm = ({ onSuccess, onError }: LoginFormProps) => {
 
       if (response.ok) {
         console.log("✅ Correo reenviado exitosamente");
+        const attemptsRemaining = data.attemptsRemaining || 0;
         setSubmitError(
-          "Correo de confirmación reenviado. Revisa tu bandeja de entrada y spam."
+          `Correo de confirmación reenviado. Revisa tu bandeja de entrada y spam. Intentos restantes: ${attemptsRemaining}`
         );
+        setShowResendButton(false);
+      } else if (response.status === 429) {
+        // Límite alcanzado
+        console.error("❌ Límite de reenvíos alcanzado:", data.message);
+        setSubmitError(`⚠️ ${data.message}`);
         setShowResendButton(false);
       } else {
         console.error("❌ Error reenviando correo:", data.error);
@@ -264,7 +270,24 @@ export const LoginForm = ({ onSuccess, onError }: LoginFormProps) => {
                 type="button"
                 onClick={handleResendConfirmation}
                 disabled={isResending}
-                className="mt-3 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:cursor-not-allowed disabled:bg-gray-400 text-sm font-semibold"
+                className="mt-3 px-4 py-2 bg-red-600 text-black font-bold rounded-lg hover:bg-red-700 transition-colors disabled:cursor-not-allowed disabled:bg-gray-400 text-sm"
+                style={{
+                  backgroundColor: "#dc2626", // red-600
+                  color: "#000000", // black
+                  fontWeight: "700",
+                  fontSize: "0.875rem",
+                  padding: "0.5rem 1rem",
+                }}
+                onMouseEnter={(e) => {
+                  if (!isResending) {
+                    e.currentTarget.style.backgroundColor = "#b91c1c"; // red-700
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isResending) {
+                    e.currentTarget.style.backgroundColor = "#dc2626"; // red-600
+                  }
+                }}
               >
                 {isResending ? "Enviando..." : "Reenviar confirmación"}
               </button>
@@ -276,7 +299,18 @@ export const LoginForm = ({ onSuccess, onError }: LoginFormProps) => {
         <div className="flex justify-between items-center">
           <a
             href="/auth/forgot-password"
-            className="text-red-600 hover:text-red-700 font-semibold text-sm"
+            className="text-red-800 hover:text-red-900 font-semibold text-sm"
+            style={{
+              color: "#991b1b", // red-800
+              fontWeight: "600",
+              fontSize: "0.875rem",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = "#7f1d1d"; // red-900
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = "#991b1b"; // red-800
+            }}
           >
             ¿Olvidaste tu contraseña?
           </a>
@@ -334,15 +368,28 @@ export const LoginForm = ({ onSuccess, onError }: LoginFormProps) => {
 
       {/* Enlaces adicionales */}
       <div className="mt-6 text-center">
-        <p className="text-gray-600">
-          ¿No tienes cuenta?{" "}
-          <a
-            href="/auth/register"
-            className="text-red-600 hover:text-red-700 font-semibold"
-          >
-            Regístrate aquí
-          </a>
-        </p>
+        <button
+          onClick={() => (window.location.href = "/auth/register")}
+          className="w-full px-6 py-3 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition-colors shadow-lg"
+          style={{
+            backgroundColor: "#dc2626", // red-600
+            color: "#ffffff", // white
+            fontWeight: "700",
+            fontSize: "1rem",
+            padding: "0.75rem 1.5rem",
+            width: "100%",
+            borderRadius: "0.5rem",
+            boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = "#b91c1c"; // red-700
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = "#dc2626"; // red-600
+          }}
+        >
+          ¿NO TIENES CUENTA? REGÍSTRATE AQUÍ
+        </button>
       </div>
     </div>
   );
