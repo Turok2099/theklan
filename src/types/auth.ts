@@ -4,7 +4,7 @@ export interface User {
   id: string;
   email: string;
   email_verified: boolean;
-  role: "student" | "admin" | "instructor";
+  role: "student" | "admin" | "coach";
   is_active: boolean;
   created_at: string;
   updated_at: string;
@@ -42,7 +42,7 @@ export type AuthState = "loading" | "authenticated" | "unauthenticated";
 export const USER_ROLES = {
   STUDENT: "student",
   ADMIN: "admin",
-  INSTRUCTOR: "instructor",
+  COACH: "coach",
 } as const;
 
 export type UserRole = (typeof USER_ROLES)[keyof typeof USER_ROLES];

@@ -76,6 +76,7 @@ export async function middleware(request: NextRequest) {
 
     // Proteger rutas que requieren autenticación
     const protectedRoutes = ["/dashboard", "/responsiva"];
+    const adminRoutes = ["/admin"];
     const authRoutes = [
       "/auth/login",
       "/auth/register",
@@ -85,12 +86,15 @@ export async function middleware(request: NextRequest) {
     const isProtectedRoute = protectedRoutes.some((route) =>
       request.nextUrl.pathname.startsWith(route)
     );
+    const isAdminRoute = adminRoutes.some((route) =>
+      request.nextUrl.pathname.startsWith(route)
+    );
     const isAuthRoute = authRoutes.some((route) =>
       request.nextUrl.pathname.startsWith(route)
     );
 
     // Si es una ruta protegida y no hay sesión, redirigir al login
-    if (isProtectedRoute && !session) {
+    if ((isProtectedRoute || isAdminRoute) && !session) {
       console.log("🔒 Middleware: Redirigiendo a login desde ruta protegida");
       const loginUrl = new URL("/auth/login", request.url);
       loginUrl.searchParams.set("redirectTo", request.nextUrl.pathname);
@@ -130,8 +134,10 @@ export const config = {
     "/auth/:path*",
     "/dashboard/:path*",
     "/responsiva/:path*",
+    "/admin/:path*",
     "/api/responsivas/:path*",
     "/api/pdf/:path*",
     "/api/auth/:path*",
+    "/api/admin/:path*",
   ],
 };

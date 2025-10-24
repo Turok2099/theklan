@@ -75,19 +75,66 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             authUser.email
           );
 
-          // Usar solo datos de auth.users (sin consultar tabla personalizada)
-          // Esto evita problemas con políticas RLS y consultas 406
-          setUser({
-            id: authUser.id,
-            email: authUser.email || "",
-            email_verified: !!authUser.email_confirmed_at, // Usar estado de Supabase Auth
-            role: "student", // Valor por defecto
-            is_active: true, // Valor por defecto
-            created_at: authUser.created_at || new Date().toISOString(),
-            updated_at: authUser.updated_at || new Date().toISOString(),
-            last_login: undefined,
-            profile_data: undefined,
-          });
+          // Obtener información adicional de la tabla users
+          try {
+            const { data: userData, error: userError } = await supabase
+              .from("users")
+              .select("*")
+              .eq("id", authUser.id)
+              .single();
+
+            if (userError) {
+              console.warn(
+                "⚠️ AuthContext: Error obteniendo datos de usuario:",
+                userError.message
+              );
+              // Si no hay datos en la tabla users, usar valores por defecto
+              setUser({
+                id: authUser.id,
+                email: authUser.email || "",
+                email_verified: !!authUser.email_confirmed_at,
+                role: "student", // Valor por defecto
+                is_active: true,
+                created_at: authUser.created_at || new Date().toISOString(),
+                updated_at: authUser.updated_at || new Date().toISOString(),
+                last_login: undefined,
+                profile_data: undefined,
+              });
+            } else {
+              console.log(
+                "✅ AuthContext: Datos de usuario obtenidos:",
+                userData.role
+              );
+              setUser({
+                id: userData.id,
+                email: userData.email,
+                email_verified: !!authUser.email_confirmed_at,
+                role: userData.role as "student" | "admin" | "instructor",
+                is_active: userData.is_active,
+                created_at: userData.created_at,
+                updated_at: userData.updated_at,
+                last_login: userData.last_login,
+                profile_data: userData.profile_data,
+              });
+            }
+          } catch (error) {
+            console.error(
+              "❌ AuthContext: Error consultando tabla users:",
+              error
+            );
+            // Fallback a valores por defecto
+            setUser({
+              id: authUser.id,
+              email: authUser.email || "",
+              email_verified: !!authUser.email_confirmed_at,
+              role: "student",
+              is_active: true,
+              created_at: authUser.created_at || new Date().toISOString(),
+              updated_at: authUser.updated_at || new Date().toISOString(),
+              last_login: undefined,
+              profile_data: undefined,
+            });
+          }
         } else {
           console.log("👤 AuthContext: No hay usuario autenticado");
           setUser(null);

@@ -4,10 +4,12 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useAuth } from "@/contexts/AuthContext";
+import { useIsAdmin } from "@/hooks/useIsAdmin";
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { user, loading, signOut } = useAuth();
+  const isAdmin = useIsAdmin();
 
   // Debug logs para el navbar
   console.log("🔍 Navbar Debug:", {
@@ -87,6 +89,14 @@ export const Navbar = () => {
                   >
                     MI CUENTA
                   </Link>
+                  {isAdmin && (
+                    <Link
+                      href="/admin"
+                      className="text-white hover:text-red-600 transition-colors duration-200 font-semibold text-sm"
+                    >
+                      ADMIN
+                    </Link>
+                  )}
                   <button
                     onClick={handleSignOut}
                     className="text-white hover:text-red-600 transition-colors duration-200 font-semibold text-sm"
@@ -175,13 +185,29 @@ export const Navbar = () => {
                 >
                   MI CUENTA
                 </Link>
+                {isAdmin && (
+                  <Link
+                    href="/admin"
+                    onClick={() => setIsOpen(false)}
+                    className="block text-white hover:text-black transition-colors duration-200 font-bold text-base py-4 border-b border-white/20"
+                    style={{
+                      animation: isOpen
+                        ? `slideInRight 0.3s ease-out ${
+                            (navLinks.length + 1) * 0.1
+                          }s both`
+                        : "none",
+                    }}
+                  >
+                    ADMIN
+                  </Link>
+                )}
                 <button
                   onClick={handleSignOut}
                   className="block w-full text-left text-white hover:text-black transition-colors duration-200 font-bold text-base py-4"
                   style={{
                     animation: isOpen
                       ? `slideInRight 0.3s ease-out ${
-                          (navLinks.length + 1) * 0.1
+                          (navLinks.length + 2) * 0.1
                         }s both`
                       : "none",
                   }}
