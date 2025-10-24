@@ -5,7 +5,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, LoginFormType } from "@/lib/auth-validations";
 import { createClient } from "@/lib/supabase-auth";
-import { useRouter } from "next/navigation";
 
 interface LoginFormProps {
   onSuccess?: () => void;
@@ -15,7 +14,10 @@ interface LoginFormProps {
 export const LoginForm = ({ onSuccess, onError }: LoginFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
-  const router = useRouter();
+  const [showResendButton, setShowResendButton] = useState(false);
+  const [userEmail, setUserEmail] = useState("");
+  const [isResending, setIsResending] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -44,14 +46,44 @@ export const LoginForm = ({ onSuccess, onError }: LoginFormProps) => {
 
       if (authError) {
         console.error("❌ Error en login:", authError);
-        throw new Error(authError.message);
+
+        // Detectar si el error es por email no confirmado
+        if (
+          authError.message.includes("email not confirmed") ||
+          authError.message.includes("Email not confirmed")
+        ) {
+          setUserEmail(data.email);
+          setShowResendButton(true);
+          setSubmitError(
+            "Tu email no ha sido confirmado. Haz clic en 'Reenviar confirmación' para recibir un nuevo correo."
+          );
+        } else {
+          throw new Error(authError.message);
+        }
+        return;
       }
 
       if (authData.user) {
         console.log("✅ Usuario logueado exitosamente");
+        console.log("✅ Datos del usuario:", {
+          id: authData.user.id,
+          email: authData.user.email,
+          email_confirmed_at: authData.user.email_confirmed_at,
+          confirmed_at: authData.user.confirmed_at,
+          last_sign_in_at: authData.user.last_sign_in_at,
+        });
 
-        // Redirigir al dashboard o página principal
-        router.push("/dashboard");
+        // Redirigir al dashboard usando window.location para evitar conflictos con middleware
+        console.log("🔄 Redirigiendo al dashboard...");
+
+        // Mostrar mensaje de redirección
+        setSubmitError("✅ Login exitoso. Redirigiendo al dashboard...");
+
+        // Usar window.location.href para forzar una navegación completa
+        // Esto evita conflictos con el middleware y AuthContext
+        setTimeout(() => {
+          window.location.href = "/dashboard";
+        }, 1500); // Dar tiempo para que el usuario vea el mensaje
 
         if (onSuccess) {
           onSuccess();
@@ -68,6 +100,41 @@ export const LoginForm = ({ onSuccess, onError }: LoginFormProps) => {
       }
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleResendConfirmation = async () => {
+    if (!userEmail) return;
+
+    setIsResending(true);
+    try {
+      console.log("📧 Reenviando correo de confirmación...");
+
+      const response = await fetch("/api/auth/resend-verification", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: userEmail }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log("✅ Correo reenviado exitosamente");
+        setSubmitError(
+          "Correo de confirmación reenviado. Revisa tu bandeja de entrada y spam."
+        );
+        setShowResendButton(false);
+      } else {
+        console.error("❌ Error reenviando correo:", data.error);
+        setSubmitError(`Error: ${data.error}`);
+      }
+    } catch (error) {
+      console.error("❌ Error en reenvío:", error);
+      setSubmitError("Error al reenviar el correo. Intenta de nuevo.");
+    } finally {
+      setIsResending(false);
     }
   };
 
@@ -112,15 +179,61 @@ export const LoginForm = ({ onSuccess, onError }: LoginFormProps) => {
           >
             Contraseña *
           </label>
-          <input
-            {...register("password")}
-            type="password"
-            id="password"
-            name="password"
-            autoComplete="current-password"
-            className="w-full px-4 py-3 border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-gray-900 bg-gray-50 text-gray-900 placeholder-gray-500"
-            placeholder="Tu contraseña"
-          />
+          <div className="relative">
+            <input
+              {...register("password")}
+              type={showPassword ? "text" : "password"}
+              id="password"
+              name="password"
+              autoComplete="current-password"
+              className="w-full px-4 py-3 pr-12 border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-gray-900 bg-gray-50 text-gray-900 placeholder-gray-500"
+              placeholder="Tu contraseña"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
+              aria-label={
+                showPassword ? "Ocultar contraseña" : "Mostrar contraseña"
+              }
+            >
+              {showPassword ? (
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"
+                  />
+                </svg>
+              ) : (
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                  />
+                </svg>
+              )}
+            </button>
+          </div>
           {errors.password && (
             <div className="p-3 bg-red-50 border border-red-200 rounded-lg mt-2">
               <p className="text-red-800 text-sm font-medium">
@@ -132,8 +245,30 @@ export const LoginForm = ({ onSuccess, onError }: LoginFormProps) => {
 
         {/* Error general */}
         {submitError && (
-          <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-red-800 text-sm font-medium">{submitError}</p>
+          <div
+            className={`p-4 border rounded-lg ${
+              submitError.includes("✅")
+                ? "bg-green-50 border-green-200"
+                : "bg-red-50 border-red-200"
+            }`}
+          >
+            <p
+              className={`text-sm font-medium ${
+                submitError.includes("✅") ? "text-green-800" : "text-red-800"
+              }`}
+            >
+              {submitError}
+            </p>
+            {showResendButton && (
+              <button
+                type="button"
+                onClick={handleResendConfirmation}
+                disabled={isResending}
+                className="mt-3 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:cursor-not-allowed disabled:bg-gray-400 text-sm font-semibold"
+              >
+                {isResending ? "Enviando..." : "Reenviar confirmación"}
+              </button>
+            )}
           </div>
         )}
 

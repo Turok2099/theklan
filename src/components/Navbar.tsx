@@ -9,6 +9,14 @@ export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { user, loading, signOut } = useAuth();
 
+  // Debug logs para el navbar
+  console.log("🔍 Navbar Debug:", {
+    user: user ? { id: user.id, email: user.email } : null,
+    loading,
+    hasUser: !!user,
+    shouldShowLogin: !loading && !user,
+  });
+
   const navLinks = [
     { href: "/", label: "INICIO" },
     { href: "/nuestros-entrenadores", label: "ENTRENADORES" },

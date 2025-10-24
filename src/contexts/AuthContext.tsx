@@ -23,17 +23,22 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<CustomUser | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const supabase = createClient();
+  const isRefreshingRef = useRef(false);
+
+  // Unificar cliente Supabase para evitar re-creación
+  const supabaseRef = useRef(createClient());
+  const supabase = supabaseRef.current;
+
   const lastRefreshRef = useRef<number>(0);
   const refreshTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const mountedRef = useRef(true);
 
   const refreshUser = useCallback(
     async (force = false) => {
       const now = Date.now();
 
       // Evitar llamadas simultáneas
-      if (isRefreshing && !force) {
+      if (isRefreshingRef.current && !force) {
         console.log("⏳ AuthContext: Refresh ya en progreso, omitiendo...");
         return;
       }
@@ -44,7 +49,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      setIsRefreshing(true);
+      isRefreshingRef.current = true;
       lastRefreshRef.current = now;
 
       try {
@@ -77,7 +82,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             email: authUser.email || "",
             email_verified: !!authUser.email_confirmed_at, // Usar estado de Supabase Auth
             role: "student", // Valor por defecto
-            is_active: true,  // Valor por defecto
+            is_active: true, // Valor por defecto
             created_at: authUser.created_at || new Date().toISOString(),
             updated_at: authUser.updated_at || new Date().toISOString(),
             last_login: undefined,
@@ -91,11 +96,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         console.error("❌ AuthContext: Error refrescando usuario:", error);
         setUser(null);
       } finally {
-        setIsRefreshing(false);
+        isRefreshingRef.current = false;
         setLoading(false);
+        console.log("🏁 AuthContext: Refresh completado, loading: false");
       }
     },
-    [isRefreshing, supabase]
+    [supabase] // Remover isRefreshing de las dependencias para evitar loop infinito
   );
 
   const signOut = useCallback(async () => {
@@ -117,7 +123,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       console.log("✅ AuthContext: SignOut de Supabase exitoso");
       setUser(null);
-      setIsRefreshing(false);
+      isRefreshingRef.current = false;
       setLoading(false);
       console.log("✅ AuthContext: Usuario limpiado del estado");
     } catch (error) {
@@ -127,17 +133,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [supabase]);
 
   useEffect(() => {
-    let mounted = true;
-
     const initializeAuth = async () => {
       console.log("🚀 AuthContext: Inicializando autenticación...");
 
       // Obtener sesión inicial
       await refreshUser(true);
 
-      if (!mounted) return;
+      if (!mountedRef.current) return;
 
-      // Escuchar cambios en la autenticación
+      // Escuchar cambios en la autenticación con mejor manejo de race conditions
       const {
         data: { subscription },
       } = supabase.auth.onAuthStateChange(async (event, session) => {
@@ -147,24 +151,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           session?.user?.email
         );
 
-        if (!mounted) return;
+        // Verificar que el componente sigue montado
+        if (!mountedRef.current) return;
+
+        // Limpiar timeout anterior para evitar acumulación
+        if (refreshTimeoutRef.current) {
+          clearTimeout(refreshTimeoutRef.current);
+          refreshTimeoutRef.current = null;
+        }
 
         switch (event) {
           case "SIGNED_IN":
             if (session?.user) {
               console.log("✅ AuthContext: Usuario firmó sesión");
-              // Usar timeout para evitar race conditions
+              // Usar timeout más corto para respuesta más rápida
               refreshTimeoutRef.current = setTimeout(() => {
-                refreshUser(true);
-              }, 100);
+                if (mountedRef.current) {
+                  refreshUser(true);
+                }
+              }, 50);
             }
             break;
 
           case "SIGNED_OUT":
             console.log("🚪 AuthContext: Usuario cerró sesión");
-            setUser(null);
-            setIsRefreshing(false);
-            setLoading(false);
+            if (mountedRef.current) {
+              setUser(null);
+              isRefreshingRef.current = false;
+              setLoading(false);
+            }
             break;
 
           case "TOKEN_REFRESHED":
@@ -172,8 +187,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               console.log("🔄 AuthContext: Token refrescado");
               // Solo refrescar si realmente cambió algo importante
               refreshTimeoutRef.current = setTimeout(() => {
-                refreshUser(true);
-              }, 200);
+                if (mountedRef.current) {
+                  refreshUser(true);
+                }
+              }, 100);
             }
             break;
 
@@ -196,11 +213,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       };
     };
 
-    const cleanup = initializeAuth();
+    initializeAuth();
 
+    // Cleanup al desmontar
     return () => {
-      mounted = false;
-      cleanup.then((cleanupFn) => cleanupFn?.());
+      mountedRef.current = false;
+      if (refreshTimeoutRef.current) {
+        clearTimeout(refreshTimeoutRef.current);
+      }
     };
   }, [refreshUser, supabase]);
 
@@ -210,6 +230,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signOut,
     refreshUser,
   };
+
+  // Debug log del estado del AuthContext
+  console.log("🔍 AuthContext State:", {
+    user: user ? { id: user.id, email: user.email } : null,
+    loading,
+    isRefreshing: isRefreshingRef.current,
+  });
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

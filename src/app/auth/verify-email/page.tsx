@@ -16,40 +16,117 @@ function VerifyEmailContent() {
   useEffect(() => {
     const verifyEmail = async () => {
       try {
+        // PRIMERO: Verificar si ya hay una sesión activa
+        const { data: sessionData } = await supabase.auth.getSession();
+
+        if (sessionData.session) {
+          console.log(
+            "✅ Sesión ya activa detectada:",
+            sessionData.session.user.email
+          );
+          setStatus("success");
+          setMessage("¡Email ya verificado! Redirigiendo al dashboard...");
+
+          // Redirigir directamente al dashboard
+          setTimeout(() => {
+            console.log("🔄 Redirigiendo al dashboard...");
+            router.push("/dashboard");
+          }, 1500);
+          return;
+        }
+
         const token = searchParams.get("token");
         const type = searchParams.get("type");
 
+        console.log("🔍 DEBUG - Verificación de email iniciada");
+        console.log("🔍 DEBUG - Token:", token ? "Presente" : "Ausente");
+        console.log("🔍 DEBUG - Type:", type);
+        console.log("🔍 DEBUG - URL completa:", window.location.href);
+
         if (type === "signup" && token) {
+          console.log("🔍 DEBUG - Iniciando verificación OTP...");
+
           const { data, error } = await supabase.auth.verifyOtp({
             token_hash: token,
             type: "email",
           });
 
-          if (error) {
-            console.error("Error verificando email:", error);
+          console.log("🔍 DEBUG - Resultado de verifyOtp:");
+          console.log("🔍 DEBUG - Data:", data);
+          console.log("🔍 DEBUG - Error:", error);
+
+          // SOLUCIÓN MEJORADA: Verificar si el usuario quedó verificado, incluso si hay error
+          let isActuallyVerified = false;
+          let userEmail = "";
+
+          // Verificar si hay sesión activa (usuario logueado automáticamente)
+          if (data.session) {
+            console.log("✅ Sesión activa creada automáticamente");
+            isActuallyVerified = true;
+            userEmail = data.session.user.email || "";
+          }
+
+          // Si no hay sesión, verificar el estado del usuario directamente
+          if (!isActuallyVerified) {
+            console.log("🔍 Verificando estado del usuario directamente...");
+            const { data: userData } = await supabase.auth.getUser();
+
+            if (userData.user?.email_confirmed_at) {
+              console.log("✅ Usuario verificado directamente");
+              isActuallyVerified = true;
+              userEmail = userData.user.email || "";
+            }
+          }
+
+          // Determinar el resultado basado en la verificación real
+          if (isActuallyVerified) {
+            console.log("✅ Email verificado exitosamente (a pesar del error)");
+            console.log("✅ Usuario verificado:", {
+              email: userEmail,
+              verified: true,
+            });
+
+            setStatus("success");
+            setMessage(
+              "¡Email verificado exitosamente! Redirigiendo al dashboard..."
+            );
+
+            // Redirigir al dashboard después de 2 segundos
+            setTimeout(() => {
+              console.log("🔄 Redirigiendo al dashboard...");
+              router.push("/dashboard");
+            }, 2000);
+          } else if (error) {
+            console.error("❌ Error real verificando email:", error);
+            console.error("❌ Detalles del error:", {
+              message: error.message,
+              status: error.status,
+              code: error.code,
+            });
             setStatus("error");
             setMessage(
               "Error al verificar el email. El enlace puede haber expirado."
             );
-          } else if (data.user) {
-            console.log("Email verificado exitosamente");
-
-            setStatus("success");
+          } else {
+            console.log("⚠️ No se recibió usuario en la respuesta");
+            setStatus("error");
             setMessage(
-              "¡Email verificado exitosamente! Ya puedes iniciar sesión."
+              "Error inesperado: No se recibió información del usuario."
             );
-
-            // Redirigir al login después de 3 segundos
-            setTimeout(() => {
-              router.push("/auth/login");
-            }, 3000);
           }
         } else {
+          console.log("❌ Parámetros inválidos:");
+          console.log("❌ Type:", type);
+          console.log("❌ Token:", token ? "Presente" : "Ausente");
           setStatus("error");
           setMessage("Enlace de verificación inválido.");
         }
       } catch (error) {
-        console.error("Error en verificación:", error);
+        console.error("❌ Error en verificación:", error);
+        console.error(
+          "❌ Stack trace:",
+          error instanceof Error ? error.stack : "No stack trace available"
+        );
         setStatus("error");
         setMessage("Error inesperado al verificar el email.");
       }
@@ -112,20 +189,21 @@ function VerifyEmailContent() {
               </svg>
             </div>
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              ¡Email Verificado!
+              ¡Email Verificado Exitosamente!
             </h2>
             <p className="text-gray-600 mb-6">{message}</p>
             <div className="bg-green-50 border border-green-200 rounded-lg p-4">
               <p className="text-green-800 text-sm">
-                Serás redirigido automáticamente al login en unos segundos...
+                Serás redirigido automáticamente al dashboard en unos
+                segundos...
               </p>
             </div>
             <div className="mt-6">
               <a
-                href="/auth/login"
+                href="/dashboard"
                 className="inline-block px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
               >
-                Ir al Login
+                Ir al Dashboard
               </a>
             </div>
           </>

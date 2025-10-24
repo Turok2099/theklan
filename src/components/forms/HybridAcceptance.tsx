@@ -36,7 +36,7 @@ export const HybridAcceptance = ({
         <h3 className="font-semibold text-gray-900 text-sm">
           TÉRMINOS Y CONDICIONES
         </h3>
-        <div className="text-sm text-gray-700 space-y-2">
+        <div className="text-sm text-gray-800 md:text-gray-700 space-y-2">
           <p>
             • The Klan no se hace responsable por pérdidas dentro de las
             instalaciones.
@@ -63,9 +63,14 @@ export const HybridAcceptance = ({
           </p>
         </div>
 
-        <label className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+        <label
+          htmlFor="acepta-terminos"
+          className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg border border-gray-200"
+        >
           <input
             type="checkbox"
+            id="acepta-terminos"
+            name="aceptaTerminos"
             checked={aceptaTerminos}
             onChange={(e) => onAceptaTerminosChange(e.target.checked)}
             className="mt-1 w-4 h-4 text-gray-900 border-gray-300 rounded focus:ring-gray-900"
@@ -86,7 +91,7 @@ export const HybridAcceptance = ({
         <h3 className="font-semibold text-gray-900 text-sm mb-4">
           AVISO DE PRIVACIDAD
         </h3>
-        <div className="text-sm text-gray-700 mb-4">
+        <div className="text-sm text-gray-800 md:text-gray-700 mb-4">
           <p>
             Aviso de privacidad con fundamento en los artículos 15 y 16 de la
             ley federal de protección a datos personales en posesión de
@@ -102,9 +107,14 @@ export const HybridAcceptance = ({
           </p>
         </div>
 
-        <label className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+        <label
+          htmlFor="acepta-privacidad"
+          className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg border border-gray-200"
+        >
           <input
             type="checkbox"
+            id="acepta-privacidad"
+            name="aceptaAvisoPrivacidad"
             checked={aceptaAvisoPrivacidad}
             onChange={(e) => onAceptaAvisoPrivacidadChange(e.target.checked)}
             className="mt-1 w-4 h-4 text-gray-900 border-gray-300 rounded focus:ring-gray-900"
@@ -124,7 +134,7 @@ export const HybridAcceptance = ({
 
       {/* Información legal simplificada */}
       <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-        <div className="text-sm text-gray-700 space-y-1">
+        <div className="text-sm text-gray-800 md:text-gray-700 space-y-1">
           <p>
             <strong>✅ Aceptación Digital:</strong> Legalmente válida en México
             según la Ley Federal de Protección de Datos Personales.

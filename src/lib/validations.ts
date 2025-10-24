@@ -33,9 +33,12 @@ export const responsivaSchema = z.object({
 
   celular: z
     .string()
-    .min(10, "El número de celular debe tener al menos 10 dígitos")
-    .max(15, "El número de celular no puede exceder 15 dígitos")
-    .regex(/^[0-9+\-\s()]+$/, "Formato de celular inválido"),
+    .min(10, "El número de celular debe tener exactamente 10 dígitos")
+    .max(10, "El número de celular debe tener exactamente 10 dígitos")
+    .regex(
+      /^[0-9]{10}$/,
+      "El celular debe contener solo números y tener exactamente 10 dígitos"
+    ),
 
   email: z
     .string()
@@ -73,9 +76,12 @@ export const responsivaSchema = z.object({
 
   telefonoEmergencia: z
     .string()
-    .min(10, "El teléfono de emergencia debe tener al menos 10 dígitos")
-    .max(15, "El teléfono no puede exceder 15 dígitos")
-    .regex(/^[0-9+\-\s()]+$/, "Formato de teléfono inválido"),
+    .min(10, "El teléfono de emergencia debe tener exactamente 10 dígitos")
+    .max(10, "El teléfono de emergencia debe tener exactamente 10 dígitos")
+    .regex(
+      /^[0-9]{10}$/,
+      "El teléfono debe contener solo números y tener exactamente 10 dígitos"
+    ),
 
   tieneSeguroMedico: z.boolean(),
 

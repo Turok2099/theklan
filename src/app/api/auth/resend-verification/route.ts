@@ -1,37 +1,26 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 
-export async function POST() {
+export async function POST(request: NextRequest) {
   try {
     const supabase = await createServerSupabaseClient();
 
-    // Obtener el usuario actual
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
+    // Obtener el email del cuerpo de la petición
+    const { email } = await request.json();
 
-    if (authError || !user) {
+    if (!email) {
       return NextResponse.json(
-        { error: "Usuario no autenticado" },
-        { status: 401 }
-      );
-    }
-
-    // Verificar si el email ya está verificado
-    if (user.email_confirmed_at) {
-      return NextResponse.json(
-        { error: "El email ya está verificado" },
+        { error: "Email es requerido" },
         { status: 400 }
       );
     }
 
-    console.log("📧 Reenviando correo de verificación para:", user.email);
+    console.log("📧 Reenviando correo de verificación para:", email);
 
     // Reenviar correo de verificación
     const { error: resendError } = await supabase.auth.resend({
       type: "signup",
-      email: user.email!,
+      email: email,
     });
 
     if (resendError) {

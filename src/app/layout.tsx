@@ -44,6 +44,29 @@ export default function RootLayout({
           crossOrigin="anonymous"
         />
 
+        {/* Manejador global para errores de extensiones del navegador */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              // Manejador global para errores de extensiones del navegador
+              window.addEventListener('error', function(event) {
+                if (event.message && event.message.includes('message channel closed')) {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  return false;
+                }
+              });
+              
+              window.addEventListener('unhandledrejection', function(event) {
+                if (event.reason && event.reason.message && event.reason.message.includes('message channel closed')) {
+                  event.preventDefault();
+                  return false;
+                }
+              });
+            `,
+          }}
+        />
+
         {/* CSS Crítico Inline para Above-the-Fold */}
         <style
           dangerouslySetInnerHTML={{

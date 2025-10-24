@@ -116,12 +116,22 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public folder
+     * Solo ejecutar middleware en rutas que requieren autenticación:
+     * - Rutas de autenticación (/auth/*)
+     * - Rutas protegidas (/dashboard, /responsiva)
+     * - Rutas de API que requieren auth (/api/responsivas, /api/pdf)
+     *
+     * EXCLUIR:
+     * - Archivos estáticos (_next/static, _next/image)
+     * - Imágenes (svg, png, jpg, jpeg, gif, webp, avif)
+     * - Favicon y otros archivos del public folder
+     * - Rutas públicas que no requieren auth
      */
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/auth/:path*",
+    "/dashboard/:path*",
+    "/responsiva/:path*",
+    "/api/responsivas/:path*",
+    "/api/pdf/:path*",
+    "/api/auth/:path*",
   ],
 };

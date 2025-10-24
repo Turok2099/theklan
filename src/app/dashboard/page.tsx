@@ -24,43 +24,9 @@ export default function DashboardPage() {
   const [responsivaStatus, setResponsivaStatus] =
     useState<ResponsivaStatus | null>(null);
   const [loadingStatus, setLoadingStatus] = useState(true);
-  const [resendingEmail, setResendingEmail] = useState(false);
 
   const handleSignOut = async () => {
     await signOut();
-  };
-
-  const handleResendVerification = async () => {
-    if (!user?.email) return;
-
-    setResendingEmail(true);
-    try {
-      console.log("📧 Reenviando correo de verificación...");
-
-      const response = await fetch("/api/auth/resend-verification", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        console.log("✅ Correo reenviado exitosamente");
-        alert(
-          "Correo de verificación reenviado. Revisa tu bandeja de entrada."
-        );
-      } else {
-        console.error("❌ Error reenviando correo:", data.error);
-        alert(`Error: ${data.error}`);
-      }
-    } catch (error) {
-      console.error("❌ Error en reenvío:", error);
-      alert("Error al reenviar el correo. Intenta de nuevo.");
-    } finally {
-      setResendingEmail(false);
-    }
   };
 
   const downloadResponsiva = async (responsivaId?: string) => {
@@ -177,30 +143,6 @@ export default function DashboardPage() {
                   >
                     {user?.email_verified ? "Verificado" : "No verificado"}
                   </p>
-                  {!user?.email_verified && (
-                    <button
-                      onClick={handleResendVerification}
-                      disabled={resendingEmail}
-                      className="px-3 py-1 text-xs rounded transition-colors disabled:cursor-not-allowed"
-                      style={{
-                        color: "#ffffff",
-                        backgroundColor: resendingEmail ? "#9ca3af" : "#2563eb",
-                        padding: "0.25rem 0.75rem",
-                      }}
-                      onMouseEnter={(e) => {
-                        if (!resendingEmail) {
-                          e.currentTarget.style.backgroundColor = "#1d4ed8";
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        if (!resendingEmail) {
-                          e.currentTarget.style.backgroundColor = "#2563eb";
-                        }
-                      }}
-                    >
-                      {resendingEmail ? "Enviando..." : "Reenviar"}
-                    </button>
-                  )}
                 </div>
               </div>
               <div>

@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { responsivaSchema, ResponsivaFormType } from "@/lib/validations";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   COMO_SE_ENTERO_OPTIONS,
   FRECUENCIA_EJERCICIO_OPTIONS,
@@ -20,6 +21,7 @@ export const ResponsivaForm = ({
   onSubmit,
   defaultEmail,
 }: ResponsivaFormProps) => {
+  const { user } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [submitSuccess, setSubmitSuccess] = useState(false);
@@ -56,8 +58,10 @@ export const ResponsivaForm = ({
   }, [defaultEmail, setValue]);
 
   const onFormSubmit = async (data: ResponsivaFormType) => {
-    console.log("🚀 Iniciando envío del formulario...");
+    console.log("🚀 INICIANDO ENVÍO DEL FORMULARIO...");
     console.log("📋 Datos recibidos:", data);
+    console.log("👤 Usuario autenticado:", !!user);
+    console.log("📧 Email del usuario:", user?.email);
 
     setIsSubmitting(true);
     setSubmitError("");
@@ -79,6 +83,9 @@ export const ResponsivaForm = ({
       };
 
       console.log("📤 Enviando datos a la API:", dataWithSignature);
+      console.log("🌐 URL de la API: /api/responsivas");
+      console.log("📊 Método: POST");
+      console.log("📋 Headers: Content-Type: application/json");
 
       await onSubmit(dataWithSignature);
 
@@ -92,7 +99,17 @@ export const ResponsivaForm = ({
       // Reset success message after 5 seconds
       setTimeout(() => setSubmitSuccess(false), 5000);
     } catch (error) {
-      console.error("❌ Error en el formulario:", error);
+      console.error("❌ ERROR EN EL FORMULARIO:", error);
+      console.error("❌ Tipo de error:", typeof error);
+      console.error(
+        "❌ Mensaje de error:",
+        error instanceof Error ? error.message : "Error desconocido"
+      );
+      console.error(
+        "❌ Stack trace:",
+        error instanceof Error ? error.stack : "No stack trace"
+      );
+
       setSubmitError(
         error instanceof Error ? error.message : "Error al enviar el formulario"
       );
@@ -135,11 +152,11 @@ export const ResponsivaForm = ({
         <h2 className="text-2xl font-bold text-gray-900 mb-2">
           ¡Responsiva Enviada Exitosamente!
         </h2>
-        <p className="text-gray-600 mb-4">
+        <p className="text-gray-800 mb-4">
           Tu responsiva ha sido enviada correctamente. Te contactaremos pronto
           para confirmar tu inscripción.
         </p>
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-gray-700">
           Recibirás una copia por email con todos los detalles.
         </p>
       </div>
@@ -151,7 +168,7 @@ export const ResponsivaForm = ({
       {/* Header */}
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">BIENVENIDO/A</h1>
-        <p className="text-gray-600">
+        <p className="text-gray-800 md:text-gray-700">
           Para hacer el uso de las instalaciones, necesitamos algunos datos
           personales
         </p>
@@ -177,7 +194,10 @@ export const ResponsivaForm = ({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Nombre */}
             <div>
-              <label className="block text-sm font-semibold text-red-600 mb-2">
+              <label
+                htmlFor="nombre"
+                className="block text-sm font-semibold text-red-600 mb-2"
+              >
                 Nombre *
               </label>
               <input
@@ -200,7 +220,10 @@ export const ResponsivaForm = ({
 
             {/* Fecha de Nacimiento */}
             <div>
-              <label className="block text-sm font-semibold text-red-600 mb-2">
+              <label
+                htmlFor="fechaNacimiento"
+                className="block text-sm font-semibold text-red-600 mb-2"
+              >
                 Fecha de Nacimiento *
               </label>
               <input
@@ -224,7 +247,10 @@ export const ResponsivaForm = ({
 
             {/* Celular */}
             <div>
-              <label className="block text-sm font-semibold text-red-600 mb-2">
+              <label
+                htmlFor="celular"
+                className="block text-sm font-semibold text-red-600 mb-2"
+              >
                 Celular *
               </label>
               <input
@@ -233,8 +259,17 @@ export const ResponsivaForm = ({
                 id="celular"
                 name="celular"
                 autoComplete="tel"
+                maxLength={10}
+                pattern="[0-9]{10}"
+                inputMode="numeric"
                 className="w-full px-4 py-3 border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-gray-900 bg-gray-50 text-gray-900 placeholder-gray-500"
-                placeholder="55-1234-5678"
+                placeholder="5545210178"
+                onChange={(e) => {
+                  // Solo permitir números y máximo 10 dígitos
+                  const value = e.target.value.replace(/\D/g, "").slice(0, 10);
+                  e.target.value = value;
+                  setValue("celular", value);
+                }}
               />
               {errors.celular && (
                 <p className="text-red-800 text-sm font-medium">
@@ -245,7 +280,10 @@ export const ResponsivaForm = ({
 
             {/* Email */}
             <div>
-              <label className="block text-sm font-semibold text-red-600 mb-2">
+              <label
+                htmlFor="email"
+                className="block text-sm font-semibold text-red-600 mb-2"
+              >
                 Email *
               </label>
               <input
@@ -266,7 +304,10 @@ export const ResponsivaForm = ({
 
             {/* Instagram */}
             <div>
-              <label className="block text-sm font-semibold text-gray-900 mb-2">
+              <label
+                htmlFor="instagram"
+                className="block text-sm font-semibold text-gray-900 mb-2"
+              >
                 Instagram
               </label>
               <input
@@ -274,7 +315,7 @@ export const ResponsivaForm = ({
                 type="text"
                 id="instagram"
                 name="instagram"
-                autoComplete="username"
+                autoComplete="off"
                 className="w-full px-4 py-3 border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-gray-900 bg-gray-50 text-gray-900 placeholder-gray-500"
                 placeholder="@tuusuario"
               />
@@ -287,7 +328,10 @@ export const ResponsivaForm = ({
 
             {/* Escuela/Empresa */}
             <div>
-              <label className="block text-sm font-semibold text-gray-900 mb-2">
+              <label
+                htmlFor="escuelaEmpresa"
+                className="block text-sm font-semibold text-gray-900 mb-2"
+              >
                 Escuela/Empresa
               </label>
               <input
@@ -308,7 +352,10 @@ export const ResponsivaForm = ({
 
             {/* ¿Cómo te enteraste? */}
             <div className="md:col-span-2">
-              <label className="block text-sm font-semibold text-red-600 mb-2">
+              <label
+                htmlFor="comoSeEntero"
+                className="block text-sm font-semibold text-red-600 mb-2"
+              >
                 ¿Cómo te enteraste de nosotros? *
               </label>
               <select
@@ -342,7 +389,10 @@ export const ResponsivaForm = ({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Contacto de Emergencia */}
             <div>
-              <label className="block text-sm font-semibold text-red-600 mb-2">
+              <label
+                htmlFor="contactoEmergencia"
+                className="block text-sm font-semibold text-red-600 mb-2"
+              >
                 Llama *
               </label>
               <input
@@ -363,7 +413,10 @@ export const ResponsivaForm = ({
 
             {/* Teléfono de Emergencia */}
             <div>
-              <label className="block text-sm font-semibold text-red-600 mb-2">
+              <label
+                htmlFor="telefonoEmergencia"
+                className="block text-sm font-semibold text-red-600 mb-2"
+              >
                 Tel/Cel *
               </label>
               <input
@@ -372,8 +425,17 @@ export const ResponsivaForm = ({
                 id="telefonoEmergencia"
                 name="telefonoEmergencia"
                 autoComplete="tel"
+                maxLength={10}
+                pattern="[0-9]{10}"
+                inputMode="numeric"
                 className="w-full px-4 py-3 border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-gray-900 bg-gray-50 text-gray-900 placeholder-gray-500"
-                placeholder="55-1234-5678"
+                placeholder="5545210179"
+                onChange={(e) => {
+                  // Solo permitir números y máximo 10 dígitos
+                  const value = e.target.value.replace(/\D/g, "").slice(0, 10);
+                  e.target.value = value;
+                  setValue("telefonoEmergencia", value);
+                }}
               />
               {errors.telefonoEmergencia && (
                 <p className="text-red-800 text-sm font-medium">
@@ -384,29 +446,29 @@ export const ResponsivaForm = ({
 
             {/* Seguro Médico */}
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-3">
+              <label className="block text-sm font-medium text-gray-800 md:text-gray-700 mb-3">
                 ¿Cuentas con seguro de gastos médicos?
               </label>
               <div className="flex gap-6">
                 <label className="flex items-center">
                   <input
-                    {...register("tieneSeguroMedico")}
                     type="radio"
                     value="true"
                     id="seguro-medico-si"
                     name="tieneSeguroMedico"
                     className="mr-2"
+                    onChange={() => setValue("tieneSeguroMedico", true)}
                   />
                   <span>Sí</span>
                 </label>
                 <label className="flex items-center">
                   <input
-                    {...register("tieneSeguroMedico")}
                     type="radio"
                     value="false"
                     id="seguro-medico-no"
                     name="tieneSeguroMedico"
                     className="mr-2"
+                    onChange={() => setValue("tieneSeguroMedico", false)}
                   />
                   <span>No</span>
                 </label>
@@ -414,9 +476,12 @@ export const ResponsivaForm = ({
             </div>
 
             {/* Lugar de Atención Médica */}
-            {watchedSeguroMedico && (
+            {watchedSeguroMedico === true && (
               <div className="md:col-span-2">
-                <label className="block text-sm font-semibold text-gray-900 mb-2">
+                <label
+                  htmlFor="lugarAtencionMedica"
+                  className="block text-sm font-semibold text-gray-900 mb-2"
+                >
                   ¿A dónde te debemos llevar?
                 </label>
                 <input
@@ -445,7 +510,7 @@ export const ResponsivaForm = ({
           </h2>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-800 md:text-gray-700 mb-1">
               Lesiones, restricciones, medicamentos
             </label>
             <textarea
@@ -513,8 +578,9 @@ export const ResponsivaForm = ({
         {/* Submit Button */}
         <div className="flex justify-end pt-6">
           <button
-            type="submit"
+            type="button"
             disabled={isSubmitting}
+            onClick={handleSubmit(onFormSubmit)}
             className="font-semibold py-4 px-8 rounded-lg transition-colors disabled:cursor-not-allowed text-base shadow-lg"
             style={{
               color: "#ffffff",

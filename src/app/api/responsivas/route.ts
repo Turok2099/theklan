@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createServerClient } from "@/lib/supabase";
+import { createServiceClient } from "@/lib/supabase-server";
 import { responsivaSchema } from "@/lib/validations";
 import { sendResponsivaEmail } from "@/lib/email-service";
 
@@ -11,23 +11,33 @@ export async function POST(request: NextRequest) {
     const validatedData = responsivaSchema.parse(body);
 
     // Crear cliente de Supabase con service role
-    const supabase = createServerClient();
+    const supabase = createServiceClient();
 
     // Preparar datos para insertar en la base de datos
     const responsivaData = {
       nombre: validatedData.nombre,
+      apellido_paterno: "", // Campo requerido por la tabla
+      apellido_materno: null, // Campo opcional
       fecha_nacimiento: validatedData.fechaNacimiento,
-      celular: validatedData.celular,
+      telefono: validatedData.celular,
       email: validatedData.email,
+      direccion: "", // Campo requerido por la tabla
+      ciudad: "", // Campo requerido por la tabla
+      estado: "pendiente", // Campo requerido por la tabla (estado de la responsiva)
+      codigo_postal: "", // Campo requerido por la tabla
       instagram: validatedData.instagram || null,
       escuela_empresa: validatedData.escuelaEmpresa || null,
       como_se_entero: validatedData.comoSeEntero,
-      contacto_emergencia: validatedData.contactoEmergencia,
-      telefono_emergencia: validatedData.telefonoEmergencia,
+      contacto_emergencia_nombre: validatedData.contactoEmergencia,
+      contacto_emergencia_telefono: validatedData.telefonoEmergencia,
+      contacto_emergencia_relacion: "Familiar", // Campo requerido por la tabla
       tiene_seguro_medico: validatedData.tieneSeguroMedico,
       lugar_atencion_medica: validatedData.lugarAtencionMedica || null,
-      lesiones_restricciones_medicamentos:
+      condiciones_medicas:
         validatedData.lesionesRestriccionesMedicamentos || null,
+      medicamentos: null, // Campo opcional
+      alergias: null, // Campo opcional
+      lesiones_previas: null, // Campo opcional
       frecuencia_ejercicio: validatedData.frecuenciaEjercicio,
       acepta_terminos: validatedData.aceptaTerminos,
       acepta_aviso_privacidad: validatedData.aceptaAvisoPrivacidad,
@@ -48,7 +58,6 @@ export async function POST(request: NextRequest) {
         request.headers.get("x-real-ip") ||
         "127.0.0.1",
       user_agent: request.headers.get("user-agent") || "Unknown",
-      estado: "pendiente",
     };
 
     // Insertar en Supabase
@@ -117,7 +126,7 @@ export async function POST(request: NextRequest) {
 // Método GET para obtener responsivas (para el panel admin)
 export async function GET(request: NextRequest) {
   try {
-    const supabase = createServerClient();
+    const supabase = createServiceClient();
     const { searchParams } = new URL(request.url);
 
     const page = parseInt(searchParams.get("page") || "1");

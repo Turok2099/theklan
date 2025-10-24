@@ -304,6 +304,7 @@ export const ResponsivaPDF: React.FC<ResponsivaPDFProps> = ({ data }) => {
         {data.firmaDigital && (
           <View style={styles.signatureSection}>
             <Text style={styles.signatureTitle}>FIRMA DIGITAL</Text>
+            {/* eslint-disable-next-line jsx-a11y/alt-text */}
             <Image style={styles.signatureImage} src={data.firmaDigital} />
             <Text style={styles.signatureDate}>
               Fecha de firma: {formatDateTime(data.fechaFirma || "")}

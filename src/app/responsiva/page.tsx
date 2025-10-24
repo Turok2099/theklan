@@ -3,7 +3,7 @@
 import { ResponsivaForm } from "@/components/forms/ResponsivaForm";
 import { ResponsivaFormType } from "@/lib/validations";
 import { useAuth } from "@/contexts/AuthContext";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 
 export default function ResponsivaPage() {
@@ -25,9 +25,12 @@ export default function ResponsivaPage() {
   } | null>(null);
   const [loadingStatus, setLoadingStatus] = useState(true);
   const router = useRouter();
+  const hasCheckedStatus = useRef(false);
 
   const checkResponsivaStatus = useCallback(async () => {
-    if (!user) return;
+    if (!user || hasCheckedStatus.current) return; // Evitar ejecuciones múltiples
+
+    hasCheckedStatus.current = true; // Marcar como ejecutado
 
     try {
       console.log("🔍 Verificando estado de responsiva...");
@@ -66,12 +69,21 @@ export default function ResponsivaPage() {
       // Verificar si ya tiene responsiva
       checkResponsivaStatus();
     }
-  }, [user, checkResponsivaStatus]);
+  }, [user, checkResponsivaStatus]); // Incluir user y checkResponsivaStatus
 
   const handleSubmit = async (data: ResponsivaFormType) => {
+    console.log("🌐 HANDLE SUBMIT INICIADO");
+    console.log("📋 Datos recibidos:", data);
+    console.log("👤 Usuario actual:", user);
+    console.log("📧 Email del usuario:", user?.email);
     console.log("🌐 handleSubmit llamado con datos:", data);
 
     try {
+      console.log("📤 PREPARANDO REQUEST A /api/responsivas...");
+      console.log("🌐 URL:", "/api/responsivas");
+      console.log("📊 Método:", "POST");
+      console.log("📋 Headers:", { "Content-Type": "application/json" });
+      console.log("📦 Body:", JSON.stringify(data));
       console.log("📤 Enviando request a /api/responsivas...");
 
       const response = await fetch("/api/responsivas", {
@@ -82,10 +94,19 @@ export default function ResponsivaPage() {
         body: JSON.stringify(data),
       });
 
+      console.log("📊 RESPONSE RECIBIDA:");
+      console.log("📊 - Status:", response.status);
+      console.log("📊 - OK:", response.ok);
+      console.log("📊 - Status Text:", response.statusText);
+      console.log(
+        "📊 - Headers:",
+        Object.fromEntries(response.headers.entries())
+      );
       console.log("📊 Response status:", response.status);
       console.log("📊 Response ok:", response.ok);
 
       const result = await response.json();
+      console.log("📋 RESPONSE DATA:", result);
       console.log("📋 Response data:", result);
 
       if (!response.ok) {
@@ -122,11 +143,27 @@ export default function ResponsivaPage() {
           window.URL.revokeObjectURL(url);
 
           console.log("📥 PDF descargado automáticamente");
+
+          // Redirigir al dashboard después de descargar el PDF
+          console.log("🔄 Redirigiendo al dashboard...");
+          setTimeout(() => {
+            router.push("/dashboard");
+          }, 2000); // Esperar 2 segundos para que el usuario vea que se descargó el PDF
         } else {
           console.warn("⚠️ Error generando PDF:", await pdfResponse.text());
+          // Redirigir al dashboard incluso si hay error en el PDF
+          console.log("🔄 Redirigiendo al dashboard (con error en PDF)...");
+          setTimeout(() => {
+            router.push("/dashboard");
+          }, 2000);
         }
       } catch (pdfError) {
         console.error("❌ Error en generación de PDF:", pdfError);
+        // Redirigir al dashboard incluso si hay error en el PDF
+        console.log("🔄 Redirigiendo al dashboard (con error en PDF)...");
+        setTimeout(() => {
+          router.push("/dashboard");
+        }, 2000);
         // No lanzamos el error para no interrumpir el flujo principal
       }
 
