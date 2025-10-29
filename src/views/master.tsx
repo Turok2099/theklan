@@ -229,6 +229,18 @@ export const Master = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
               {
+                year: "2025",
+                achievement: "Participante en el Wold Master IBJJF",
+                location: "Las Vegas, Estados Unidos",
+              },
+              {
+                year: "2024",
+                achievement:
+                  "Premio a lo más descarado del deporte y fineness 2024",
+                location: "Ciudad de México, México",
+              },
+
+              {
                 year: "2024",
                 achievement: "Subcampeón Mundial CBJJO",
                 location: "Río de Janeiro, Brasil",
@@ -245,7 +257,7 @@ export const Master = () => {
               },
               {
                 year: "2022",
-                achievement: "Campeón IBJJF",
+                achievement: "3er Lugar IBJJF",
                 location: "São Paulo, Brasil",
               },
               {
@@ -255,7 +267,7 @@ export const Master = () => {
               },
               {
                 year: "2018-2020",
-                achievement: "Tercer Lugar Torneo WFI (SuperFight)",
+                achievement: "Ganador en Torneo WFI (SuperFight)",
                 location: "México",
               },
               {
