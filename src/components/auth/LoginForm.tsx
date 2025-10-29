@@ -76,14 +76,9 @@ export const LoginForm = ({ onSuccess, onError }: LoginFormProps) => {
         // Redirigir al dashboard usando window.location para evitar conflictos con middleware
         console.log("🔄 Redirigiendo al dashboard...");
 
-        // Mostrar mensaje de redirección
-        setSubmitError("✅ Login exitoso. Redirigiendo al dashboard...");
-
         // Usar window.location.href para forzar una navegación completa
         // Esto evita conflictos con el middleware y AuthContext
-        setTimeout(() => {
-          window.location.href = "/dashboard";
-        }, 1500); // Dar tiempo para que el usuario vea el mensaje
+        window.location.href = "/dashboard";
 
         if (onSuccess) {
           onSuccess();
@@ -251,18 +246,8 @@ export const LoginForm = ({ onSuccess, onError }: LoginFormProps) => {
 
         {/* Error general */}
         {submitError && (
-          <div
-            className={`p-4 border rounded-lg ${
-              submitError.includes("✅")
-                ? "bg-green-50 border-green-200"
-                : "bg-red-50 border-red-200"
-            }`}
-          >
-            <p
-              className={`text-sm font-medium ${
-                submitError.includes("✅") ? "text-green-800" : "text-red-800"
-              }`}
-            >
+          <div className="p-4 border rounded-lg bg-red-50 border-red-200">
+            <p className="text-sm font-medium text-red-800">
               {submitError}
             </p>
             {showResendButton && (

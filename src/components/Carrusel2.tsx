@@ -79,7 +79,6 @@ export const Carrusel2 = () => {
                 alt={`Imagen ${i + 1}`}
                 fill
                 sizes="(max-width: 640px) 224px, (max-width: 768px) 288px, (max-width: 1024px) 320px, 384px"
-                quality={60}
                 className="object-cover rounded-lg shadow-lg transition-transform duration-300 group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-30 transition-opacity duration-300 rounded-lg" />
@@ -97,7 +96,6 @@ export const Carrusel2 = () => {
                 alt={`Imagen duplicada ${i + 1}`}
                 fill
                 sizes="(max-width: 640px) 224px, (max-width: 768px) 288px, (max-width: 1024px) 320px, 384px"
-                quality={60}
                 className="object-cover rounded-lg shadow-lg transition-transform duration-300 group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-30 transition-opacity duration-300 rounded-lg" />
@@ -141,7 +139,6 @@ export const Carrusel2 = () => {
               alt={`Imagen ${selectedImage + 1}`}
               width={1200}
               height={800}
-              quality={60}
               className="object-contain max-h-[90vh] w-auto h-auto"
             />
           </div>

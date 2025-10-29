@@ -6,6 +6,7 @@ import { Footer } from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { Toaster } from "react-hot-toast";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -43,6 +44,11 @@ export default function RootLayout({
           href="https://res.cloudinary.com"
           crossOrigin="anonymous"
         />
+        <link
+          rel="preconnect"
+          href="https://www.googletagmanager.com"
+          crossOrigin="anonymous"
+        />
 
         {/* Manejador global para errores de extensiones del navegador */}
         <script
@@ -78,6 +84,24 @@ export default function RootLayout({
               a{color:inherit;text-decoration:inherit}
               img,svg,video{display:block;max-width:100%;height:auto}
               button{background-color:transparent;background-image:none;padding:0;cursor:pointer}
+              /* CSS Crítico Hero y Navbar */
+              .relative{position:relative}
+              .absolute{position:absolute}
+              .sticky{position:sticky;top:0}
+              .inset-0{top:0;right:0;bottom:0;left:0}
+              .z-10{z-index:10}
+              .z-20{z-index:20}
+              .z-50{z-index:50}
+              .bg-black{background-color:#000}
+              .text-white{color:#fff}
+              .text-red-600{color:#dc2626}
+              .shadow-lg{box-shadow:0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -2px rgba(0,0,0,.05)}
+              .w-full{width:100%}
+              .h-screen{height:100vh}
+              .overflow-hidden{overflow:hidden}
+              .flex{display:flex}
+              .items-center{align-items:center}
+              .justify-between{justify-content:space-between}
             `,
           }}
         />
@@ -101,6 +125,29 @@ export default function RootLayout({
           {children}
           <Footer />
           <WhatsAppButton phoneNumber="525613701366" />
+          <Toaster
+            position="top-center"
+            toastOptions={{
+              style: {
+                background: "#000000",
+                color: "#ffffff",
+                border: "1px solid #dc2626",
+                borderRadius: "0.5rem",
+                zIndex: 9999,
+              },
+              success: {
+                iconTheme: {
+                  primary: "#dc2626",
+                  secondary: "#ffffff",
+                },
+              },
+            }}
+            containerStyle={{
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+            }}
+          />
         </AuthProvider>
 
         {/* 📊 Google Tag Manager */}

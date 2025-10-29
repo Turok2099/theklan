@@ -3,6 +3,9 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/auth/AuthGuard";
 import { useState, useEffect } from "react";
+import { PencilIcon, ArrowDownTrayIcon } from "@heroicons/react/24/outline";
+import Link from "next/link";
+import toast from "react-hot-toast";
 
 interface ResponsivaStatus {
   hasResponsiva: boolean;
@@ -20,10 +23,21 @@ interface ResponsivaStatus {
 }
 
 export default function DashboardPage() {
-  const { user, signOut } = useAuth();
+  const { user, signOut, refreshUser } = useAuth();
   const [responsivaStatus, setResponsivaStatus] =
     useState<ResponsivaStatus | null>(null);
   const [loadingStatus, setLoadingStatus] = useState(true);
+
+  // Estados para edición
+  const [isEditing, setIsEditing] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+
+  // Formulario de edición
+  const [editForm, setEditForm] = useState({
+    nombre: "",
+    email: "",
+  });
 
   const handleSignOut = async () => {
     await signOut();
@@ -65,6 +79,30 @@ export default function DashboardPage() {
     }
   };
 
+  // Obtener nombre del usuario (desde profile_data)
+  const getUserName = () => {
+    if (!user) return "";
+    const nombre = (user.profile_data as { nombre?: string })?.nombre;
+    return nombre || "";
+  };
+
+  // Obtener nombre para mostrar en saludo
+  const getDisplayName = () => {
+    const nombre = getUserName();
+    return nombre || user?.email || "";
+  };
+
+  // Inicializar formulario cuando se abre edición
+  useEffect(() => {
+    if (isEditing && user) {
+      setEditForm({
+        nombre: getUserName() || "",
+        email: user.email || "",
+      });
+      setSubmitError("");
+    }
+  }, [isEditing, user]);
+
   // Verificar estado de responsiva
   useEffect(() => {
     const checkResponsivaStatus = async () => {
@@ -89,6 +127,81 @@ export default function DashboardPage() {
     checkResponsivaStatus();
   }, [user]);
 
+  // Manejar envío del formulario de edición
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitError("");
+
+    try {
+      const body: {
+        email?: string;
+        nombre?: string;
+      } = {};
+
+      if (editForm.email !== user?.email) {
+        body.email = editForm.email;
+      }
+
+      if (editForm.nombre !== getUserName()) {
+        body.nombre = editForm.nombre;
+      }
+
+      // Si no hay cambios, no hacer nada
+      if (Object.keys(body).length === 0) {
+        setIsEditing(false);
+        setIsSubmitting(false);
+        return;
+      }
+
+      const response = await fetch("/api/users/profile", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Error al actualizar el perfil");
+      }
+
+      setIsEditing(false);
+
+      // Refrescar datos del usuario
+      await refreshUser();
+
+      // Mostrar toast de éxito
+      toast.success("Perfil actualizado exitosamente", {
+        style: {
+          background: "#000000",
+          color: "#ffffff",
+          border: "1px solid #dc2626",
+          borderRadius: "0.5rem",
+        },
+        iconTheme: {
+          primary: "#dc2626",
+          secondary: "#ffffff",
+        },
+      });
+
+      // Limpiar formulario
+      setEditForm({
+        nombre: "",
+        email: "",
+      });
+    } catch (error) {
+      console.error("Error actualizando perfil:", error);
+      setSubmitError(
+        error instanceof Error ? error.message : "Error desconocido"
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <ProtectedRoute>
       <main className="min-h-screen bg-gray-50 py-8 px-4">
@@ -98,11 +211,9 @@ export default function DashboardPage() {
             <div className="flex justify-between items-center">
               <div>
                 <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                  ¡Bienvenido, {user?.email}!
+                  ¡Bienvenido,{" "}
+                  <span className="text-red-600">{getDisplayName()}</span>!
                 </h1>
-                <p className="text-gray-600">
-                  Panel de control de The Klan BJJ
-                </p>
               </div>
               <button
                 onClick={handleSignOut}
@@ -114,178 +225,202 @@ export default function DashboardPage() {
           </div>
 
           {/* Información del usuario */}
-          <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              Información de tu cuenta
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Email
-                </label>
-                <p className="text-gray-900">{user?.email}</p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Rol
-                </label>
-                <p className="text-gray-900 capitalize">{user?.role}</p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Estado de verificación
-                </label>
-                <div className="flex items-center space-x-3">
-                  <p
-                    className={`${
-                      user?.email_verified ? "text-green-600" : "text-red-600"
-                    }`}
-                  >
-                    {user?.email_verified ? "Verificado" : "No verificado"}
+          <div className="bg-black rounded-lg shadow-lg p-6 mb-6">
+            <div className="mb-6">
+              <h2
+                className="mb-0"
+                style={{
+                  fontSize: "1.875rem",
+                  fontWeight: "700",
+                  color: "#dc2626",
+                  lineHeight: "1.2",
+                  fontFamily: "var(--font-geist-sans, system-ui, sans-serif)",
+                }}
+              >
+                Información de tu cuenta
+              </h2>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Lado Izquierdo */}
+              <div className="space-y-6">
+                <div className="min-h-[72px]">
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Nombre
+                  </label>
+                  {!isEditing ? (
+                    <p className="text-base text-white min-h-[40px] flex items-center">
+                      {getUserName() || (
+                        <span className="text-gray-400 italic">
+                          No configurado
+                        </span>
+                      )}
+                    </p>
+                  ) : (
+                    <input
+                      type="text"
+                      id="nombre"
+                      value={editForm.nombre}
+                      onChange={(e) =>
+                        setEditForm({ ...editForm, nombre: e.target.value })
+                      }
+                      className="w-full px-4 py-2 text-base border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent"
+                      placeholder="Ingresa tu nombre"
+                    />
+                  )}
+                </div>
+
+                <div className="min-h-[72px]">
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    E-mail
+                  </label>
+                  {!isEditing ? (
+                    <p className="text-base text-white min-h-[40px] flex items-center">
+                      {user?.email}
+                    </p>
+                  ) : (
+                    <input
+                      type="email"
+                      id="email"
+                      value={editForm.email}
+                      onChange={(e) =>
+                        setEditForm({ ...editForm, email: e.target.value })
+                      }
+                      className="w-full px-4 py-2 text-base border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent"
+                      required
+                    />
+                  )}
+                </div>
+
+                <div className="min-h-[72px]">
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Rol
+                  </label>
+                  <p className="text-base text-white capitalize min-h-[40px] flex items-center">
+                    {user?.role}
                   </p>
                 </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Último acceso
-                </label>
-                <p className="text-gray-900">
-                  {user?.last_login
-                    ? new Date(user.last_login).toLocaleString("es-MX")
-                    : "Primera vez"}
+
+              {/* Lado Derecho */}
+              <div className="space-y-6">
+                {/* Sección de Responsiva */}
+                {loadingStatus ? (
+                  <div className="min-h-[72px]">
+                    <div className="flex items-center space-x-2">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-600"></div>
+                      <p className="text-base text-gray-400">
+                        Verificando estado...
+                      </p>
+                    </div>
+                  </div>
+                ) : responsivaStatus?.isCompleted ? (
+                  <div className="min-h-[72px]">
+                    <div className="flex items-center gap-2">
+                      <p className="text-base text-green-400 font-medium">
+                        Responsiva completada
+                      </p>
+                      <button
+                        onClick={() =>
+                          downloadResponsiva(responsivaStatus.responsiva?.id)
+                        }
+                        className="inline-flex items-center justify-center w-10 h-10 rounded-lg border border-gray-600 text-gray-200 hover:bg-gray-800 hover:border-gray-500 transition-colors"
+                        title="Descargar responsiva"
+                        aria-label="Descargar responsiva"
+                      >
+                        <ArrowDownTrayIcon className="w-5 h-5" />
+                      </button>
+                    </div>
+                  </div>
+                ) : null}
+
+                <div className="min-h-[72px]">
+                  <Link
+                    href="/dashboard/change-password"
+                    className="inline-block px-4 py-2 text-sm font-medium bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                  >
+                    Cambiar Contraseña
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            {submitError && isEditing && (
+              <div className="bg-red-900 border border-red-700 rounded-lg p-4 mt-4">
+                <p className="text-red-200 text-sm font-medium">
+                  {submitError}
                 </p>
               </div>
+            )}
+
+            <div className="flex justify-end gap-3 mt-6">
+              {!isEditing ? (
+                <button
+                  onClick={() => setIsEditing(true)}
+                  className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
+                >
+                  <PencilIcon className="w-4 h-4" />
+                  Editar
+                </button>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsEditing(false);
+                      setSubmitError("");
+                      setEditForm({
+                        nombre: getUserName() || "",
+                        email: user?.email || "",
+                      });
+                    }}
+                    className="px-4 py-2 border border-gray-600 text-gray-300 rounded-lg hover:bg-gray-800 transition-colors"
+                    disabled={isSubmitting}
+                  >
+                    Cancelar
+                  </button>
+                  <form onSubmit={handleEditSubmit} className="inline-block">
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:bg-gray-600 disabled:cursor-not-allowed flex items-center gap-2"
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <svg
+                            className="animate-spin h-4 w-4"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                            ></circle>
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                            ></path>
+                          </svg>
+                          Guardando...
+                        </>
+                      ) : (
+                        "Guardar Cambios"
+                      )}
+                    </button>
+                  </form>
+                </>
+              )}
             </div>
           </div>
 
           {/* Acciones disponibles */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Responsiva */}
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                📋 Responsiva
-              </h3>
-
-              {loadingStatus ? (
-                <div className="text-center py-4">
-                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-red-600 mx-auto mb-2"></div>
-                  <p className="text-gray-600 text-sm">Verificando estado...</p>
-                </div>
-              ) : responsivaStatus?.isCompleted ? (
-                <div>
-                  <p className="text-green-600 mb-4 font-medium">
-                    ✅ Responsiva completada
-                  </p>
-                  <p className="text-gray-600 mb-4 text-sm">
-                    {responsivaStatus.isSigned ? (
-                      <>
-                        Fecha de firma:{" "}
-                        {responsivaStatus.responsiva?.fechaFirma
-                          ? new Date(
-                              responsivaStatus.responsiva.fechaFirma
-                            ).toLocaleDateString("es-MX")
-                          : "No disponible"}
-                      </>
-                    ) : (
-                      "Términos y condiciones aceptados (firma digital opcional)"
-                    )}
-                  </p>
-                  <button
-                    onClick={() =>
-                      downloadResponsiva(responsivaStatus.responsiva?.id)
-                    }
-                    className="inline-block w-full text-center px-4 py-2 rounded-lg transition-colors font-semibold"
-                    style={{
-                      color: "#ffffff",
-                      backgroundColor: "#2563eb",
-                      padding: "0.75rem 1.5rem",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = "#1d4ed8";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = "#2563eb";
-                    }}
-                  >
-                    📄 Descargar PDF
-                  </button>
-                </div>
-              ) : responsivaStatus?.hasResponsiva ? (
-                <div>
-                  <p className="text-yellow-600 mb-4 font-medium">
-                    ⚠️ Responsiva pendiente de completar
-                  </p>
-                  <p className="text-gray-600 mb-4 text-sm">
-                    Creada el:{" "}
-                    {responsivaStatus.responsiva?.fechaCreacion
-                      ? new Date(
-                          responsivaStatus.responsiva.fechaCreacion
-                        ).toLocaleDateString("es-MX")
-                      : "No disponible"}
-                  </p>
-                  <a
-                    href={user?.email_verified ? "/responsiva" : "#"}
-                    className={`inline-block w-full text-center px-4 py-2 rounded-lg transition-colors ${
-                      user?.email_verified
-                        ? "bg-red-600 text-white hover:bg-red-700"
-                        : "bg-gray-400 text-gray-600 cursor-not-allowed"
-                    }`}
-                    onClick={(e) => {
-                      if (!user?.email_verified) {
-                        e.preventDefault();
-                        alert(
-                          "Debes verificar tu email antes de completar la responsiva. Revisa tu correo o haz clic en 'Reenviar'."
-                        );
-                      }
-                    }}
-                  >
-                    Completar Responsiva
-                  </a>
-                </div>
-              ) : (
-                <div>
-                  <p className="text-gray-600 mb-4">
-                    Completa tu responsiva de inscripción para comenzar tus
-                    clases
-                  </p>
-                  <a
-                    href={user?.email_verified ? "/responsiva" : "#"}
-                    className={`inline-block w-full text-center px-4 py-2 rounded-lg transition-colors ${
-                      user?.email_verified
-                        ? "bg-red-600 text-white hover:bg-red-700"
-                        : "bg-gray-400 text-gray-600 cursor-not-allowed"
-                    }`}
-                    onClick={(e) => {
-                      if (!user?.email_verified) {
-                        e.preventDefault();
-                        alert(
-                          "Debes verificar tu email antes de llenar la responsiva. Revisa tu correo o haz clic en 'Reenviar'."
-                        );
-                      }
-                    }}
-                  >
-                    Llenar Responsiva
-                  </a>
-                </div>
-              )}
-            </div>
-
-            {/* Perfil */}
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                👤 Perfil
-              </h3>
-              <p className="text-gray-600 mb-4">
-                Actualiza tu información personal y preferencias
-              </p>
-              <button
-                disabled
-                className="inline-block w-full text-center px-4 py-2 bg-gray-400 text-white rounded-lg cursor-not-allowed"
-              >
-                Próximamente
-              </button>
-            </div>
-
             {/* Clases */}
             <div className="bg-white rounded-lg shadow-lg p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-3">

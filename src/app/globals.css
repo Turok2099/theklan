@@ -150,3 +150,20 @@ video {
     font-size: 1.5rem; /* 24px */
   }
 }
+
+/* 🎯 Toast centrado */
+.react-hot-toast {
+  position: fixed;
+  z-index: 9999;
+}
+
+/* Asegurar que el toast esté centrado */
+.react-hot-toast > div {
+  position: fixed;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  right: auto !important;
+  bottom: auto !important;
+  margin: 0 !important;
+}

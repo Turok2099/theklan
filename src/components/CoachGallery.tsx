@@ -62,7 +62,6 @@ export const CoachGallery = ({ images, coachName }: CoachGalleryProps) => {
               alt={`${coachName} - Imagen ${i + 1}`}
               fill
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-              quality={60}
               className="object-cover group-hover:scale-110 transition-transform duration-300"
             />
             <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-30 transition-opacity duration-300" />
@@ -105,7 +104,6 @@ export const CoachGallery = ({ images, coachName }: CoachGalleryProps) => {
               alt={`${coachName} - Imagen ${selectedImage + 1}`}
               width={1200}
               height={800}
-              quality={60}
               className="object-contain max-h-[90vh] w-auto h-auto"
             />
           </div>
