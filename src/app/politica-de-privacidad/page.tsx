@@ -11,6 +11,9 @@ export const metadata: Metadata = {
       "Conoce nuestra política de privacidad y protección de datos personales.",
     url: "https://theklanbjj.com.mx/politica-de-privacidad",
   },
+  alternates: {
+    canonical: "https://theklanbjj.com.mx/politica-de-privacidad",
+  },
 };
 
 export default function PrivacyPage() {

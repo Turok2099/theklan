@@ -11,6 +11,9 @@ export const metadata: Metadata = {
       "Contáctanos para más información sobre nuestras clases de Jiu Jitsu Brasileño y MMA en CDMX.",
     url: "https://theklanbjj.com.mx/contacto",
   },
+  alternates: {
+    canonical: "https://theklanbjj.com.mx/contacto",
+  },
 };
 
 export default function Contacto() {

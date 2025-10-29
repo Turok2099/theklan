@@ -11,6 +11,9 @@ export const metadata: Metadata = {
       "Fundador y Head Coach con más de 25 años de experiencia en Artes Marciales. Cinturón Negro en BJJ y campeón internacional.",
     url: "https://theklanbjj.com.mx/semblanza-master-francisco-ramirez",
   },
+  alternates: {
+    canonical: "https://theklanbjj.com.mx/semblanza-master-francisco-ramirez",
+  },
 };
 
 export default function SemblanzaMaster() {

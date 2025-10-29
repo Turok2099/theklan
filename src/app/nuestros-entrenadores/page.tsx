@@ -11,6 +11,9 @@ export const metadata: Metadata = {
       "Conoce a nuestro equipo de instructores profesionales certificados en BJJ y MMA.",
     url: "https://theklanbjj.com.mx/nuestros-entrenadores",
   },
+  alternates: {
+    canonical: "https://theklanbjj.com.mx/nuestros-entrenadores",
+  },
 };
 
 export default function NuestrosEntrenadores() {

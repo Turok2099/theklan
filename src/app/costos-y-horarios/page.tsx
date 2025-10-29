@@ -11,6 +11,9 @@ export const metadata: Metadata = {
       "Consulta nuestros horarios de clases de BJJ, MMA, Striking y Funcional en CDMX.",
     url: "https://theklanbjj.com.mx/costos-y-horarios",
   },
+  alternates: {
+    canonical: "https://theklanbjj.com.mx/costos-y-horarios",
+  },
 };
 
 export default function CostosYHorarios() {
