@@ -100,6 +100,34 @@ export default function AdminDashboard() {
     setEditingName(currentName);
   };
 
+  const downloadResponsiva = async (responsivaId: string) => {
+    try {
+      console.log("📄 Descargando responsiva:", responsivaId);
+
+      const response = await fetch(`/api/pdf?id=${responsivaId}`);
+
+      if (!response.ok) {
+        throw new Error(`Error ${response.status}: ${response.statusText}`);
+      }
+
+      // Crear blob y descargar
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `responsiva-${responsivaId}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+      console.log("✅ PDF descargado exitosamente");
+    } catch (error) {
+      console.error("❌ Error descargando PDF:", error);
+      alert("Error al descargar el PDF. Por favor, intenta de nuevo.");
+    }
+  };
+
   const handleCancelEdit = () => {
     setEditingUser(null);
     setEditingRole("");
@@ -606,7 +634,7 @@ export default function AdminDashboard() {
                                   handleEditUser(
                                     userItem.id,
                                     userItem.role,
-                                    userItem.email_verified,
+                                    userItem.email_verified || false,
                                     userItem.nombre || ""
                                   )
                                 }

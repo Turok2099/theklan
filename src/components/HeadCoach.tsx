@@ -11,7 +11,7 @@ export const HeadCoach = () => {
           {/* Imagen */}
           <div className="relative h-[400px] md:h-[500px] lg:h-[600px] rounded-2xl overflow-hidden shadow-2xl">
             <Image
-              src="https://res.cloudinary.com/dxbtafe9u/image/upload/v1759429794/The%20Klan/coaches/francisco-ramirez/14.jpg"
+              src="https://res.cloudinary.com/dxbtafe9u/image/upload/v1761709455/WhatsApp_Image_2025-10-28_at_6.26.36_PM_hcsyah.jpg"
               alt="Francisco Ramírez - Head Coach"
               fill
               className="object-cover"

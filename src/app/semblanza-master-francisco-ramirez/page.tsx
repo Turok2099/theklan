@@ -2,8 +2,7 @@ import { Master } from "@/views/master";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title:
-    "Master Francisco Ramírez - The Klan BJJ | Cinturón Negro Jiu Jitsu",
+  title: "Master Francisco Ramírez - The Klan BJJ | Cinturón Negro Jiu Jitsu",
   description:
     "Conoce la trayectoria de Master Francisco Ramírez, fundador de The Klan. Cinturón Negro en BJJ, 6to grado KENPO. Más de 25 años de experiencia y campeón internacional.",
   openGraph: {

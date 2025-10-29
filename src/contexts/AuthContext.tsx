@@ -109,7 +109,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 id: userData.id,
                 email: userData.email,
                 email_verified: !!authUser.email_confirmed_at,
-                role: userData.role as "student" | "admin" | "instructor",
+                role: userData.role as "student" | "admin" | "coach",
                 is_active: userData.is_active,
                 created_at: userData.created_at,
                 updated_at: userData.updated_at,
