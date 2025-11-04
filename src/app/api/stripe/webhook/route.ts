@@ -155,13 +155,16 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
 
   // Si no hay metadata payment_type, verificar si el PaymentIntent tiene un invoice asociado
   // Si tiene invoice, es muy probable que sea una suscripción
-  if (!paymentIntent.metadata?.payment_type && paymentIntent.invoice) {
+  const piWithInvoice = paymentIntent as Stripe.PaymentIntent & { invoice?: Stripe.Invoice | string };
+  if (!paymentIntent.metadata?.payment_type && piWithInvoice.invoice) {
     try {
-      const invoiceId = typeof paymentIntent.invoice === "string"
-        ? paymentIntent.invoice
-        : paymentIntent.invoice.id;
+      const invoiceId = typeof piWithInvoice.invoice === "string"
+        ? piWithInvoice.invoice
+        : piWithInvoice.invoice.id;
       
-      const invoice = await stripe.invoices.retrieve(invoiceId);
+      const invoice = await stripe.invoices.retrieve(invoiceId, {
+        expand: ['subscription'],
+      }) as Stripe.Invoice & { subscription?: Stripe.Subscription | string };
       
       // Si el invoice tiene una subscription, entonces es un pago de suscripción
       if (invoice.subscription) {
