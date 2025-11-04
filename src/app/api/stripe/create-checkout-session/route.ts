@@ -56,10 +56,10 @@ export async function POST(request: NextRequest) {
       .eq("id", authUser.id)
       .single();
 
-    let customerId = userData?.stripe_customer_id;
+    let customerId = userData?.stripe_customer_id || null;
 
-    // Si no existe, crear uno nuevo en Stripe
-    if (!customerId) {
+    // Si no existe o es null, crear uno nuevo en Stripe
+    if (!customerId || customerId === 'null' || customerId === 'Null') {
       const customer = await stripe.customers.create({
         email: customerEmail || authUser.email || undefined,
         metadata: {
