@@ -52,7 +52,7 @@ export async function PUT(request: NextRequest) {
     // Actualizar nombre en la tabla users (en profile_data)
     if (nombre !== undefined) {
       // Obtener datos actuales del usuario
-      const { data: currentUser, error: fetchError } = await supabase
+      const { data: currentUser } = await supabase
         .from("users")
         .select("profile_data")
         .eq("id", authUser.id)

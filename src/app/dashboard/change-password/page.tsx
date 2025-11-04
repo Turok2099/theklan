@@ -152,7 +152,7 @@ export default function CambiarContraseñaPage() {
   return (
     <ProtectedRoute>
       <main className="min-h-screen bg-gray-50 py-8 px-4">
-        <div className="container mx-auto max-w-2xl">
+        <div className="container mx-auto max-w-4xl">
           {/* Header */}
           <div className="mb-6">
             <Link
@@ -164,17 +164,12 @@ export default function CambiarContraseñaPage() {
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
               Cambiar Contraseña
             </h1>
-            <p className="text-gray-600">
-              {step === "verify"
-                ? "Valida tu contraseña actual para continuar"
-                : "Ingresa tu nueva contraseña"}
-            </p>
           </div>
 
           {/* Mensaje de éxito */}
           {success && step === "change" && (
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-              <p className="text-green-800 text-sm font-medium">
+            <div className="bg-green-900 border border-green-700 rounded-lg p-4 mb-6">
+              <p className="text-green-200 text-sm font-medium">
                 ✅ Contraseña actualizada exitosamente. Redirigiendo...
               </p>
             </div>
@@ -182,18 +177,18 @@ export default function CambiarContraseñaPage() {
 
           {/* Error */}
           {error && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-              <p className="text-red-800 text-sm font-medium">{error}</p>
+            <div className="bg-red-900 border border-red-700 rounded-lg p-4 mb-6">
+              <p className="text-red-200 text-sm font-medium">{error}</p>
             </div>
           )}
 
-          <div className="bg-white rounded-lg shadow-lg p-8">
+          <div className="bg-gradient-to-br from-gray-900 to-black rounded-2xl shadow-xl border border-gray-800 p-8 hover:shadow-2xl transition-all duration-300">
             {step === "verify" ? (
               <form onSubmit={handleVerifyPassword} className="space-y-6">
                 <div>
                   <label
                     htmlFor="currentPassword"
-                    className="block text-sm font-medium text-gray-700 mb-2"
+                    className="block text-xs font-medium text-gray-400 uppercase tracking-wide mb-2"
                   >
                     Contraseña Actual *
                   </label>
@@ -202,7 +197,7 @@ export default function CambiarContraseñaPage() {
                     id="currentPassword"
                     value={currentPassword}
                     onChange={(e) => setCurrentPassword(e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent placeholder-gray-400"
                     placeholder="Ingresa tu contraseña actual"
                     required
                     autoFocus
@@ -213,28 +208,28 @@ export default function CambiarContraseñaPage() {
                   <button
                     type="button"
                     onClick={handleForgotPassword}
-                    className="text-sm text-red-600 hover:text-red-700 font-medium"
+                    className="text-sm text-red-600 hover:text-red-500 font-medium transition-colors"
                   >
                     ¿Olvidaste tu contraseña?
                   </button>
                 </div>
 
-                <div className="flex justify-end gap-3 pt-4">
+                <div className="flex justify-end gap-3 pt-6 border-t border-gray-800">
                   <Link
                     href="/dashboard"
-                    className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                    className="px-5 py-2.5 border border-gray-600 text-gray-300 rounded-xl hover:bg-gray-800 transition-all duration-200 font-semibold"
                   >
                     Cancelar
                   </Link>
                   <button
                     type="submit"
                     disabled={isValidating}
-                    className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2"
+                    className="px-5 py-2.5 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-all duration-200 disabled:bg-gray-600 disabled:cursor-not-allowed flex items-center gap-2 font-semibold shadow-md hover:shadow-lg"
                   >
                     {isValidating ? (
                       <>
                         <svg
-                          className="animate-spin h-5 w-5"
+                          className="animate-spin h-4 w-4"
                           xmlns="http://www.w3.org/2000/svg"
                           fill="none"
                           viewBox="0 0 24 24"
@@ -264,8 +259,8 @@ export default function CambiarContraseñaPage() {
             ) : (
               <form onSubmit={handleChangePassword} className="space-y-6">
                 {/* Información */}
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                  <p className="text-blue-800 text-sm">
+                <div className="bg-blue-900 border border-blue-700 rounded-lg p-4 mb-6">
+                  <p className="text-blue-200 text-sm">
                     ✅ Contraseña actual verificada. Ingresa tu nueva contraseña.
                   </p>
                 </div>
@@ -273,7 +268,7 @@ export default function CambiarContraseñaPage() {
                 <div>
                   <label
                     htmlFor="newPassword"
-                    className="block text-sm font-medium text-gray-700 mb-2"
+                    className="block text-xs font-medium text-gray-400 uppercase tracking-wide mb-2"
                   >
                     Nueva Contraseña *
                   </label>
@@ -282,39 +277,39 @@ export default function CambiarContraseñaPage() {
                     id="newPassword"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent placeholder-gray-400"
                     placeholder="Mínimo 8 caracteres"
                     required
                     minLength={8}
                     autoFocus
                   />
-                  <div className="mt-2 text-xs text-gray-500">
-                    <p>Requisitos de contraseña:</p>
+                  <div className="mt-2 text-xs">
+                    <p className="text-white mb-2">Requisitos de contraseña:</p>
                     <ul className="list-disc list-inside mt-1 space-y-1">
                       <li
                         className={
-                          newPassword.length >= 8 ? "text-green-600" : ""
+                          newPassword.length >= 8 ? "text-green-400" : "text-white"
                         }
                       >
                         Mínimo 8 caracteres
                       </li>
                       <li
                         className={
-                          /[a-z]/.test(newPassword) ? "text-green-600" : ""
+                          /[a-z]/.test(newPassword) ? "text-green-400" : "text-white"
                         }
                       >
                         Una letra minúscula
                       </li>
                       <li
                         className={
-                          /[A-Z]/.test(newPassword) ? "text-green-600" : ""
+                          /[A-Z]/.test(newPassword) ? "text-green-400" : "text-white"
                         }
                       >
                         Una letra mayúscula
                       </li>
                       <li
                         className={
-                          /\d/.test(newPassword) ? "text-green-600" : ""
+                          /\d/.test(newPassword) ? "text-green-400" : "text-white"
                         }
                       >
                         Un número
@@ -326,7 +321,7 @@ export default function CambiarContraseñaPage() {
                 <div>
                   <label
                     htmlFor="confirmPassword"
-                    className="block text-sm font-medium text-gray-700 mb-2"
+                    className="block text-xs font-medium text-gray-400 uppercase tracking-wide mb-2"
                   >
                     Confirmar Nueva Contraseña *
                   </label>
@@ -335,7 +330,7 @@ export default function CambiarContraseñaPage() {
                     id="confirmPassword"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent placeholder-gray-400"
                     placeholder="Repite tu nueva contraseña"
                     required
                     minLength={8}
@@ -349,7 +344,7 @@ export default function CambiarContraseñaPage() {
                     )}
                 </div>
 
-                <div className="flex justify-end gap-3 pt-4">
+                <div className="flex justify-end gap-3 pt-6 border-t border-gray-800">
                   <button
                     type="button"
                     onClick={() => {
@@ -358,7 +353,7 @@ export default function CambiarContraseñaPage() {
                       setConfirmPassword("");
                       setError("");
                     }}
-                    className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                    className="px-5 py-2.5 border border-gray-600 text-gray-300 rounded-xl hover:bg-gray-800 transition-all duration-200 font-semibold"
                     disabled={isChanging}
                   >
                     Volver
@@ -366,12 +361,12 @@ export default function CambiarContraseñaPage() {
                   <button
                     type="submit"
                     disabled={isChanging}
-                    className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2"
+                    className="px-5 py-2.5 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-all duration-200 disabled:bg-gray-600 disabled:cursor-not-allowed flex items-center gap-2 font-semibold shadow-md hover:shadow-lg"
                   >
                     {isChanging ? (
                       <>
                         <svg
-                          className="animate-spin h-5 w-5"
+                          className="animate-spin h-4 w-4"
                           xmlns="http://www.w3.org/2000/svg"
                           fill="none"
                           viewBox="0 0 24 24"
