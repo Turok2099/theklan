@@ -29,7 +29,6 @@ const nextConfig: NextConfig = {
   },
   // Optimización de JavaScript moderno - SWC está activado por defecto en Next.js 15
   // Los navegadores modernos soportarán el código sin transpilación innecesaria
-  swcMinify: true,
 };
 
 export default nextConfig;
