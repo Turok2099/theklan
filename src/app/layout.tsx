@@ -49,9 +49,29 @@ export default function RootLayout({
           }}
         />
 
+        {/* 📊 Google Analytics 4 - The Klan BJJ (Direct Implementation) */}
+        <script
+          async
+          src="https://www.googletagmanager.com/gtag/js?id=G-9YRTFHP6XN"
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-9YRTFHP6XN', {
+                page_path: window.location.pathname,
+              });
+              console.log('✅ GA4 Inicializado - The Klan BJJ: G-9YRTFHP6XN');
+            `,
+          }}
+        />
+
         {/* DNS Prefetch para recursos externos */}
         <link rel="dns-prefetch" href="https://res.cloudinary.com" />
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+        <link rel="dns-prefetch" href="https://www.google-analytics.com" />
         <link
           rel="preconnect"
           href="https://res.cloudinary.com"
@@ -60,6 +80,11 @@ export default function RootLayout({
         <link
           rel="preconnect"
           href="https://www.googletagmanager.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preconnect"
+          href="https://www.google-analytics.com"
           crossOrigin="anonymous"
         />
 
