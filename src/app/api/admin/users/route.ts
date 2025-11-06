@@ -21,12 +21,34 @@ export async function PUT(request: NextRequest) {
 
     // 1. Actualizar en la tabla users
     console.log("📋 Actualizando tabla users...");
+    
+    // Preparar datos a actualizar
+    const updateData: {
+      role: string;
+      updated_at: string;
+      profile_data?: { nombre?: string };
+    } = {
+      role: role,
+      updated_at: new Date().toISOString(),
+    };
+
+    // Si se proporciona nombre, actualizarlo en profile_data
+    if (nombre !== undefined) {
+      // Obtener datos actuales del usuario para no sobrescribir otros campos de profile_data
+      const { data: currentUser } = await supabase
+        .from("users")
+        .select("profile_data")
+        .eq("id", userId)
+        .single();
+
+      const profileData = (currentUser?.profile_data as { nombre?: string } | null) || {};
+      profileData.nombre = nombre;
+      updateData.profile_data = profileData;
+    }
+
     const { error: usersError } = await supabase
       .from("users")
-      .update({
-        role: role,
-        updated_at: new Date().toISOString(),
-      })
+      .update(updateData)
       .eq("id", userId);
 
     if (usersError) {
@@ -215,10 +237,14 @@ export async function GET() {
         timestamp: new Date().toISOString(),
       });
 
+      // Extraer nombre de profile_data (igual que en dashboard)
+      const profileData = user.profile_data as { nombre?: string } | null;
+      const nombre = profileData?.nombre || "";
+
       return {
         ...user,
         email_verified: email_verified,
-        nombre: user.nombre || "",
+        nombre: nombre,
         apellido_paterno: userResponsiva?.apellido_paterno || "",
         responsiva_status: {
           hasResponsiva: !!userResponsiva,

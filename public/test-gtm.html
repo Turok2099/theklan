@@ -1,229 +1,250 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Test GTM - The Klan BJJ</title>
-    
+
     <!-- Google Tag Manager -->
     <script>
-        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-        })(window,document,'script','dataLayer','GTM-N7LP9GLV');
+      (function (w, d, s, l, i) {
+        w[l] = w[l] || [];
+        w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+        var f = d.getElementsByTagName(s)[0],
+          j = d.createElement(s),
+          dl = l != "dataLayer" ? "&l=" + l : "";
+        j.async = true;
+        j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+        f.parentNode.insertBefore(j, f);
+      })(window, document, "script", "dataLayer", "GTM-N7LP9GLV");
     </script>
     <!-- End Google Tag Manager -->
-    
+
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 50px auto;
-            padding: 20px;
-            background: #f5f5f5;
-        }
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        h1 {
-            color: #dc2626;
-            border-bottom: 3px solid #dc2626;
-            padding-bottom: 10px;
-        }
-        .status {
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 5px;
-            font-weight: bold;
-        }
-        .success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        .error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        button {
-            background: #dc2626;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            font-size: 16px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin: 10px 5px;
-        }
-        button:hover {
-            background: #b91c1c;
-        }
-        #datalayer-content {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 5px;
-            max-height: 400px;
-            overflow-y: auto;
-            font-family: monospace;
-            font-size: 12px;
-        }
-        .info {
-            background: #e7f3ff;
-            padding: 15px;
-            border-left: 4px solid #2196F3;
-            margin: 20px 0;
-        }
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 50px auto;
+        padding: 20px;
+        background: #f5f5f5;
+      }
+      .container {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        color: #dc2626;
+        border-bottom: 3px solid #dc2626;
+        padding-bottom: 10px;
+      }
+      .status {
+        padding: 15px;
+        margin: 20px 0;
+        border-radius: 5px;
+        font-weight: bold;
+      }
+      .success {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+      }
+      .error {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+      }
+      button {
+        background: #dc2626;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        font-size: 16px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin: 10px 5px;
+      }
+      button:hover {
+        background: #b91c1c;
+      }
+      #datalayer-content {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 5px;
+        max-height: 400px;
+        overflow-y: auto;
+        font-family: monospace;
+        font-size: 12px;
+      }
+      .info {
+        background: #e7f3ff;
+        padding: 15px;
+        border-left: 4px solid #2196f3;
+        margin: 20px 0;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <!-- Google Tag Manager (noscript) -->
     <noscript>
-        <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-N7LP9GLV"
-        height="0" width="0" style="display:none;visibility:hidden"></iframe>
+      <iframe
+        src="https://www.googletagmanager.com/ns.html?id=GTM-N7LP9GLV"
+        height="0"
+        width="0"
+        style="display: none; visibility: hidden"
+      ></iframe>
     </noscript>
     <!-- End Google Tag Manager (noscript) -->
 
     <div class="container">
-        <h1>🔍 Test de Google Tag Manager</h1>
-        <p><strong>GTM ID:</strong> GTM-N7LP9GLV</p>
-        
-        <div class="info">
-            <strong>📋 Instrucciones:</strong>
-            <ol>
-                <li>Abre la consola del navegador (F12)</li>
-                <li>Ve a la pestaña "Network" y filtra por "gtm"</li>
-                <li>Haz clic en los botones de prueba</li>
-                <li>Verifica que los eventos aparecen en el dataLayer</li>
-            </ol>
-        </div>
+      <h1>🔍 Test de Google Tag Manager</h1>
+      <p><strong>GTM ID:</strong> GTM-N7LP9GLV</p>
 
-        <div id="status"></div>
+      <div class="info">
+        <strong>📋 Instrucciones:</strong>
+        <ol>
+          <li>Abre la consola del navegador (F12)</li>
+          <li>Ve a la pestaña "Network" y filtra por "gtm"</li>
+          <li>Haz clic en los botones de prueba</li>
+          <li>Verifica que los eventos aparecen en el dataLayer</li>
+        </ol>
+      </div>
 
-        <h2>🧪 Tests</h2>
-        <button onclick="testDataLayer()">Test 1: Verificar dataLayer</button>
-        <button onclick="testPageView()">Test 2: Enviar Page View</button>
-        <button onclick="testWhatsAppClick()">Test 3: Simular Click WhatsApp</button>
-        <button onclick="testCustomEvent()">Test 4: Evento Personalizado</button>
-        <button onclick="clearConsole()">🗑️ Limpiar</button>
+      <div id="status"></div>
 
-        <h3>📊 Contenido del dataLayer:</h3>
-        <div id="datalayer-content"></div>
+      <h2>🧪 Tests</h2>
+      <button onclick="testDataLayer()">Test 1: Verificar dataLayer</button>
+      <button onclick="testPageView()">Test 2: Enviar Page View</button>
+      <button onclick="testWhatsAppClick()">
+        Test 3: Simular Click WhatsApp
+      </button>
+      <button onclick="testCustomEvent()">Test 4: Evento Personalizado</button>
+      <button onclick="clearConsole()">🗑️ Limpiar</button>
 
-        <div class="info" style="margin-top: 30px;">
-            <strong>✅ Verificación en Google Tag Manager:</strong>
-            <ol>
-                <li>Ve a <a href="https://tagmanager.google.com" target="_blank">tagmanager.google.com</a></li>
-                <li>Selecciona tu contenedor GTM-N7LP9GLV</li>
-                <li>Haz clic en "Preview" (Vista Previa)</li>
-                <li>Ingresa esta URL para conectar</li>
-                <li>Verás todos los eventos en tiempo real</li>
-            </ol>
-        </div>
+      <h3>📊 Contenido del dataLayer:</h3>
+      <div id="datalayer-content"></div>
+
+      <div class="info" style="margin-top: 30px">
+        <strong>✅ Verificación en Google Tag Manager:</strong>
+        <ol>
+          <li>
+            Ve a
+            <a href="https://tagmanager.google.com" target="_blank"
+              >tagmanager.google.com</a
+            >
+          </li>
+          <li>Selecciona tu contenedor GTM-N7LP9GLV</li>
+          <li>Haz clic en "Preview" (Vista Previa)</li>
+          <li>Ingresa esta URL para conectar</li>
+          <li>Verás todos los eventos en tiempo real</li>
+        </ol>
+      </div>
     </div>
 
     <script>
-        // Función para mostrar el estado
-        function showStatus(message, type) {
-            const statusDiv = document.getElementById('status');
-            statusDiv.className = `status ${type}`;
-            statusDiv.innerHTML = message;
-            updateDataLayerDisplay();
+      // Función para mostrar el estado
+      function showStatus(message, type) {
+        const statusDiv = document.getElementById("status");
+        statusDiv.className = `status ${type}`;
+        statusDiv.innerHTML = message;
+        updateDataLayerDisplay();
+      }
+
+      // Test 1: Verificar dataLayer
+      function testDataLayer() {
+        if (typeof window.dataLayer === "undefined") {
+          showStatus("❌ ERROR: dataLayer no está definido", "error");
+          return;
         }
 
-        // Test 1: Verificar dataLayer
-        function testDataLayer() {
-            if (typeof window.dataLayer === 'undefined') {
-                showStatus('❌ ERROR: dataLayer no está definido', 'error');
-                return;
-            }
-            
-            if (window.dataLayer.length === 0) {
-                showStatus('⚠️ WARNING: dataLayer existe pero está vacío', 'error');
-                return;
-            }
-            
-            showStatus(`✅ SUCCESS: dataLayer tiene ${window.dataLayer.length} eventos`, 'success');
-            console.log('✅ dataLayer:', window.dataLayer);
+        if (window.dataLayer.length === 0) {
+          showStatus("⚠️ WARNING: dataLayer existe pero está vacío", "error");
+          return;
         }
 
-        // Test 2: Page View
-        function testPageView() {
-            window.dataLayer = window.dataLayer || [];
-            window.dataLayer.push({
-                event: 'page_view',
-                page_path: '/test-gtm',
-                page_title: 'Test GTM Page',
-                page_location: window.location.href,
-                timestamp: new Date().toISOString()
-            });
-            showStatus('✅ Evento "page_view" enviado', 'success');
-            console.log('📊 Page view enviado');
-        }
+        showStatus(
+          `✅ SUCCESS: dataLayer tiene ${window.dataLayer.length} eventos`,
+          "success"
+        );
+        console.log("✅ dataLayer:", window.dataLayer);
+      }
 
-        // Test 3: WhatsApp Click
-        function testWhatsAppClick() {
-            window.dataLayer = window.dataLayer || [];
-            window.dataLayer.push({
-                event: 'click_whatsapp',
-                button_name: 'WhatsApp Test',
-                button_location: 'test_page',
-                phone_number: '525613701366',
-                page_path: '/test-gtm',
-                page_url: window.location.href,
-                timestamp: new Date().toISOString()
-            });
-            showStatus('✅ Evento "click_whatsapp" enviado', 'success');
-            console.log('📱 WhatsApp click simulado');
-        }
-
-        // Test 4: Evento personalizado
-        function testCustomEvent() {
-            window.dataLayer = window.dataLayer || [];
-            window.dataLayer.push({
-                event: 'test_event',
-                event_category: 'Test',
-                event_label: 'Manual Test',
-                value: 1,
-                timestamp: new Date().toISOString()
-            });
-            showStatus('✅ Evento personalizado enviado', 'success');
-            console.log('🎯 Evento personalizado enviado');
-        }
-
-        // Actualizar visualización del dataLayer
-        function updateDataLayerDisplay() {
-            const display = document.getElementById('datalayer-content');
-            if (typeof window.dataLayer !== 'undefined' && window.dataLayer.length > 0) {
-                display.textContent = JSON.stringify(window.dataLayer, null, 2);
-            } else {
-                display.textContent = '(vacío)';
-            }
-        }
-
-        // Limpiar consola
-        function clearConsole() {
-            console.clear();
-            document.getElementById('status').innerHTML = '';
-            showStatus('🗑️ Consola limpiada', 'success');
-        }
-
-        // Inicialización
-        window.addEventListener('load', function() {
-            console.log('🚀 Página de test cargada');
-            console.log('📊 GTM ID: GTM-N7LP9GLV');
-            
-            // Verificar automáticamente al cargar
-            setTimeout(testDataLayer, 1000);
-            
-            // Actualizar display cada 2 segundos
-            setInterval(updateDataLayerDisplay, 2000);
+      // Test 2: Page View
+      function testPageView() {
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({
+          event: "page_view",
+          page_path: "/test-gtm",
+          page_title: "Test GTM Page",
+          page_location: window.location.href,
+          timestamp: new Date().toISOString(),
         });
-    </script>
-</body>
-</html>
+        showStatus('✅ Evento "page_view" enviado', "success");
+        console.log("📊 Page view enviado");
+      }
 
+      // Test 3: WhatsApp Click
+      function testWhatsAppClick() {
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({
+          event: "click_whatsapp",
+          button_name: "WhatsApp Test",
+          button_location: "test_page",
+          phone_number: "525613701366",
+          page_path: "/test-gtm",
+          page_url: window.location.href,
+          timestamp: new Date().toISOString(),
+        });
+        showStatus('✅ Evento "click_whatsapp" enviado', "success");
+        console.log("📱 WhatsApp click simulado");
+      }
+
+      // Test 4: Evento personalizado
+      function testCustomEvent() {
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({
+          event: "test_event",
+          event_category: "Test",
+          event_label: "Manual Test",
+          value: 1,
+          timestamp: new Date().toISOString(),
+        });
+        showStatus("✅ Evento personalizado enviado", "success");
+        console.log("🎯 Evento personalizado enviado");
+      }
+
+      // Actualizar visualización del dataLayer
+      function updateDataLayerDisplay() {
+        const display = document.getElementById("datalayer-content");
+        if (
+          typeof window.dataLayer !== "undefined" &&
+          window.dataLayer.length > 0
+        ) {
+          display.textContent = JSON.stringify(window.dataLayer, null, 2);
+        } else {
+          display.textContent = "(vacío)";
+        }
+      }
+
+      // Limpiar consola
+      function clearConsole() {
+        console.clear();
+        document.getElementById("status").innerHTML = "";
+        showStatus("🗑️ Consola limpiada", "success");
+      }
+
+      // Inicialización
+      window.addEventListener("load", function () {
+        console.log("🚀 Página de test cargada");
+        console.log("📊 GTM ID: GTM-N7LP9GLV");
+
+        // Verificar automáticamente al cargar
+        setTimeout(testDataLayer, 1000);
+
+        // Actualizar display cada 2 segundos
+        setInterval(updateDataLayerDisplay, 2000);
+      });
+    </script>
+  </body>
+</html>
