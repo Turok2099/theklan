@@ -26,7 +26,21 @@ interface Payment {
   description: string | null;
   product_id: string | null;
   updated_at: string | null;
+  subscription_end_date?: string | null; // Fecha de expiración manual para suscripciones
 }
+
+interface ManualSubscriptionOverride {
+  plan_value: "basic" | "full" | "unlimited";
+  plan_label: string;
+  expires_at: string;
+  updated_at?: string;
+}
+
+const PLAN_VALUE_TO_AMOUNT: Record<string, number> = {
+  basic: 145000,
+  full: 165000,
+  unlimited: 199000,
+};
 
 interface ResponsivaStatus {
   hasResponsiva: boolean;
@@ -254,6 +268,9 @@ export default function DashboardPage() {
 function SubscriptionStatus() {
   const [payments, setPayments] = useState<Payment[]>([]);
   const [loading, setLoading] = useState(true);
+  const [manualSubscription, setManualSubscription] = useState<
+    ManualSubscriptionOverride | null
+  >(null);
 
   useEffect(() => {
     const fetchPayments = async () => {
@@ -284,6 +301,22 @@ function SubscriptionStatus() {
 
     fetchPayments();
 
+    const fetchManual = async () => {
+      try {
+        const response = await fetch("/api/subscription");
+        if (!response.ok) {
+          throw new Error("Error obteniendo override de suscripción");
+        }
+        const data = await response.json();
+        setManualSubscription(data.manualSubscription || null);
+      } catch (error) {
+        console.error("📊 SubscriptionStatus: Error obteniendo override", error);
+        setManualSubscription(null);
+      }
+    };
+
+    fetchManual();
+
     // Refrescar los pagos cuando la ventana vuelve a tener foco
     // Esto ayuda a actualizar cuando el usuario vuelve del flujo de pago
     const handleFocus = () => {
@@ -291,6 +324,7 @@ function SubscriptionStatus() {
         "📊 SubscriptionStatus: Ventana enfocada, refrescando pagos..."
       );
       fetchPayments();
+      fetchManual();
     };
 
     window.addEventListener("focus", handleFocus);
@@ -325,11 +359,18 @@ function SubscriptionStatus() {
     return planMap[amount] || "Plan Personalizado";
   };
 
-  // Calcular fecha de expiración (30 días naturales desde el pago)
-  const getExpirationDate = (paymentDate: Date): Date => {
-    const expiration = new Date(paymentDate);
+  // Calcular fecha de expiración
+  // PRIORIDAD: Si tiene subscription_end_date (pago manual), usar esa fecha
+  // Si no, calcular 30 días desde paid_at (pago de Stripe)
+  const getExpirationDate = (payment: Payment, paymentDate: Date): Date => {
+    // Si el pago tiene subscription_end_date, usarlo (pagos manuales)
+    if (payment.subscription_end_date) {
+      console.log(`📅 Usando subscription_end_date del pago ${payment.id}:`, payment.subscription_end_date);
+      return new Date(payment.subscription_end_date);
+    }
 
-    // Agregar 30 días naturales
+    // Si no, calcular 30 días naturales desde el pago (Stripe)
+    const expiration = new Date(paymentDate);
     expiration.setDate(expiration.getDate() + 30);
 
     // Si el día es 31 o mayor y el mes siguiente no tiene 31 días
@@ -347,6 +388,7 @@ function SubscriptionStatus() {
       }
     }
 
+    console.log(`📅 Calculando expiración automática (30 días) para pago ${payment.id}`);
     return expiration;
   };
 
@@ -369,6 +411,44 @@ function SubscriptionStatus() {
   // Obtener el último pago de suscripción activo usando useMemo para recalcular cuando cambien los pagos
   const subscription = useMemo(() => {
     const now = new Date();
+
+    if (manualSubscription) {
+      const amount = PLAN_VALUE_TO_AMOUNT[manualSubscription.plan_value] || 0;
+      const expirationDate = new Date(manualSubscription.expires_at);
+      const paymentDate = manualSubscription.updated_at
+        ? new Date(manualSubscription.updated_at)
+        : expirationDate;
+      const daysRemaining = Math.max(
+        Math.ceil((expirationDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)),
+        0
+      );
+
+      const manualPayment: Payment = {
+        id: `manual-${manualSubscription.plan_value}`,
+        payment_type: "subscription",
+        amount,
+        currency: "mxn",
+        status: "manual",
+        created_at: paymentDate.toISOString(),
+        paid_at: paymentDate.toISOString(),
+        card_last4: null,
+        card_brand: null,
+        description: manualSubscription.plan_label,
+        product_id: null,
+        updated_at: manualSubscription.updated_at || paymentDate.toISOString(),
+        subscription_end_date: manualSubscription.expires_at,
+      };
+
+      return {
+        payment: manualPayment,
+        paymentDate,
+        expirationDate,
+        isActive: expirationDate >= now,
+        daysRemaining,
+        planLabel: manualSubscription.plan_label,
+        source: "manual" as const,
+      };
+    }
 
     console.log(
       "📊 SubscriptionStatus: Total de pagos recibidos:",
@@ -408,11 +488,15 @@ function SubscriptionStatus() {
     }
 
     // Separar suscripciones de pagos únicos
-    const subscriptionPayments = successfulPayments.filter(p => p.payment_type === "subscription");
-    const oneTimePayments = successfulPayments.filter(p => p.payment_type === "one-time");
+    const subscriptionPaymentsAll = successfulPayments.filter(
+      (p) => p.payment_type === "subscription"
+    );
+    const oneTimePayments = successfulPayments.filter(
+      (p) => p.payment_type === "one-time"
+    );
 
     console.log(
-      `📊 SubscriptionStatus: ${subscriptionPayments.length} suscripciones, ${oneTimePayments.length} pagos únicos`
+      `📊 SubscriptionStatus: ${subscriptionPaymentsAll.length} suscripciones (incluyendo cancelaciones), ${oneTimePayments.length} pagos únicos`
     );
 
     // Ordenar por fecha de pago (más reciente primero)
@@ -444,7 +528,21 @@ function SubscriptionStatus() {
       });
     };
 
-    const sortedSubscriptions = sortPayments(subscriptionPayments);
+    const sortedAllSubscriptions = sortPayments(subscriptionPaymentsAll);
+
+    if (
+      sortedAllSubscriptions.length > 0 &&
+      sortedAllSubscriptions[0].amount === 0
+    ) {
+      console.log(
+        "📊 SubscriptionStatus: Último registro es cancelación de suscripción."
+      );
+      return null;
+    }
+
+    const sortedSubscriptions = sortedAllSubscriptions.filter(
+      (p) => p.amount > 0
+    );
     const sortedOneTime = sortPayments(oneTimePayments);
 
     // Priorizar suscripciones activas
@@ -459,7 +557,7 @@ function SubscriptionStatus() {
       // Buscar una suscripción activa
       const activeSubscription = sortedSubscriptions.find(p => {
         const paymentDate = new Date(getPaymentDate(p));
-        const expirationDate = getExpirationDate(paymentDate);
+        const expirationDate = getExpirationDate(p, paymentDate);
         return now <= expirationDate;
       });
 
@@ -485,7 +583,7 @@ function SubscriptionStatus() {
     }
 
     const paymentDate = new Date(getPaymentDate(lastPayment));
-    const expirationDate = getExpirationDate(paymentDate);
+    const expirationDate = getExpirationDate(lastPayment, paymentDate);
 
     console.log("📊 SubscriptionStatus: Pago seleccionado:", {
       id: lastPayment.id,
@@ -525,8 +623,10 @@ function SubscriptionStatus() {
             (expirationDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
           )
         : 0,
+      planLabel: getPlanName(lastPayment.amount),
+      source: "payments" as const,
     };
-  }, [payments]); // Recalcular cuando cambien los pagos
+  }, [payments, manualSubscription]); // Recalcular cuando cambien los pagos
 
   if (loading) {
     return (
@@ -547,11 +647,12 @@ function SubscriptionStatus() {
   console.log("📊 SubscriptionStatus: Renderizando con:", {
     hasSubscription: !!subscription,
     isActive,
+    source: subscription?.source,
     subscriptionDetails: subscription
       ? {
           paymentId: subscription.payment.id,
           amount: subscription.payment.amount,
-          plan: getPlanName(subscription.payment.amount),
+          plan: subscription.planLabel,
           paymentDate: formatDate(subscription.paymentDate),
           expirationDate: formatDate(subscription.expirationDate),
           daysRemaining: subscription.daysRemaining,
@@ -575,11 +676,11 @@ function SubscriptionStatus() {
           {subscription && subscription.isActive ? (
             <div className={textLightClass}>
               <p className="text-2xl font-bold mb-2">
-                {getPlanName(subscription.payment.amount)}
+                {subscription.planLabel}
               </p>
               <p className="text-sm">
-                Activada: {formatDate(subscription.paymentDate)} | Monto:{" "}
-                {formatAmount(
+                Activada: {formatDate(subscription.paymentDate)} | Monto:{
+                formatAmount(
                   subscription.payment.amount,
                   subscription.payment.currency
                 )}
@@ -606,21 +707,14 @@ function SubscriptionStatus() {
             </div>
           )}
         </div>
-        {subscription && subscription.isActive ? (
-          <button
-            disabled
-            className="px-6 py-3 bg-white bg-opacity-50 text-white font-bold rounded-lg cursor-not-allowed opacity-50 shadow-md whitespace-nowrap"
-          >
-            Renovar Suscripción
-          </button>
-        ) : (
+        {!subscription || !subscription.isActive ? (
           <Link
             href="/suscripcion"
             className="px-6 py-3 bg-white text-gray-800 font-bold rounded-lg hover:bg-gray-100 transition-colors shadow-md hover:shadow-lg whitespace-nowrap"
           >
             Activar Suscripción
           </Link>
-        )}
+        ) : null}
       </div>
     </div>
   );

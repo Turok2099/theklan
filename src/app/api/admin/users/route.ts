@@ -174,6 +174,18 @@ export async function GET() {
 
     const supabase = createServiceClient();
 
+    const PLAN_VALUE_TO_LABEL: Record<string, string> = {
+      basic: "Basic",
+      full: "Full Jiu Jitsu",
+      unlimited: "Ilimitado",
+    };
+
+    const PLAN_VALUE_TO_AMOUNT: Record<string, number> = {
+      basic: 145000,
+      full: 165000,
+      unlimited: 199000,
+    };
+
     // Obtener usuarios de la tabla users
     console.log("📋 Obteniendo usuarios de tabla users...");
     const { data: usersData, error: usersError } = await supabase
@@ -202,6 +214,20 @@ export async function GET() {
       );
     }
 
+    // Obtener pagos para obtener suscripciones
+    console.log("📋 Obteniendo pagos para calcular suscripciones...");
+    const { data: paymentsData, error: paymentsError } = await supabase
+      .from("payments")
+      .select("*")
+      .eq("payment_type", "subscription")
+      .eq("status", "succeeded")
+      .order("paid_at", { ascending: false });
+
+    if (paymentsError) {
+      console.warn("⚠️ Error obteniendo pagos:", paymentsError.message);
+      // No lanzar error, continuar sin datos de suscripción
+    }
+
     // Obtener información de verificación de email desde auth.users
     console.log("🔍 Obteniendo usuarios de auth.users...");
     const { data: authUsers, error: authError } =
@@ -215,7 +241,83 @@ export async function GET() {
       );
     }
 
-    // Combinar datos de usuarios con información de auth y responsivas
+    const getUserSubscriptionFromPayments = (userId: string) => {
+      if (!paymentsData) return null;
+
+      const now = new Date();
+
+      const userPayments = paymentsData
+        .filter((p) => p.user_id === userId && p.payment_type === "subscription")
+        .sort((a, b) => {
+          const dateA = a.paid_at || a.created_at;
+          const dateB = b.paid_at || b.created_at;
+          if (!dateA && !dateB) return 0;
+          if (!dateA) return 1;
+          if (!dateB) return -1;
+          return new Date(dateB).getTime() - new Date(dateA).getTime();
+        });
+
+      if (userPayments.length === 0) return null;
+
+      const latestPayment = userPayments[0];
+
+      // Si el registro más reciente es una cancelación (monto 0), no hay suscripción
+      if (latestPayment.amount === 0) {
+        return null;
+      }
+
+      const planNames: Record<number, string> = {
+        145000: "Basic",
+        165000: "Full Jiu Jitsu",
+        199000: "Ilimitado",
+      };
+
+      const activeSubscription = userPayments.find((p) => {
+        if (p.amount === 0) return false;
+
+        const paidDate = new Date(p.paid_at || p.created_at);
+        const expirationDate = p.subscription_end_date
+          ? new Date(p.subscription_end_date)
+          : new Date(paidDate.getTime() + 30 * 24 * 60 * 60 * 1000);
+
+        return expirationDate > now;
+      });
+
+      if (activeSubscription) {
+        const paidDate = new Date(activeSubscription.paid_at || activeSubscription.created_at);
+        const expirationDate = activeSubscription.subscription_end_date
+          ? new Date(activeSubscription.subscription_end_date)
+          : new Date(paidDate.getTime() + 30 * 24 * 60 * 60 * 1000);
+
+        return {
+          plan: planNames[activeSubscription.amount] || "Personalizado",
+          amount: activeSubscription.amount,
+          isActive: true,
+          startDate: paidDate.toISOString(),
+          endDate: expirationDate.toISOString(),
+          paymentMethod: activeSubscription.payment_method || "stripe",
+          source: "payments" as const,
+        };
+      }
+
+      // Si no hay activa, tomar la más reciente (expirada)
+      const paidDate = new Date(latestPayment.paid_at || latestPayment.created_at);
+      const expirationDate = latestPayment.subscription_end_date
+        ? new Date(latestPayment.subscription_end_date)
+        : new Date(paidDate.getTime() + 30 * 24 * 60 * 60 * 1000);
+
+      return {
+        plan: planNames[latestPayment.amount] || "Personalizado",
+        amount: latestPayment.amount,
+        isActive: false,
+        startDate: paidDate.toISOString(),
+        endDate: expirationDate.toISOString(),
+        paymentMethod: latestPayment.payment_method || "stripe",
+        source: "payments" as const,
+      };
+    };
+
+    // Combinar datos de usuarios con información de auth, responsivas y suscripciones
     const usersWithDetails = usersData.map((user) => {
       // Buscar información de auth.users - usar la misma lógica que AuthContext
       const authUser = authUsers?.users.find((au) => au.id === user.id);
@@ -224,6 +326,39 @@ export async function GET() {
       const userResponsiva = responsivasData.find(
         (r) => r.email === user.email
       );
+
+      const now = new Date();
+      let subscription = null;
+      let subscriptionSource: "manual" | "payments" | "none" = "none";
+
+      if (user.subscription_override_plan) {
+        const planValue = user.subscription_override_plan as string;
+        const planLabel = PLAN_VALUE_TO_LABEL[planValue] || planValue;
+        const amount = PLAN_VALUE_TO_AMOUNT[planValue] || 0;
+        const expiresAt = user.subscription_override_expires_at
+          ? new Date(user.subscription_override_expires_at)
+          : null;
+        const startDate = expiresAt
+          ? new Date(expiresAt.getTime() - 30 * 24 * 60 * 60 * 1000)
+          : now;
+
+        subscription = {
+          plan: planLabel,
+          amount,
+          isActive: !expiresAt || expiresAt > now,
+          startDate: startDate.toISOString(),
+          endDate: expiresAt ? expiresAt.toISOString() : null,
+          paymentMethod: "manual_override",
+          source: "manual" as const,
+        };
+        subscriptionSource = "manual";
+      } else {
+        const paymentSubscription = getUserSubscriptionFromPayments(user.id);
+        if (paymentSubscription) {
+          subscription = paymentSubscription;
+          subscriptionSource = "payments";
+        }
+      }
 
       // Usar la misma lógica de verificación que AuthContext
       const email_verified = !!authUser?.email_confirmed_at;
@@ -234,6 +369,8 @@ export async function GET() {
         email_confirmed_at: authUser?.email_confirmed_at,
         confirmed_at: authUser?.confirmed_at,
         email_verified: email_verified,
+        hasSubscription: !!subscription,
+        subscriptionActive: subscription?.isActive,
         timestamp: new Date().toISOString(),
       });
 
@@ -256,6 +393,18 @@ export async function GET() {
             userResponsiva?.firma_digital && userResponsiva?.fecha_firma
           ),
         },
+        subscription,
+        subscription_source: subscriptionSource,
+        subscription_override: user.subscription_override_plan
+          ? {
+              plan_value: user.subscription_override_plan,
+              plan_label:
+                PLAN_VALUE_TO_LABEL[user.subscription_override_plan] ||
+                user.subscription_override_plan,
+              expires_at: user.subscription_override_expires_at,
+              updated_by: user.subscription_override_updated_by,
+            }
+          : null,
       };
     });
 

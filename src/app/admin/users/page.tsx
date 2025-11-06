@@ -19,6 +19,14 @@ interface UserData {
     isCompleted: boolean;
     isSigned: boolean;
   };
+  subscription?: {
+    plan: string;
+    amount: number;
+    isActive: boolean;
+    startDate: string;
+    endDate: string;
+    paymentMethod: string;
+  } | null;
 }
 
 export default function UsersPage() {
@@ -75,6 +83,7 @@ export default function UsersPage() {
     currentValue: string
   ) => {
     setEditingField({ userId, field });
+
     setEditForm({
       nombre: field === "nombre" ? currentValue : "",
       email: field === "email" ? currentValue : "",
@@ -114,7 +123,6 @@ export default function UsersPage() {
       } else if (editingField.field === "role") {
         body.role = editForm.role;
       }
-      // Email se maneja diferente, no se puede cambiar desde admin
 
       const response = await fetch("/api/admin/users", {
         method: "PUT",
@@ -132,11 +140,10 @@ export default function UsersPage() {
       }
 
       console.log("✅ Usuario actualizado exitosamente");
+      alert("Usuario actualizado exitosamente");
 
       await fetchData();
       handleCancelEdit();
-
-      alert("Usuario actualizado exitosamente");
     } catch (error) {
       console.error("❌ Error actualizando usuario:", error);
       alert(
@@ -317,6 +324,9 @@ export default function UsersPage() {
                     Rol
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">
+                    Suscripción
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">
                     Responsiva
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">
@@ -351,11 +361,11 @@ export default function UsersPage() {
                             onClick={() =>
                               handleSaveField(userItem.id, userItem.email)
                             }
-                            className="text-green-600 hover:text-green-700 transition-colors"
+                            className="inline-flex items-center justify-center w-9 h-9 rounded-lg border border-green-300 bg-green-50 text-green-600 hover:bg-green-100 transition-colors"
                             title="Guardar"
                           >
                             <svg
-                              className="w-5 h-5"
+                              className="w-4 h-4"
                               fill="currentColor"
                               viewBox="0 0 20 20"
                             >
@@ -368,11 +378,11 @@ export default function UsersPage() {
                           </button>
                           <button
                             onClick={handleCancelEdit}
-                            className="text-red-600 hover:text-red-700 transition-colors"
+                            className="inline-flex items-center justify-center w-9 h-9 rounded-lg border border-red-300 bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
                             title="Cancelar"
                           >
                             <svg
-                              className="w-5 h-5"
+                              className="w-4 h-4"
                               fill="currentColor"
                               viewBox="0 0 20 20"
                             >
@@ -478,11 +488,11 @@ export default function UsersPage() {
                             onClick={() =>
                               handleSaveField(userItem.id, userItem.email)
                             }
-                            className="text-green-600 hover:text-green-700 transition-colors"
+                            className="inline-flex items-center justify-center w-9 h-9 rounded-lg border border-green-300 bg-green-50 text-green-600 hover:bg-green-100 transition-colors"
                             title="Guardar"
                           >
                             <svg
-                              className="w-5 h-5"
+                              className="w-4 h-4"
                               fill="currentColor"
                               viewBox="0 0 20 20"
                             >
@@ -495,11 +505,11 @@ export default function UsersPage() {
                           </button>
                           <button
                             onClick={handleCancelEdit}
-                            className="text-red-600 hover:text-red-700 transition-colors"
+                            className="inline-flex items-center justify-center w-9 h-9 rounded-lg border border-red-300 bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
                             title="Cancelar"
                           >
                             <svg
-                              className="w-5 h-5"
+                              className="w-4 h-4"
                               fill="currentColor"
                               viewBox="0 0 20 20"
                             >
@@ -549,6 +559,28 @@ export default function UsersPage() {
                             </svg>
                           </button>
                         </div>
+                      )}
+                    </td>
+                    <td className="px-6 py-5 whitespace-nowrap">
+                      {userItem.subscription ? (
+                        <div className="flex flex-col gap-1">
+                          <span
+                            className={`inline-flex items-center px-3 py-1.5 text-xs font-bold rounded-lg ${
+                              userItem.subscription.isActive
+                                ? "bg-green-100 text-green-800 border border-green-300"
+                                : "bg-red-100 text-red-800 border border-red-300"
+                            }`}
+                          >
+                            {userItem.subscription.plan}
+                          </span>
+                          <span className="text-xs text-gray-500">
+                            Expira: {new Date(userItem.subscription.endDate).toLocaleDateString("es-MX")}
+                          </span>
+                        </div>
+                      ) : (
+                        <span className="inline-flex items-center px-3 py-1.5 text-xs font-bold rounded-lg bg-gray-100 text-gray-600 border border-gray-300">
+                          Sin suscripción
+                        </span>
                       )}
                     </td>
                     <td className="px-6 py-5 whitespace-nowrap">

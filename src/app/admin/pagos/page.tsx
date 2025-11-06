@@ -22,6 +22,7 @@ interface Payment {
   category: string | null; // Nuevo campo
   discount_amount: number; // Nuevo campo
   discount_reason: string | null; // Nuevo campo
+  subscription_end_date?: string | null;
   users: {
     email: string;
     profile_data: { nombre?: string } | null;
@@ -32,7 +33,40 @@ interface User {
   id: string;
   email: string;
   profile_data: { nombre?: string } | null;
+  subscription?: {
+    plan: string;
+    amount: number;
+    isActive: boolean;
+    startDate: string;
+    endDate: string | null;
+    paymentMethod: string;
+    source?: "manual" | "payments";
+  } | null;
+  subscription_source?: "manual" | "payments" | "none";
+  subscription_override?: {
+    plan_value: "basic" | "full" | "unlimited";
+    plan_label: string;
+    expires_at: string | null;
+    updated_by?: string | null;
+  } | null;
 }
+
+type SubscriptionPlanValue = "" | "none" | "basic" | "full" | "unlimited";
+
+const PLAN_OPTIONS: { value: SubscriptionPlanValue; label: string }[] = [
+  { value: "", label: "Selecciona una opción" },
+  { value: "none", label: "Sin suscripción" },
+  { value: "basic", label: "Basic ($1,450)" },
+  { value: "full", label: "Full Jiu Jitsu ($1,650)" },
+  { value: "unlimited", label: "Ilimitado ($1,990)" },
+];
+
+const PLAN_LABEL_TO_VALUE: Record<string, SubscriptionPlanValue> = {
+  Basic: "basic",
+  "Full Jiu Jitsu": "full",
+  Ilimitado: "unlimited",
+  "Sin suscripción": "none",
+};
 
 export default function PagosPage() {
   const { user, loading: authLoading } = useAuth();
@@ -46,13 +80,37 @@ export default function PagosPage() {
   const [formData, setFormData] = useState({
     userId: "",
     paymentMethod: "cash" as "cash" | "transfer",
+    paymentType: "one-time" as "subscription" | "one-time",
+    plan: "" as "" | "basic" | "full" | "unlimited",
     amount: "",
     description: "",
     notes: "",
     category: "membership",
     discountAmount: "",
     discountReason: "",
+    subscriptionEndDate: "",
   });
+  const [subscriptionEditor, setSubscriptionEditor] = useState<{
+    userId: string;
+    plan: SubscriptionPlanValue;
+  } | null>(null);
+
+  // Función helper para obtener el monto según el plan
+  const getPlanAmount = (plan: string): string => {
+    const amounts: Record<string, string> = {
+      basic: "1450.00",
+      full: "1650.00",
+      unlimited: "1990.00",
+    };
+    return amounts[plan] || "";
+  };
+
+  // Función helper para calcular fecha de expiración sugerida (30 días)
+  const getSuggestedEndDate = (): string => {
+    const date = new Date();
+    date.setDate(date.getDate() + 30);
+    return date.toISOString().split("T")[0];
+  };
 
   const fetchData = useCallback(async () => {
     try {
@@ -92,11 +150,124 @@ export default function PagosPage() {
     }
   }, []);
 
+  const getUserSubscription = useCallback(
+    (userId: string) => {
+      const user = users.find((u) => u.id === userId);
+      return user?.subscription || null;
+    },
+    [users]
+  );
+
+  const getUserLastPayment = useCallback(
+    (userId: string) => {
+      const userPayments = payments
+        .filter((p) => p.user_id === userId)
+        .sort((a, b) => {
+          const dateA = new Date(a.paid_at || a.created_at).getTime();
+          const dateB = new Date(b.paid_at || b.created_at).getTime();
+          return dateB - dateA;
+        });
+
+      return userPayments[0] || null;
+    },
+    [payments]
+  );
+
+  const startEditingSubscription = (userId: string) => {
+    const user = users.find((u) => u.id === userId);
+    const override = user?.subscription_override;
+    const currentSubscription = getUserSubscription(userId);
+
+    let planValue: SubscriptionPlanValue = "none";
+
+    if (override?.plan_value) {
+      planValue = override.plan_value;
+    } else if (currentSubscription?.plan) {
+      planValue = PLAN_LABEL_TO_VALUE[currentSubscription.plan] || "none";
+    }
+
+    setSubscriptionEditor({
+      userId,
+      plan: planValue,
+    });
+  };
+
+  const cancelEditingSubscription = () => {
+    setSubscriptionEditor(null);
+  };
+
+  const saveSubscription = async () => {
+    if (!subscriptionEditor) return;
+
+    const { userId, plan } = subscriptionEditor;
+
+    if (!plan) {
+      toast.error("Selecciona una opción de suscripción");
+      return;
+    }
+
+    const toastId = toast.loading("Actualizando suscripción...");
+
+    try {
+      if (plan === "none") {
+        const response = await fetch("/api/admin/subscriptions", {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ userId }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(
+            errorData.error || "Error al cancelar la suscripción"
+          );
+        }
+
+        toast.success("Suscripción cancelada", { id: toastId });
+      } else {
+        const response = await fetch("/api/admin/subscriptions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ userId, plan }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(
+            errorData.error || "Error al actualizar la suscripción"
+          );
+        }
+
+        toast.success("Suscripción actualizada", { id: toastId });
+      }
+
+      await fetchData();
+      await fetchUsers();
+      setSubscriptionEditor(null);
+    } catch (error) {
+      console.error("Error actualizando suscripción:", error);
+      toast.error(
+        error instanceof Error ? error.message : "Error al actualizar",
+        { id: toastId }
+      );
+    }
+  };
+
   const handleSubmitPayment = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!formData.userId || !formData.amount) {
       toast.error("Por favor completa todos los campos requeridos");
+      return;
+    }
+
+    // Validación adicional para suscripciones
+    if (formData.paymentType === "subscription" && !formData.subscriptionEndDate) {
+      toast.error("Por favor especifica la fecha de expiración para suscripciones");
       return;
     }
 
@@ -114,12 +285,14 @@ export default function PagosPage() {
         body: JSON.stringify({
           userId: formData.userId,
           paymentMethod: formData.paymentMethod,
+          paymentType: formData.paymentType,
           amount: amountInCents,
           description: formData.description || undefined,
           notes: formData.notes || undefined,
           category: formData.category,
           discountAmount: discountInCents || undefined,
           discountReason: formData.discountReason || undefined,
+          subscriptionEndDate: formData.subscriptionEndDate || undefined,
         }),
       });
 
@@ -133,12 +306,15 @@ export default function PagosPage() {
       setFormData({
         userId: "",
         paymentMethod: "cash",
+        paymentType: "one-time",
+        plan: "",
         amount: "",
         description: "",
         notes: "",
         category: "membership",
         discountAmount: "",
         discountReason: "",
+        subscriptionEndDate: "",
       });
       fetchData(); // Recargar la lista de pagos
     } catch (err) {
@@ -163,8 +339,13 @@ export default function PagosPage() {
     }
   }, []);
 
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString?: string | null) => {
+    if (!dateString) return "Sin fecha";
+
     const date = new Date(dateString);
+
+    if (isNaN(date.getTime())) return "Sin fecha";
+
     const day = String(date.getDate()).padStart(2, "0");
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const year = date.getFullYear();
@@ -324,6 +505,11 @@ export default function PagosPage() {
     0
   );
 
+  const filteredUsers = users.filter((user) => {
+    if (!filterUserId) return true;
+    return user.id === filterUserId;
+  });
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-8">
@@ -428,7 +614,7 @@ export default function PagosPage() {
                     className="flex-1 px-3 py-3 bg-gray-700 border-2 border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-sm font-medium transition-colors"
                   >
                     <option value="">Todos los usuarios</option>
-                    {users.map((u) => (
+                    {filteredUsers.map((u) => (
                       <option key={u.id} value={u.id}>
                         {u.profile_data?.nombre || u.email}
                       </option>
@@ -601,6 +787,189 @@ export default function PagosPage() {
             </table>
           </div>
         </div>
+
+      {/* Gestión de suscripciones */}
+      <div className="mt-8 bg-white rounded-lg shadow">
+        <div className="px-4 md:px-6 py-4 border-b border-gray-200 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+          <div>
+            <h2 className="text-lg font-semibold text-gray-900">
+              Gestión de Suscripciones
+            </h2>
+            <p className="text-sm text-gray-500">
+              Consulta el último pago registrado de cada usuario y ajusta su suscripción manualmente.
+            </p>
+          </div>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="min-w-full table-fixed divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="w-1/3 px-3 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Usuario
+                </th>
+                <th className="w-1/3 px-3 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Último pago
+                </th>
+                <th className="w-1/3 px-3 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Suscripción actual
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {filteredUsers.length === 0 ? (
+                <tr>
+                  <td colSpan={3} className="px-6 py-8 text-center text-gray-500">
+                    No hay usuarios cargados.
+                  </td>
+                </tr>
+              ) : (
+                filteredUsers.map((u) => {
+                  const subscription = u.subscription;
+                  const lastPayment = getUserLastPayment(u.id);
+                  const isEditing = subscriptionEditor?.userId === u.id;
+
+                  let currentPlanValue: SubscriptionPlanValue = "none";
+                  if (u.subscription_override?.plan_value) {
+                    currentPlanValue = u.subscription_override.plan_value;
+                  } else if (subscription?.plan) {
+                    currentPlanValue = PLAN_LABEL_TO_VALUE[subscription.plan] || "none";
+                  }
+
+                  const handleSelectChange = (value: string) => {
+                    setSubscriptionEditor({
+                      userId: u.id,
+                      plan: value as SubscriptionPlanValue,
+                    });
+                  };
+ 
+                  return (
+                    <tr key={u.id}>
+                      <td className="px-3 md:px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm font-semibold text-gray-900">
+                          {u.profile_data?.nombre || u.email}
+                        </div>
+                        <div className="text-xs text-gray-500">{u.email}</div>
+                      </td>
+                      <td className="px-3 md:px-6 py-4 whitespace-nowrap">
+                        {lastPayment ? (
+                          <div className="text-sm text-gray-900">
+                            {formatAmount(lastPayment.amount, lastPayment.currency)}
+                          </div>
+                        ) : (
+                          <span className="text-sm text-gray-500">Sin pagos</span>
+                        )}
+                        <div className="text-xs text-gray-500">
+                          {lastPayment
+                            ? `${formatDate(lastPayment.paid_at || lastPayment.created_at)} • ${
+                                lastPayment.payment_type === "subscription"
+                                  ? "Suscripción"
+                                  : "Único"
+                              }`
+                            : ""}
+                        </div>
+                      </td>
+                      <td className="px-3 md:px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-start gap-3 text-sm">
+                          <div className="flex flex-col gap-1">
+                            <select
+                              value={
+                                isEditing ? subscriptionEditor.plan : currentPlanValue
+                              }
+                              onChange={(e) => handleSelectChange(e.target.value)}
+                              disabled={!isEditing}
+                              className={`px-2.5 py-1 border rounded-md text-xs focus:outline-none transition-colors ${
+                                isEditing
+                                  ? "border-red-300 focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                                  : "border-gray-200 bg-gray-100 text-gray-700"
+                              }`}
+                            >
+                              {PLAN_OPTIONS.map((option) => (
+                                <option key={option.value} value={option.value}>
+                                  {option.label}
+                                </option>
+                              ))}
+                            </select>
+                            <span className="text-[11px] text-gray-500">
+                              {subscription?.endDate
+                                ? `Expira: ${formatDate(subscription.endDate)}`
+                                : "Sin fecha de expiración"}
+                            </span>
+                            {u.subscription_source === "manual" && (
+                              <span className="inline-flex items-center px-2 py-0.5 text-[11px] font-semibold bg-red-50 text-red-600 border border-red-200 rounded-full">
+                                Configurada manualmente
+                              </span>
+                            )}
+                          </div>
+
+                          {isEditing ? (
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={saveSubscription}
+                                className="inline-flex items-center justify-center w-8 h-8 rounded-md border border-green-300 bg-green-50 text-green-600 hover:bg-green-100 transition-colors focus:outline-none"
+                                title="Guardar"
+                              >
+                                <svg
+                                  className="w-4 h-4"
+                                  fill="currentColor"
+                                  viewBox="0 0 20 20"
+                                >
+                                  <path
+                                    fillRule="evenodd"
+                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                    clipRule="evenodd"
+                                  />
+                                </svg>
+                              </button>
+                              <button
+                                onClick={cancelEditingSubscription}
+                                className="inline-flex items-center justify-center w-8 h-8 rounded-md border border-red-300 bg-red-50 text-red-600 hover:bg-red-100 transition-colors focus:outline-none"
+                                title="Cancelar"
+                              >
+                                <svg
+                                  className="w-4 h-4"
+                                  fill="currentColor"
+                                  viewBox="0 0 20 20"
+                                >
+                                  <path
+                                    fillRule="evenodd"
+                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                    clipRule="evenodd"
+                                  />
+                                </svg>
+                              </button>
+                            </div>
+                          ) : (
+                            <button
+                              onClick={() => startEditingSubscription(u.id)}
+                              className="inline-flex items-center justify-center w-8 h-8 rounded-md border border-red-300 bg-red-50 text-red-600 hover:bg-red-100 transition-colors focus:outline-none"
+                              title="Editar suscripción"
+                            >
+                              <svg
+                                className="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                                />
+                              </svg>
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       </div>
 
       {/* Modal de Registro de Pago Manual */}
@@ -646,7 +1015,7 @@ export default function PagosPage() {
                   required
                 >
                   <option value="">Selecciona un usuario</option>
-                  {users.map((u) => (
+                  {filteredUsers.map((u) => (
                     <option key={u.id} value={u.id}>
                       {u.profile_data?.nombre || u.email}
                     </option>
@@ -675,6 +1044,79 @@ export default function PagosPage() {
                 </select>
               </div>
 
+              {/* Tipo de Pago */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Tipo de Pago <span className="text-red-600">*</span>
+                </label>
+                <select
+                  value={formData.paymentType}
+                  onChange={(e) => {
+                    const paymentType = e.target.value as "subscription" | "one-time";
+                    setFormData({
+                      ...formData,
+                      paymentType,
+                      plan: "",
+                      amount: "",
+                      subscriptionEndDate: paymentType === "subscription" ? getSuggestedEndDate() : "",
+                    });
+                  }}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                  required
+                >
+                  <option value="one-time">💵 Pago Único</option>
+                  <option value="subscription">🔄 Suscripción</option>
+                </select>
+              </div>
+
+              {/* Si es suscripción, mostrar selector de plan */}
+              {formData.paymentType === "subscription" && (
+                <>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Plan de Suscripción <span className="text-red-600">*</span>
+                    </label>
+                    <select
+                      value={formData.plan}
+                      onChange={(e) => {
+                        const plan = e.target.value as "" | "basic" | "full" | "unlimited";
+                        setFormData({
+                          ...formData,
+                          plan,
+                          amount: plan ? getPlanAmount(plan) : "",
+                        });
+                      }}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                      required
+                    >
+                      <option value="">Selecciona un plan</option>
+                      <option value="basic">Basic - $1,450 MXN</option>
+                      <option value="full">Full Jiu Jitsu - $1,650 MXN</option>
+                      <option value="unlimited">Ilimitado - $1,990 MXN</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Fecha de Expiración <span className="text-red-600">*</span>
+                    </label>
+                    <input
+                      type="date"
+                      value={formData.subscriptionEndDate}
+                      onChange={(e) =>
+                        setFormData({ ...formData, subscriptionEndDate: e.target.value })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                      min={new Date().toISOString().split("T")[0]}
+                      required
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Fecha hasta la cual la suscripción estará activa
+                    </p>
+                  </div>
+                </>
+              )}
+
               {/* Monto */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -691,7 +1133,13 @@ export default function PagosPage() {
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
                   placeholder="500.00"
                   required
+                  readOnly={formData.paymentType === "subscription" && formData.plan !== ""}
                 />
+                {formData.paymentType === "subscription" && formData.plan && (
+                  <p className="text-xs text-gray-500 mt-1">
+                    Monto auto-completado según el plan seleccionado
+                  </p>
+                )}
               </div>
 
               {/* Categoría */}

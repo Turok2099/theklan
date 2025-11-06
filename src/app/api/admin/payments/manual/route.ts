@@ -46,6 +46,7 @@ export async function POST(request: Request) {
     const {
       userId,
       paymentMethod, // 'cash' o 'transfer'
+      paymentType, // 'subscription' o 'one-time'
       amount,
       description,
       notes,
@@ -53,6 +54,7 @@ export async function POST(request: Request) {
       discountAmount,
       discountReason,
       paidAt,
+      subscriptionEndDate, // Solo para suscripciones
     } = body;
 
     // Validaciones
@@ -70,11 +72,44 @@ export async function POST(request: Request) {
       );
     }
 
-    if (typeof amount !== "number" || amount <= 0) {
+    if (typeof amount !== "number" || amount < 0) {
       return NextResponse.json(
-        { error: "amount debe ser un número positivo (en centavos)" },
+        { error: "amount debe ser un número mayor o igual a 0 (en centavos)" },
         { status: 400 }
       );
+    }
+
+    // Validar paymentType
+    const validPaymentType = paymentType || "one-time";
+    if (!["subscription", "one-time"].includes(validPaymentType)) {
+      return NextResponse.json(
+        { error: "paymentType debe ser 'subscription' o 'one-time'" },
+        { status: 400 }
+      );
+    }
+
+    // Si es pago único, el monto debe ser mayor a 0
+    if (validPaymentType === "one-time" && amount === 0) {
+      return NextResponse.json(
+        { error: "El monto debe ser mayor a 0 para pagos únicos" },
+        { status: 400 }
+      );
+    }
+
+    // Si es suscripción y el monto es 0, se interpretará como cancelación
+    const isSubscriptionCancellation =
+      validPaymentType === "subscription" && amount === 0;
+
+    // Validar que subscriptionEndDate sea una fecha futura, salvo cancelaciones
+    if (subscriptionEndDate && !isSubscriptionCancellation) {
+      const endDate = new Date(subscriptionEndDate);
+      const now = new Date();
+      if (endDate <= now) {
+        return NextResponse.json(
+          { error: "subscriptionEndDate debe ser una fecha futura" },
+          { status: 400 }
+        );
+      }
     }
 
     // Verificar que el usuario existe
@@ -96,7 +131,7 @@ export async function POST(request: Request) {
     const paymentData: PaymentData = {
       userId: targetUser.id,
       paymentMethod: paymentMethod as "cash" | "transfer",
-      paymentType: "one-time", // Los pagos manuales son siempre one-time
+      paymentType: validPaymentType as "subscription" | "one-time",
       amount: Math.round(amount), // Asegurar que sea un entero
       currency: "mxn",
       status: "succeeded", // Los pagos manuales son siempre exitosos
@@ -106,14 +141,21 @@ export async function POST(request: Request) {
       category: category || "membership",
       discountAmount: discountAmount ? Math.round(discountAmount) : 0,
       discountReason: discountReason || null,
+      subscriptionEndDate: subscriptionEndDate || null,
       paidAt: paidAt || new Date().toISOString(),
     };
+
+    if (isSubscriptionCancellation) {
+      paymentData.description = description || "Cancelación de suscripción manual";
+    }
 
     console.log("💰 Registrando pago manual:", {
       userId: paymentData.userId,
       userEmail: targetUser.email,
       paymentMethod: paymentData.paymentMethod,
+      paymentType: paymentData.paymentType,
       amount: paymentData.amount,
+      subscriptionEndDate: paymentData.subscriptionEndDate,
       registeredBy: authUser.id,
     });
 

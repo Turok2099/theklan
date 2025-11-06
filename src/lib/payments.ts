@@ -3,13 +3,13 @@ import type Stripe from "stripe";
 
 export interface PaymentData {
   userId: string;
-  
+
   // Campos de Stripe (opcionales para pagos manuales)
   stripePaymentIntentId?: string;
   stripeInvoiceId?: string;
   stripeSubscriptionId?: string;
   stripeCustomerId?: string; // Ahora opcional
-  
+
   // Campos generales
   paymentMethod?: "stripe" | "cash" | "transfer"; // Nuevo campo
   paymentType: "subscription" | "one-time";
@@ -17,25 +17,26 @@ export interface PaymentData {
   currency: string;
   status: string;
   description?: string;
-  
+
   // Campos de tarjeta (opcionales)
   paymentMethodId?: string;
   cardLast4?: string;
   cardBrand?: string;
   cardExpMonth?: number;
   cardExpYear?: number;
-  
+
   // Campos de producto
   priceId?: string;
   productId?: string;
-  
+
   // Campos para pagos manuales (nuevos)
   registeredBy?: string; // ID del admin que registró el pago
   notes?: string; // Notas adicionales
   category?: "membership" | "class" | "seminar" | "product" | "other"; // Categoría del pago
   discountAmount?: number; // Descuento en centavos
   discountReason?: string; // Razón del descuento
-  
+  subscriptionEndDate?: Date | string; // Fecha de expiración manual para suscripciones
+
   metadata?: Record<string, unknown>;
   paidAt?: Date | string;
 }
@@ -59,39 +60,44 @@ export async function upsertPayment(paymentData: PaymentData) {
 
   const paymentRecord = {
     user_id: paymentData.userId,
-    
+
     // Campos de Stripe (ahora opcionales)
     stripe_payment_intent_id: paymentData.stripePaymentIntentId || null,
     stripe_invoice_id: paymentData.stripeInvoiceId || null,
     stripe_subscription_id: paymentData.stripeSubscriptionId || null,
     stripe_customer_id: paymentData.stripeCustomerId || null,
-    
+
     // Campos generales (con defaults seguros)
-    payment_method: paymentData.paymentMethod || 'stripe',
+    payment_method: paymentData.paymentMethod || "stripe",
     payment_type: paymentData.paymentType,
     amount: paymentData.amount,
     currency: paymentData.currency,
     status: paymentData.status,
     description: paymentData.description || null,
-    
+
     // Campos de tarjeta (opcionales)
     payment_method_id: paymentData.paymentMethodId || null,
     card_last4: paymentData.cardLast4 || null,
     card_brand: paymentData.cardBrand || null,
     card_exp_month: paymentData.cardExpMonth || null,
     card_exp_year: paymentData.cardExpYear || null,
-    
+
     // Campos de producto (opcionales)
     price_id: paymentData.priceId || null,
     product_id: paymentData.productId || null,
-    
+
     // Campos para pagos manuales (nuevos)
     registered_by: paymentData.registeredBy || null,
     notes: paymentData.notes || null,
     category: paymentData.category || null,
     discount_amount: paymentData.discountAmount || 0,
     discount_reason: paymentData.discountReason || null,
-    
+    subscription_end_date: paymentData.subscriptionEndDate
+      ? typeof paymentData.subscriptionEndDate === "string"
+        ? paymentData.subscriptionEndDate
+        : paymentData.subscriptionEndDate.toISOString()
+      : null,
+
     // Metadata y fechas
     metadata: paymentData.metadata || {},
     paid_at: paymentData.paidAt
@@ -111,7 +117,10 @@ export async function upsertPayment(paymentData: PaymentData) {
 
   // Si hay stripe_payment_intent_id, usar upsert para evitar duplicados
   if (paymentData.stripePaymentIntentId) {
-    console.log("💾 Usando upsert con stripe_payment_intent_id:", paymentData.stripePaymentIntentId);
+    console.log(
+      "💾 Usando upsert con stripe_payment_intent_id:",
+      paymentData.stripePaymentIntentId
+    );
     const { data, error } = await supabase
       .from("payments")
       .upsert(paymentRecord, {
@@ -227,8 +236,8 @@ export async function getUserPayments(userId: string) {
     .from("payments")
     .select("*")
     .eq("user_id", userId);
-    // NO usar .order() aquí para evitar problemas con nulls o límites implícitos
-  
+  // NO usar .order() aquí para evitar problemas con nulls o límites implícitos
+
   if (error) {
     console.error("❌ Error fetching user payments:", error);
     throw error;
@@ -236,10 +245,14 @@ export async function getUserPayments(userId: string) {
 
   const allPayments = data || [];
 
-  console.log(`📊 getUserPayments: Total de ${allPayments.length} pagos encontrados para userId ${userId}`);
-  
+  console.log(
+    `📊 getUserPayments: Total de ${allPayments.length} pagos encontrados para userId ${userId}`
+  );
+
   if (allPayments.length === 0) {
-    console.warn("⚠️ getUserPayments: No se encontraron pagos para este usuario");
+    console.warn(
+      "⚠️ getUserPayments: No se encontraron pagos para este usuario"
+    );
     return [];
   }
 
@@ -248,26 +261,30 @@ export async function getUserPayments(userId: string) {
   const sortedData = allPayments.sort((a, b) => {
     const dateA = a.paid_at || a.created_at;
     const dateB = b.paid_at || b.created_at;
-    
+
     // Manejar casos donde las fechas podrían ser null o inválidas
     if (!dateA && !dateB) return 0;
     if (!dateA) return 1;
     if (!dateB) return -1;
-    
+
     const timeA = new Date(dateA).getTime();
     const timeB = new Date(dateB).getTime();
-    
+
     // Si las fechas son iguales, usar created_at como desempate
     if (timeA === timeB) {
       const createdA = new Date(a.created_at).getTime();
       const createdB = new Date(b.created_at).getTime();
       return createdB - createdA;
     }
-    
+
     return timeB - timeA;
   });
 
-  console.log("📊 getUserPayments: Pagos ordenados, retornando", sortedData.length, "pagos");
+  console.log(
+    "📊 getUserPayments: Pagos ordenados, retornando",
+    sortedData.length,
+    "pagos"
+  );
 
   return sortedData;
 }
@@ -354,4 +371,3 @@ export function stripePaymentIntentToPaymentData(
         : undefined,
   };
 }
-
