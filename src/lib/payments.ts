@@ -3,22 +3,39 @@ import type Stripe from "stripe";
 
 export interface PaymentData {
   userId: string;
+  
+  // Campos de Stripe (opcionales para pagos manuales)
   stripePaymentIntentId?: string;
   stripeInvoiceId?: string;
   stripeSubscriptionId?: string;
-  stripeCustomerId: string;
+  stripeCustomerId?: string; // Ahora opcional
+  
+  // Campos generales
+  paymentMethod?: "stripe" | "cash" | "transfer"; // Nuevo campo
   paymentType: "subscription" | "one-time";
   amount: number; // En centavos
   currency: string;
   status: string;
+  description?: string;
+  
+  // Campos de tarjeta (opcionales)
   paymentMethodId?: string;
   cardLast4?: string;
   cardBrand?: string;
   cardExpMonth?: number;
   cardExpYear?: number;
+  
+  // Campos de producto
   priceId?: string;
   productId?: string;
-  description?: string;
+  
+  // Campos para pagos manuales (nuevos)
+  registeredBy?: string; // ID del admin que registró el pago
+  notes?: string; // Notas adicionales
+  category?: "membership" | "class" | "seminar" | "product" | "other"; // Categoría del pago
+  discountAmount?: number; // Descuento en centavos
+  discountReason?: string; // Razón del descuento
+  
   metadata?: Record<string, unknown>;
   paidAt?: Date | string;
 }
@@ -42,22 +59,40 @@ export async function upsertPayment(paymentData: PaymentData) {
 
   const paymentRecord = {
     user_id: paymentData.userId,
+    
+    // Campos de Stripe (ahora opcionales)
     stripe_payment_intent_id: paymentData.stripePaymentIntentId || null,
     stripe_invoice_id: paymentData.stripeInvoiceId || null,
     stripe_subscription_id: paymentData.stripeSubscriptionId || null,
-    stripe_customer_id: paymentData.stripeCustomerId,
+    stripe_customer_id: paymentData.stripeCustomerId || null,
+    
+    // Campos generales (con defaults seguros)
+    payment_method: paymentData.paymentMethod || 'stripe',
     payment_type: paymentData.paymentType,
     amount: paymentData.amount,
     currency: paymentData.currency,
     status: paymentData.status,
+    description: paymentData.description || null,
+    
+    // Campos de tarjeta (opcionales)
     payment_method_id: paymentData.paymentMethodId || null,
     card_last4: paymentData.cardLast4 || null,
     card_brand: paymentData.cardBrand || null,
     card_exp_month: paymentData.cardExpMonth || null,
     card_exp_year: paymentData.cardExpYear || null,
+    
+    // Campos de producto (opcionales)
     price_id: paymentData.priceId || null,
     product_id: paymentData.productId || null,
-    description: paymentData.description || null,
+    
+    // Campos para pagos manuales (nuevos)
+    registered_by: paymentData.registeredBy || null,
+    notes: paymentData.notes || null,
+    category: paymentData.category || null,
+    discount_amount: paymentData.discountAmount || 0,
+    discount_reason: paymentData.discountReason || null,
+    
+    // Metadata y fechas
     metadata: paymentData.metadata || {},
     paid_at: paymentData.paidAt
       ? typeof paymentData.paidAt === "string"
@@ -287,6 +322,7 @@ export function stripePaymentIntentToPaymentData(
       typeof paymentIntent.customer === "string"
         ? paymentIntent.customer
         : paymentIntent.customer?.id || "",
+    paymentMethod: "stripe", // Nuevo campo: siempre 'stripe' para pagos de Stripe
     paymentType,
     amount: paymentIntent.amount,
     currency: paymentIntent.currency,

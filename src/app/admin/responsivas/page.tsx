@@ -157,31 +157,37 @@ export default function ResponsivasPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-8">
         {/* Header con botón de regreso */}
         <div className="mb-6 md:mb-8">
-          <Link
-            href="/admin"
-            className="inline-flex items-center text-red-600 hover:text-red-700 mb-4 transition-colors"
-          >
-            <svg
-              className="w-5 h-5 mr-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+              Gestión de Responsivas
+            </h1>
+            <Link
+              href="/admin"
+              className="inline-flex items-center justify-center px-4 py-2 text-sm font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors shadow-sm whitespace-nowrap"
+              style={{
+                color: "#ffffff",
+                backgroundColor: "#dc2626",
+                border: "none",
+                outline: "none",
+              }}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M10 19l-7-7m0 0l7-7m-7 7h18"
-              />
-            </svg>
-            Volver al Dashboard
-          </Link>
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-            Gestión de Responsivas
-          </h1>
-          <p className="text-gray-600 text-sm md:text-base">
-            Total de responsivas: <strong>{responsivas.length}</strong>
-          </p>
+              <svg
+                className="w-4 h-4 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                style={{ stroke: "#ffffff" }}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                />
+              </svg>
+              <span style={{ color: "#ffffff" }}>Volver al Dashboard</span>
+            </Link>
+          </div>
         </div>
 
         {/* Responsivas Table */}

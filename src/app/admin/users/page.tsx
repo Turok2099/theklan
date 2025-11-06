@@ -26,11 +26,15 @@ export default function UsersPage() {
   const [users, setUsers] = useState<UserData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [editingUser, setEditingUser] = useState<string | null>(null);
-  const [editingRole, setEditingRole] = useState<string>("");
-  const [editingVerification, setEditingVerification] =
-    useState<boolean>(false);
-  const [editingName, setEditingName] = useState<string>("");
+  const [editingField, setEditingField] = useState<{
+    userId: string;
+    field: "nombre" | "email" | "role";
+  } | null>(null);
+  const [editForm, setEditForm] = useState({
+    nombre: "",
+    email: "",
+    role: "",
+  });
 
   const fetchData = useCallback(async () => {
     try {
@@ -65,41 +69,59 @@ export default function UsersPage() {
     }
   }, [user, fetchData]);
 
-  const handleEditUser = (
+  const handleEditField = (
     userId: string,
-    currentRole: string,
-    currentVerification: boolean,
-    currentName: string
+    field: "nombre" | "email" | "role",
+    currentValue: string
   ) => {
-    setEditingUser(userId);
-    setEditingRole(currentRole);
-    setEditingVerification(currentVerification);
-    setEditingName(currentName);
+    setEditingField({ userId, field });
+    setEditForm({
+      nombre: field === "nombre" ? currentValue : "",
+      email: field === "email" ? currentValue : "",
+      role: field === "role" ? currentValue : "",
+    });
   };
 
   const handleCancelEdit = () => {
-    setEditingUser(null);
-    setEditingRole("");
-    setEditingVerification(false);
-    setEditingName("");
+    setEditingField(null);
+    setEditForm({
+      nombre: "",
+      email: "",
+      role: "",
+    });
   };
 
-  const handleSaveUser = async (userId: string, userEmail: string) => {
+  const handleSaveField = async (userId: string, userEmail: string) => {
+    if (!editingField) return;
+
     try {
-      console.log(`💾 Guardando cambios para usuario: ${userEmail}`);
+      console.log(
+        `💾 Guardando ${editingField.field} para usuario: ${userEmail}`
+      );
+
+      const body: {
+        userId: string;
+        userEmail: string;
+        role?: string;
+        nombre?: string;
+      } = {
+        userId,
+        userEmail,
+      };
+
+      if (editingField.field === "nombre") {
+        body.nombre = editForm.nombre;
+      } else if (editingField.field === "role") {
+        body.role = editForm.role;
+      }
+      // Email se maneja diferente, no se puede cambiar desde admin
 
       const response = await fetch("/api/admin/users", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          userId,
-          userEmail,
-          role: editingRole,
-          email_verified: editingVerification,
-          nombre: editingName,
-        }),
+        body: JSON.stringify(body),
       });
 
       if (!response.ok) {
@@ -241,31 +263,37 @@ export default function UsersPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-8">
         {/* Header con botón de regreso */}
         <div className="mb-6 md:mb-8">
-          <Link
-            href="/admin"
-            className="inline-flex items-center text-red-600 hover:text-red-700 mb-4 transition-colors"
-          >
-            <svg
-              className="w-5 h-5 mr-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+              Gestión de Usuarios
+            </h1>
+            <Link
+              href="/admin"
+              className="inline-flex items-center justify-center px-4 py-2 text-sm font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors shadow-sm whitespace-nowrap"
+              style={{
+                color: "#ffffff",
+                backgroundColor: "#dc2626",
+                border: "none",
+                outline: "none",
+              }}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M10 19l-7-7m0 0l7-7m-7 7h18"
-              />
-            </svg>
-            Volver al Dashboard
-          </Link>
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-            Gestión de Usuarios
-          </h1>
-          <p className="text-gray-600 text-sm md:text-base">
-            Total de usuarios registrados: <strong>{users.length}</strong>
-          </p>
+              <svg
+                className="w-4 h-4 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                style={{ stroke: "#ffffff" }}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                />
+              </svg>
+              <span style={{ color: "#ffffff" }}>Volver al Dashboard</span>
+            </Link>
+          </div>
         </div>
 
         {/* Users Table */}
@@ -289,9 +317,6 @@ export default function UsersPage() {
                     Rol
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">
-                    Verificación
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">
                     Responsiva
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">
@@ -306,84 +331,224 @@ export default function UsersPage() {
                     className="hover:bg-gray-50 transition-colors duration-150"
                   >
                     <td className="px-6 py-5 whitespace-nowrap">
-                      {editingUser === userItem.id ? (
-                        <input
-                          type="text"
-                          value={editingName}
-                          onChange={(e) => setEditingName(e.target.value)}
-                          className="px-3 py-2 border-2 border-red-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 w-full max-w-xs transition-all"
-                          placeholder="Nombre completo"
-                        />
+                      {editingField?.userId === userItem.id &&
+                      editingField?.field === "nombre" ? (
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="text"
+                            value={editForm.nombre}
+                            onChange={(e) =>
+                              setEditForm({
+                                ...editForm,
+                                nombre: e.target.value,
+                              })
+                            }
+                            className="px-3 py-2 border-2 border-red-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 w-full max-w-xs transition-all"
+                            placeholder="Nombre completo"
+                            autoFocus
+                          />
+                          <button
+                            onClick={() =>
+                              handleSaveField(userItem.id, userItem.email)
+                            }
+                            className="text-green-600 hover:text-green-700 transition-colors"
+                            title="Guardar"
+                          >
+                            <svg
+                              className="w-5 h-5"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          </button>
+                          <button
+                            onClick={handleCancelEdit}
+                            className="text-red-600 hover:text-red-700 transition-colors"
+                            title="Cancelar"
+                          >
+                            <svg
+                              className="w-5 h-5"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          </button>
+                        </div>
                       ) : (
-                        <div className="flex items-center">
+                        <div className="flex items-center gap-3">
                           <div className="flex-shrink-0 h-10 w-10 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
                             {(userItem.nombre || "SN").charAt(0).toUpperCase()}
                           </div>
-                          <div className="ml-4">
+                          <div className="flex-1">
                             <div className="text-sm font-semibold text-gray-900">
                               {userItem.nombre || "Sin nombre"}
                             </div>
                           </div>
+                          <button
+                            onClick={() =>
+                              handleEditField(
+                                userItem.id,
+                                "nombre",
+                                userItem.nombre || ""
+                              )
+                            }
+                            className="text-gray-400 hover:text-red-600 transition-colors"
+                            title="Editar nombre"
+                          >
+                            <svg
+                              className="w-5 h-5"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                              />
+                            </svg>
+                          </button>
                         </div>
                       )}
                     </td>
                     <td className="px-6 py-5 whitespace-nowrap">
-                      <div className="text-sm text-gray-700 truncate max-w-xs">
-                        {userItem.email}
+                      <div className="flex items-center gap-2">
+                        <div className="text-sm text-gray-700 truncate max-w-xs">
+                          {userItem.email}
+                        </div>
+                        {userItem.email_verified ? (
+                          <span title="Email verificado">
+                            <svg
+                              className="w-5 h-5 text-green-600 flex-shrink-0"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          </span>
+                        ) : (
+                          <span title="Email no verificado">
+                            <svg
+                              className="w-5 h-5 text-red-600 flex-shrink-0"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          </span>
+                        )}
                       </div>
                     </td>
                     <td className="px-6 py-5 whitespace-nowrap">
-                      {editingUser === userItem.id ? (
-                        <select
-                          value={editingRole}
-                          onChange={(e) => setEditingRole(e.target.value)}
-                          className="px-3 py-2 border-2 border-red-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 font-medium transition-all"
-                        >
-                          <option value="student">Student</option>
-                          <option value="coach">Coach</option>
-                          <option value="admin">Admin</option>
-                        </select>
+                      {editingField?.userId === userItem.id &&
+                      editingField?.field === "role" ? (
+                        <div className="flex items-center gap-2">
+                          <select
+                            value={editForm.role}
+                            onChange={(e) =>
+                              setEditForm({ ...editForm, role: e.target.value })
+                            }
+                            className="px-3 py-2 border-2 border-red-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 font-medium transition-all"
+                            autoFocus
+                          >
+                            <option value="student">Student</option>
+                            <option value="coach">Coach</option>
+                            <option value="admin">Admin</option>
+                          </select>
+                          <button
+                            onClick={() =>
+                              handleSaveField(userItem.id, userItem.email)
+                            }
+                            className="text-green-600 hover:text-green-700 transition-colors"
+                            title="Guardar"
+                          >
+                            <svg
+                              className="w-5 h-5"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          </button>
+                          <button
+                            onClick={handleCancelEdit}
+                            className="text-red-600 hover:text-red-700 transition-colors"
+                            title="Cancelar"
+                          >
+                            <svg
+                              className="w-5 h-5"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          </button>
+                        </div>
                       ) : (
-                        <span
-                          className={`inline-flex items-center px-3 py-1.5 text-xs font-bold rounded-lg ${getRoleBadgeColor(
-                            userItem.role
-                          )}`}
-                        >
-                          {userItem.role === "admin" && "👑 "}
-                          {userItem.role === "coach" && "🥋 "}
-                          {userItem.role === "student" && "🎓 "}
-                          {userItem.role.toUpperCase()}
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-6 py-5 whitespace-nowrap">
-                      {editingUser === userItem.id ? (
-                        <select
-                          value={
-                            editingVerification ? "verified" : "not-verified"
-                          }
-                          onChange={(e) =>
-                            setEditingVerification(
-                              e.target.value === "verified"
-                            )
-                          }
-                          className="px-3 py-2 border-2 border-red-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 font-medium transition-all"
-                        >
-                          <option value="not-verified">No Verificado</option>
-                          <option value="verified">Verificado</option>
-                        </select>
-                      ) : (
-                        <span
-                          className={`inline-flex items-center px-3 py-1.5 text-xs font-bold rounded-lg ${
-                            userItem.email_verified
-                              ? "bg-green-100 text-green-800 border border-green-300"
-                              : "bg-red-100 text-red-800 border border-red-300"
-                          }`}
-                        >
-                          {userItem.email_verified
-                            ? "✓ Verificado"
-                            : "✕ No Verificado"}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={`inline-flex items-center px-3 py-1.5 text-xs font-bold rounded-lg ${getRoleBadgeColor(
+                              userItem.role
+                            )}`}
+                          >
+                            {userItem.role === "admin" && "👑 "}
+                            {userItem.role === "coach" && "🥋 "}
+                            {userItem.role === "student" && "🎓 "}
+                            {userItem.role.toUpperCase()}
+                          </span>
+                          <button
+                            onClick={() =>
+                              handleEditField(
+                                userItem.id,
+                                "role",
+                                userItem.role
+                              )
+                            }
+                            className="text-gray-400 hover:text-red-600 transition-colors"
+                            title="Editar rol"
+                          >
+                            <svg
+                              className="w-5 h-5"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                              />
+                            </svg>
+                          </button>
+                        </div>
                       )}
                     </td>
                     <td className="px-6 py-5 whitespace-nowrap">
@@ -400,142 +565,37 @@ export default function UsersPage() {
                       </span>
                     </td>
                     <td className="px-6 py-5 whitespace-nowrap">
-                      <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
-                        {editingUser === userItem.id ? (
-                          <>
-                            <button
-                              onClick={() =>
-                                handleSaveUser(userItem.id, userItem.email)
-                              }
-                              className="inline-flex items-center justify-center px-3 py-2 text-xs font-semibold rounded-lg bg-green-600 text-white hover:bg-green-700 transition-colors shadow-sm"
-                              style={{
-                                color: "#ffffff",
-                                backgroundColor: "#16a34a",
-                                padding: "0.5rem 0.75rem",
-                                border: "none",
-                                outline: "none",
-                                borderRadius: "0.5rem",
-                                fontWeight: "600",
-                              }}
-                            >
-                              <svg
-                                className="w-4 h-4 mr-1.5"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                                style={{ stroke: "#ffffff" }}
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M5 13l4 4L19 7"
-                                />
-                              </svg>
-                              <span style={{ color: "#ffffff" }}>Guardar</span>
-                            </button>
-                            <button
-                              onClick={handleCancelEdit}
-                              className="inline-flex items-center justify-center px-3 py-2 text-xs font-semibold rounded-lg bg-gray-600 text-white hover:bg-gray-700 transition-colors shadow-sm"
-                              style={{
-                                color: "#ffffff",
-                                backgroundColor: "#4b5563",
-                                padding: "0.5rem 0.75rem",
-                                border: "none",
-                                outline: "none",
-                                borderRadius: "0.5rem",
-                                fontWeight: "600",
-                              }}
-                            >
-                              <svg
-                                className="w-4 h-4 mr-1.5"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                                style={{ stroke: "#ffffff" }}
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M6 18L18 6M6 6l12 12"
-                                />
-                              </svg>
-                              <span style={{ color: "#ffffff" }}>Cancelar</span>
-                            </button>
-                          </>
-                        ) : (
-                          <>
-                            <button
-                              onClick={() =>
-                                handleEditUser(
-                                  userItem.id,
-                                  userItem.role,
-                                  userItem.email_verified || false,
-                                  userItem.nombre || ""
-                                )
-                              }
-                              className="inline-flex items-center justify-center px-3 py-2 text-xs font-semibold rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors shadow-sm"
-                              style={{
-                                color: "#ffffff",
-                                backgroundColor: "#dc2626",
-                                padding: "0.5rem 0.75rem",
-                                border: "none",
-                                outline: "none",
-                                borderRadius: "0.5rem",
-                                fontWeight: "600",
-                              }}
-                            >
-                              <svg
-                                className="w-4 h-4 mr-1.5"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                                style={{ stroke: "#ffffff" }}
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                                />
-                              </svg>
-                              <span style={{ color: "#ffffff" }}>Editar</span>
-                            </button>
-                            <button
-                              onClick={() =>
-                                handleDeleteUser(userItem.id, userItem.email)
-                              }
-                              className="inline-flex items-center justify-center px-3 py-2 text-xs font-semibold rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors shadow-sm"
-                              style={{
-                                color: "#ffffff",
-                                backgroundColor: "#dc2626",
-                                padding: "0.5rem 0.75rem",
-                                border: "none",
-                                outline: "none",
-                                borderRadius: "0.5rem",
-                                fontWeight: "600",
-                              }}
-                            >
-                              <svg
-                                className="w-4 h-4 mr-1.5"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                                style={{ stroke: "#ffffff" }}
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                                />
-                              </svg>
-                              <span style={{ color: "#ffffff" }}>Eliminar</span>
-                            </button>
-                          </>
-                        )}
-                      </div>
+                      <button
+                        onClick={() =>
+                          handleDeleteUser(userItem.id, userItem.email)
+                        }
+                        className="inline-flex items-center justify-center px-3 py-2 text-xs font-semibold rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors shadow-sm"
+                        style={{
+                          color: "#ffffff",
+                          backgroundColor: "#dc2626",
+                          padding: "0.5rem 0.75rem",
+                          border: "none",
+                          outline: "none",
+                          borderRadius: "0.5rem",
+                          fontWeight: "600",
+                        }}
+                      >
+                        <svg
+                          className="w-4 h-4 mr-1.5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          style={{ stroke: "#ffffff" }}
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                          />
+                        </svg>
+                        <span style={{ color: "#ffffff" }}>Eliminar</span>
+                      </button>
                     </td>
                   </tr>
                 ))}
