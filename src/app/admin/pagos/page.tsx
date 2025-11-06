@@ -637,32 +637,54 @@ export default function PagosPage() {
           </div>
         </div>
 
-        {/* Estadísticas del mes */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <div className="bg-white rounded-lg shadow p-4">
-            <p className="text-sm text-gray-600 font-medium mb-1">
-              Pagos Este Mes
-            </p>
-            <p className="text-2xl font-bold text-gray-900">
-              {paymentsThisMonth.length}
-            </p>
+        {/* Estadísticas del mes + botón de acción */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 flex-1">
+            <div className="bg-white rounded-lg shadow p-4">
+              <p className="text-sm text-gray-600 font-medium mb-1">
+                Pagos Este Mes
+              </p>
+              <p className="text-2xl font-bold text-gray-900">
+                {paymentsThisMonth.length}
+              </p>
+            </div>
+            <div className="bg-white rounded-lg shadow p-4">
+              <p className="text-sm text-gray-600 font-medium mb-1">
+                Ingresos Este Mes
+              </p>
+              <p className="text-2xl font-bold text-gray-900">
+                {formatAmount(totalAmountThisMonth, "mxn")}
+              </p>
+            </div>
+            <div className="bg-white rounded-lg shadow p-4">
+              <p className="text-sm text-gray-600 font-medium mb-1">
+                Pagos Exitosos
+              </p>
+              <p className="text-2xl font-bold text-gray-900">
+                {filteredPayments.filter((p) => p.status === "succeeded").length}
+              </p>
+            </div>
           </div>
-          <div className="bg-white rounded-lg shadow p-4">
-            <p className="text-sm text-gray-600 font-medium mb-1">
-              Ingresos Este Mes
-            </p>
-            <p className="text-2xl font-bold text-gray-900">
-              {formatAmount(totalAmountThisMonth, "mxn")}
-            </p>
-          </div>
-          <div className="bg-white rounded-lg shadow p-4">
-            <p className="text-sm text-gray-600 font-medium mb-1">
-              Pagos Exitosos
-            </p>
-            <p className="text-2xl font-bold text-gray-900">
-              {filteredPayments.filter((p) => p.status === "succeeded").length}
-            </p>
-          </div>
+          <button
+            type="button"
+            onClick={() => setShowModal(true)}
+            className="inline-flex items-center justify-center gap-2 rounded-lg !bg-red-600 !px-5 !py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:!bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+          >
+            <svg
+              className="w-4 h-4 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 4v16m8-8H4"
+              />
+            </svg>
+            Registrar Pago Manual
+          </button>
         </div>
 
         {/* Payments Table */}
