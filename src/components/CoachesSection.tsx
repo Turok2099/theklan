@@ -11,7 +11,6 @@ export const CoachesSection = () => {
         "Fundador y Head Coach. Más de 25 años de experiencia en Artes Marciales, Instructor de kickboxing (Dingolfing, Alemania) Avalado por WAKO Baviera Germany Full-contact, Kung Fu, American Kenpo, Kenpo Kinetico, Jiu-jitsu Brazileño, Universal Submission, Combativs (Alemania), Muay Thai, Boxeo Amateur y Profesional, Especialista en Striking.",
       teaches: ["JIU-JITSU BRASILEÑO", "STRIKING"],
       images: [
-        "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759429787/The%20Klan/coaches/francisco-ramirez/1.png",
         "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759428590/The%20Klan/coaches/francisco-ramirez/2.png",
         "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759428596/The%20Klan/coaches/francisco-ramirez/3.png",
         "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759428597/The%20Klan/coaches/francisco-ramirez/4.png",
@@ -23,9 +22,7 @@ export const CoachesSection = () => {
         "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759429789/The%20Klan/coaches/francisco-ramirez/10.png",
         "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759428588/The%20Klan/coaches/francisco-ramirez/11.png",
         "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759429793/The%20Klan/coaches/francisco-ramirez/12.jpg",
-        "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759429794/The%20Klan/coaches/francisco-ramirez/13.jpg",
         "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759429794/The%20Klan/coaches/francisco-ramirez/14.jpg",
-        "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759429795/The%20Klan/coaches/francisco-ramirez/15.jpg",
       ],
     },
     {

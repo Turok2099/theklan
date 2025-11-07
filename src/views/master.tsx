@@ -5,7 +5,6 @@ import Image from "next/image";
 
 export const Master = () => {
   const images = [
-    "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759429787/The%20Klan/coaches/francisco-ramirez/1.png",
     "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759428590/The%20Klan/coaches/francisco-ramirez/2.png",
     "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759428596/The%20Klan/coaches/francisco-ramirez/3.png",
     "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759428597/The%20Klan/coaches/francisco-ramirez/4.png",
@@ -17,9 +16,8 @@ export const Master = () => {
     "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759429789/The%20Klan/coaches/francisco-ramirez/10.png",
     "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759428588/The%20Klan/coaches/francisco-ramirez/11.png",
     "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759429793/The%20Klan/coaches/francisco-ramirez/12.jpg",
-    "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759429794/The%20Klan/coaches/francisco-ramirez/13.jpg",
+
     "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759429794/The%20Klan/coaches/francisco-ramirez/14.jpg",
-    "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759429795/The%20Klan/coaches/francisco-ramirez/15.jpg",
   ];
 
   return (
@@ -27,24 +25,24 @@ export const Master = () => {
       {/* Hero Section con imagen de fondo */}
       <section className="relative w-full h-[60vh] md:h-[70vh] lg:h-[80vh] overflow-hidden">
         <Image
-          src="https://res.cloudinary.com/dxbtafe9u/image/upload/v1759429794/The%20Klan/coaches/francisco-ramirez/13.jpg"
+          src="https://res.cloudinary.com/dxbtafe9u/image/upload/v1759429793/The%20Klan/coaches/francisco-ramirez/12.jpg"
           alt="Master Francisco Ramírez"
           fill
           priority
-          className="object-cover"
+          className="object-cover object-top"
         />
         {/* Overlay */}
         <div className="absolute inset-0 bg-black/70" />
 
         {/* Contenido */}
-        <div className="relative z-10 h-full flex flex-col items-center justify-center px-6 md:px-12 lg:px-24 text-center text-white">
-          <p className="text-red-600 font-bold text-sm md:text-base uppercase tracking-wider mb-4">
+        <div className="relative z-10 h-full flex flex-col items-center justify-end px-6 md:px-12 lg:px-24 pb-14 md:pb-20 text-center text-white">
+          <p className="text-red-600 font-bold text-sm md:text-base uppercase tracking-wider mb-3 md:mb-4">
             HEAD COACH & FUNDADOR
           </p>
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6">
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-5 md:mb-6">
             Master Francisco Ramírez
           </h1>
-          <div className="w-32 h-1 bg-red-600 mx-auto mb-8"></div>
+          <div className="w-32 h-1 bg-red-600 mx-auto mb-6 md:mb-8" />
           <p className="text-lg md:text-2xl text-gray-200 max-w-4xl mx-auto">
             Más de 20 años dedicados a las Artes Marciales y formando campeones
           </p>
