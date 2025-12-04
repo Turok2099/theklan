@@ -400,7 +400,7 @@ export const Master = () => {
       {/* Galería */}
       <section className="py-16 px-6 md:px-12 lg:px-24 bg-gray-50">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-12 text-center">
+          <h2 className="text-5xl md:text-6xl lg:text-7xl font-black tracking-tight text-gray-900 mb-12 text-center">
             Galería
           </h2>
           <CoachGallery images={images} coachName="Francisco Ramírez" />

@@ -5,11 +5,16 @@ import { HeadCoach } from "@/components/HeadCoach";
 import { GoogleReviews } from "@/components/GoogleReviews";
 import { JiuJitsuSection } from "@/components/JiuJitsuSection";
 import { IntroSection } from "@/components/IntroSection";
+import VideoYoutubeHome from "@/components/Youtube/youtubeHome";
 
 export const Principal = () => {
   return (
     <section className="w-full bg-white text-gray-800 py-12 px-6 md:px-12 lg:px-24">
       <IntroSection />
+
+      <div className="mt-10 md:mt-20">
+        <VideoYoutubeHome />
+      </div>
 
       <div className="mt-10 md:mt-20">
         <HeadCoach />
