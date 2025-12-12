@@ -1,4 +1,4 @@
-import { createServerSupabaseClient } from "@/lib/supabase-server";
+import { createServerSupabaseClient, createServiceClient } from "@/lib/supabase-server";
 import type Stripe from "stripe";
 
 export interface PaymentData {
@@ -44,8 +44,11 @@ export interface PaymentData {
 /**
  * Crea o actualiza un registro de pago en la base de datos
  */
-export async function upsertPayment(paymentData: PaymentData) {
-  const supabase = await createServerSupabaseClient();
+export async function upsertPayment(
+  paymentData: PaymentData,
+  supabaseClient?: ReturnType<typeof createServiceClient>
+) {
+  const supabase = supabaseClient || await createServerSupabaseClient();
 
   console.log("💾 upsertPayment llamado con:", {
     userId: paymentData.userId,
@@ -175,9 +178,10 @@ export async function upsertPayment(paymentData: PaymentData) {
 export async function updatePaymentStatus(
   stripePaymentIntentId: string,
   status: string,
-  additionalData?: Partial<PaymentData>
+  additionalData?: Partial<PaymentData>,
+  supabaseClient?: ReturnType<typeof createServiceClient>
 ) {
-  const supabase = await createServerSupabaseClient();
+  const supabase = supabaseClient || await createServerSupabaseClient();
 
   const updateData: Record<string, unknown> = {
     status,

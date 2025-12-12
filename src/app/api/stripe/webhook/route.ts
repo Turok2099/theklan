@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe-server";
 import { headers } from "next/headers";
 import { upsertPayment, updatePaymentStatus } from "@/lib/payments";
-import { createServerSupabaseClient } from "@/lib/supabase-server";
+import { createServiceClient } from "@/lib/supabase-server";
 import type Stripe from "stripe";
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -40,47 +40,50 @@ export async function POST(request: NextRequest) {
 
   console.log(`✅ Webhook recibido: ${event.type}`);
 
+  // Crear service client para bypass RLS (webhooks no tienen usuario autenticado)
+  const serviceSupabase = createServiceClient();
+
   try {
     switch (event.type) {
       case "payment_intent.succeeded": {
         const paymentIntent = event.data.object as Stripe.PaymentIntent;
-        await handlePaymentIntentSucceeded(paymentIntent);
+        await handlePaymentIntentSucceeded(paymentIntent, serviceSupabase);
         break;
       }
 
       case "payment_intent.payment_failed": {
         const paymentIntent = event.data.object as Stripe.PaymentIntent;
-        await handlePaymentIntentFailed(paymentIntent);
+        await handlePaymentIntentFailed(paymentIntent, serviceSupabase);
         break;
       }
 
       case "payment_intent.canceled": {
         const paymentIntent = event.data.object as Stripe.PaymentIntent;
-        await handlePaymentIntentCanceled(paymentIntent);
+        await handlePaymentIntentCanceled(paymentIntent, serviceSupabase);
         break;
       }
 
       case "payment_intent.requires_action": {
         const paymentIntent = event.data.object as Stripe.PaymentIntent;
-        await handlePaymentIntentRequiresAction(paymentIntent);
+        await handlePaymentIntentRequiresAction(paymentIntent, serviceSupabase);
         break;
       }
 
       case "invoice.paid": {
         const invoice = event.data.object as Stripe.Invoice;
-        await handleInvoicePaid(invoice);
+        await handleInvoicePaid(invoice, serviceSupabase);
         break;
       }
 
       case "invoice.payment_failed": {
         const invoice = event.data.object as Stripe.Invoice;
-        await handleInvoicePaymentFailed(invoice);
+        await handleInvoicePaymentFailed(invoice, serviceSupabase);
         break;
       }
 
       case "charge.refunded": {
         const charge = event.data.object as Stripe.Charge;
-        await handleChargeRefunded(charge);
+        await handleChargeRefunded(charge, serviceSupabase);
         break;
       }
 
@@ -106,11 +109,14 @@ export async function POST(request: NextRequest) {
   }
 }
 
-async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent) {
+async function handlePaymentIntentSucceeded(
+  paymentIntent: Stripe.PaymentIntent,
+  serviceSupabase: ReturnType<typeof createServiceClient>
+) {
   console.log(`✅ PaymentIntent succeeded: ${paymentIntent.id}`);
 
   // FASE 4: Mejorar búsqueda de userId - intentar múltiples métodos
-  let userId = await getUserIdFromStripeObject(paymentIntent);
+  let userId = await getUserIdFromStripeObject(paymentIntent, serviceSupabase);
   
   // Si no se encontró userId, intentar buscar directamente por stripe_customer_id
   if (!userId && paymentIntent.customer) {
@@ -121,8 +127,7 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
       
     if (customerId) {
       try {
-        const supabase = await createServerSupabaseClient();
-        const { data: user, error: userError } = await supabase
+        const { data: user, error: userError } = await serviceSupabase
           .from("users")
           .select("id")
           .eq("stripe_customer_id", customerId)
@@ -228,48 +233,58 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
     cardExpYear,
     paidAt: new Date(paymentIntent.created * 1000),
     metadata: paymentIntent.metadata,
-  });
+  }, serviceSupabase);
 }
 
-async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
+async function handlePaymentIntentFailed(
+  paymentIntent: Stripe.PaymentIntent,
+  serviceSupabase: ReturnType<typeof createServiceClient>
+) {
   console.log(`❌ PaymentIntent failed: ${paymentIntent.id}`);
 
   try {
     await updatePaymentStatus(paymentIntent.id, "failed", {
       metadata: paymentIntent.metadata,
-    });
+    }, serviceSupabase);
   } catch (error) {
     console.error("Error actualizando pago fallido:", error);
   }
 }
 
-async function handlePaymentIntentCanceled(paymentIntent: Stripe.PaymentIntent) {
+async function handlePaymentIntentCanceled(
+  paymentIntent: Stripe.PaymentIntent,
+  serviceSupabase: ReturnType<typeof createServiceClient>
+) {
   console.log(`🚫 PaymentIntent canceled: ${paymentIntent.id}`);
 
   try {
     await updatePaymentStatus(paymentIntent.id, "canceled", {
       metadata: paymentIntent.metadata,
-    });
+    }, serviceSupabase);
   } catch (error) {
     console.error("Error actualizando pago cancelado:", error);
   }
 }
 
 async function handlePaymentIntentRequiresAction(
-  paymentIntent: Stripe.PaymentIntent
+  paymentIntent: Stripe.PaymentIntent,
+  serviceSupabase: ReturnType<typeof createServiceClient>
 ) {
   console.log(`⚠️ PaymentIntent requires action: ${paymentIntent.id}`);
 
   try {
     await updatePaymentStatus(paymentIntent.id, "requires_action", {
       metadata: paymentIntent.metadata,
-    });
+    }, serviceSupabase);
   } catch (error) {
     console.error("Error actualizando pago que requiere acción:", error);
   }
 }
 
-async function handleInvoicePaid(invoice: Stripe.Invoice) {
+async function handleInvoicePaid(
+  invoice: Stripe.Invoice,
+  serviceSupabase: ReturnType<typeof createServiceClient>
+) {
   console.log(`✅ Invoice paid: ${invoice.id}`);
 
   const invoiceWithPaymentIntent = invoice as Stripe.Invoice & {
@@ -288,7 +303,7 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
       : invoiceWithPaymentIntent.payment_intent.id;
 
   // FASE 4: Mejorar búsqueda de userId - intentar múltiples métodos
-  let userId = await getUserIdFromStripeObject(invoiceWithPaymentIntent);
+  let userId = await getUserIdFromStripeObject(invoiceWithPaymentIntent, serviceSupabase);
   
   // Si no se encontró userId, intentar buscar directamente por stripe_customer_id
   if (!userId && invoiceWithPaymentIntent.customer) {
@@ -299,8 +314,7 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
       
     if (customerId) {
       try {
-        const supabase = await createServerSupabaseClient();
-        const { data: user, error: userError } = await supabase
+        const { data: user, error: userError } = await serviceSupabase
           .from("users")
           .select("id")
           .eq("stripe_customer_id", customerId)
@@ -408,10 +422,13 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
     })(),
     paidAt: new Date(invoice.created * 1000),
     metadata: invoice.metadata || {},
-  });
+  }, serviceSupabase);
 }
 
-async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
+async function handleInvoicePaymentFailed(
+  invoice: Stripe.Invoice,
+  serviceSupabase: ReturnType<typeof createServiceClient>
+) {
   console.log(`❌ Invoice payment failed: ${invoice.id}`);
 
   const invoiceWithPaymentIntent = invoice as Stripe.Invoice & {
@@ -431,13 +448,16 @@ async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
     await updatePaymentStatus(paymentIntentId, "failed", {
       stripeInvoiceId: invoice.id,
       metadata: invoice.metadata || {},
-    });
+    }, serviceSupabase);
   } catch (error) {
     console.error("Error actualizando invoice fallido:", error);
   }
 }
 
-async function handleChargeRefunded(charge: Stripe.Charge) {
+async function handleChargeRefunded(
+  charge: Stripe.Charge,
+  serviceSupabase: ReturnType<typeof createServiceClient>
+) {
   console.log(`↩️ Charge refunded: ${charge.id}`);
 
   if (!charge.payment_intent) {
@@ -452,7 +472,7 @@ async function handleChargeRefunded(charge: Stripe.Charge) {
   try {
     await updatePaymentStatus(paymentIntentId, "refunded", {
       metadata: charge.metadata || {},
-    });
+    }, serviceSupabase);
   } catch (error) {
     console.error("Error actualizando reembolso:", error);
   }
@@ -479,7 +499,8 @@ async function getUserIdFromStripeObject(
   stripeObject: {
     metadata?: Record<string, string> | Stripe.Metadata | null;
     customer?: string | Stripe.Customer | Stripe.DeletedCustomer | null;
-  }
+  },
+  serviceSupabase: ReturnType<typeof createServiceClient>
 ): Promise<string | null> {
   // Prioridad 1: Buscar user_id en metadatos del objeto Stripe
   const metadata = stripeObject.metadata;
@@ -523,13 +544,14 @@ async function getUserIdFromStripeObject(
 
   // Prioridad 3: Fallback - buscar por stripe_customer_id en tabla users
   if (stripeObject.customer) {
-    return await getUserIdFromCustomer(stripeObject.customer);
+    return await getUserIdFromCustomer(stripeObject.customer, serviceSupabase);
   }
   return null;
 }
 
 async function getUserIdFromCustomer(
-  customer: string | Stripe.Customer | Stripe.DeletedCustomer | null
+  customer: string | Stripe.Customer | Stripe.DeletedCustomer | null,
+  serviceSupabase: ReturnType<typeof createServiceClient>
 ): Promise<string | null> {
   if (!customer) return null;
 
@@ -538,9 +560,7 @@ async function getUserIdFromCustomer(
 
   if (!customerId) return null;
 
-  const supabase = await createServerSupabaseClient();
-
-  const { data, error } = await supabase
+  const { data, error } = await serviceSupabase
     .from("users")
     .select("id")
     .eq("stripe_customer_id", customerId)
