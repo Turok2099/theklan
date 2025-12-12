@@ -2,34 +2,42 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { getCloudinaryImageUrl } from "@/lib/cloudinary";
 
 export const TeamPreview = () => {
   const team = [
     {
       name: "Francisco Ramírez",
       role: "Head Coach",
-      image:
-        "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759428609/The%20Klan/coaches/francisco-ramirez/paco1.png",
+      imagePath: "v1759428609/The%20Klan/coaches/francisco-ramirez/paco1.png",
     },
     {
       name: "Sebastián Gómez",
       role: "Entrenador",
-      image:
-        "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759428621/The%20Klan/coaches/sebastian-gomez/WhatsApp-Image-2025-06-05-at-11.jpg",
+      imagePath:
+        "v1759428621/The%20Klan/coaches/sebastian-gomez/WhatsApp-Image-2025-06-05-at-11.jpg",
     },
     {
       name: "Luis González",
       role: "Entrenador",
-      image:
-        "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759428622/The%20Klan/coaches/luis-gonzalez/WhatsApp-Image-2025-06-20-at-12.jpg",
+      imagePath:
+        "v1759428622/The%20Klan/coaches/luis-gonzalez/WhatsApp-Image-2025-06-20-at-12.jpg",
     },
     {
       name: "Joaquín Lino",
       role: "Entrenador",
-      image:
-        "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759428626/The%20Klan/coaches/joaquin-lino/TheKlan-EntregaFinal-13.jpg",
+      imagePath:
+        "v1759428626/The%20Klan/coaches/joaquin-lino/TheKlan-EntregaFinal-13.jpg",
     },
-  ];
+  ].map((member) => ({
+    ...member,
+    image: getCloudinaryImageUrl(member.imagePath, {
+      width: 400,
+      height: 533,
+      quality: 85,
+      crop: "fill",
+    }),
+  }));
 
   return (
     <section className="w-full bg-white py-16 px-3 md:px-12 lg:px-24">
@@ -64,6 +72,7 @@ export const TeamPreview = () => {
                   src={member.image}
                   alt={member.name}
                   fill
+                  quality={85}
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                   className="object-cover group-hover:scale-110 transition-transform duration-500"
                 />

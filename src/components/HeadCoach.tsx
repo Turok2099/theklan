@@ -2,8 +2,19 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { getCloudinaryImageUrl } from "@/lib/cloudinary";
 
 export const HeadCoach = () => {
+  const headCoachImageUrl = getCloudinaryImageUrl(
+    "v1761709455/WhatsApp_Image_2025-10-28_at_6.26.36_PM_hcsyah.jpg",
+    {
+      width: 800,
+      height: 1200,
+      quality: 85,
+      crop: "fill",
+    }
+  );
+
   return (
     <section className="w-full py-16 px-3 md:px-12 lg:px-24">
       <div className="max-w-7xl mx-auto bg-black rounded-3xl shadow-2xl overflow-hidden p-10 md:p-16">
@@ -11,9 +22,10 @@ export const HeadCoach = () => {
           {/* Imagen */}
           <div className="relative h-[400px] md:h-[500px] lg:h-[600px] rounded-2xl overflow-hidden shadow-2xl">
             <Image
-              src="https://res.cloudinary.com/dxbtafe9u/image/upload/v1761709455/WhatsApp_Image_2025-10-28_at_6.26.36_PM_hcsyah.jpg"
+              src={headCoachImageUrl}
               alt="Francisco Ramírez - Head Coach"
               fill
+              quality={85}
               className="object-cover"
               sizes="(max-width: 1024px) 100vw, 50vw"
             />

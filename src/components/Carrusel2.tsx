@@ -1,41 +1,69 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import styles from "@/styles/animations.module.css";
 import {
   XMarkIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
 } from "@heroicons/react/24/outline";
+import { getCloudinaryImageUrl } from "@/lib/cloudinary";
 
 export const Carrusel2 = () => {
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
-  const images = [
-    "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759427152/The%20Klan/1.png",
-    "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759427154/The%20Klan/2.png",
-    "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759427156/The%20Klan/3.png",
-    "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759427158/The%20Klan/4.png",
-    "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759427161/The%20Klan/5.png",
-    "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759427163/The%20Klan/6.png",
-    "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759427164/The%20Klan/7.jpg",
-    "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759427166/The%20Klan/8.jpg",
-    "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759427169/The%20Klan/9.png",
-    "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759427171/The%20Klan/10.png",
-    "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759427173/The%20Klan/12.png",
-    "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759427175/The%20Klan/13.png",
-    "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759427177/The%20Klan/14.jpg",
-    "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759427179/The%20Klan/15.png",
-    "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759427181/The%20Klan/16.png",
-    "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759427182/The%20Klan/17.jpg",
-    "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759427145/The%20Klan/jiu-jitsu1.png",
-    "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759427147/The%20Klan/the-klan-bjj-portada.png",
+  
+  // Rutas originales de las imágenes
+  const imagePaths = [
+    "v1759427152/The%20Klan/1.png",
+    "v1759427154/The%20Klan/2.png",
+    "v1759427156/The%20Klan/3.png",
+    "v1759427158/The%20Klan/4.png",
+    "v1759427161/The%20Klan/5.png",
+    "v1759427163/The%20Klan/6.png",
+    "v1759427164/The%20Klan/7.jpg",
+    "v1759427166/The%20Klan/8.jpg",
+    "v1759427169/The%20Klan/9.png",
+    "v1759427171/The%20Klan/10.png",
+    "v1759427173/The%20Klan/12.png",
+    "v1759427175/The%20Klan/13.png",
+    "v1759427177/The%20Klan/14.jpg",
+    "v1759427179/The%20Klan/15.png",
+    "v1759427181/The%20Klan/16.png",
+    "v1759427182/The%20Klan/17.jpg",
+    "v1759427145/The%20Klan/jiu-jitsu1.png",
+    "v1759427147/The%20Klan/the-klan-bjj-portada.png",
   ];
+
+  // URLs optimizadas para thumbnails (calidad 85)
+  const thumbnailImages = useMemo(
+    () =>
+      imagePaths.map((path) =>
+        getCloudinaryImageUrl(path, {
+          width: 400,
+          height: 600,
+          quality: 85,
+          crop: "fill",
+        })
+      ),
+    []
+  );
+
+  // URLs optimizadas para lightbox (calidad 90, sin redimensionar)
+  const lightboxImages = useMemo(
+    () =>
+      imagePaths.map((path) =>
+        getCloudinaryImageUrl(path, {
+          quality: 90, // Mayor calidad para lightbox
+        })
+      ),
+    []
+  );
 
   const handlePrevious = () => {
     if (selectedImage !== null) {
       setSelectedImage(
-        selectedImage === 0 ? images.length - 1 : selectedImage - 1
+        selectedImage === 0 ? imagePaths.length - 1 : selectedImage - 1
       );
     }
   };
@@ -43,7 +71,7 @@ export const Carrusel2 = () => {
   const handleNext = () => {
     if (selectedImage !== null) {
       setSelectedImage(
-        selectedImage === images.length - 1 ? 0 : selectedImage + 1
+        selectedImage === imagePaths.length - 1 ? 0 : selectedImage + 1
       );
     }
   };
@@ -68,7 +96,7 @@ export const Carrusel2 = () => {
       <div className="overflow-hidden w-full">
         <div className={styles.marqueeRight}>
           {/* Primer set */}
-          {images.map((src, i) => (
+          {thumbnailImages.map((src, i) => (
             <div
               key={i}
               onClick={() => setSelectedImage(i)}
@@ -78,6 +106,7 @@ export const Carrusel2 = () => {
                 src={src}
                 alt={`Imagen ${i + 1}`}
                 fill
+                quality={85}
                 sizes="(max-width: 640px) 224px, (max-width: 768px) 288px, (max-width: 1024px) 320px, 384px"
                 className="object-cover rounded-lg shadow-lg transition-transform duration-300 group-hover:scale-105"
               />
@@ -85,7 +114,7 @@ export const Carrusel2 = () => {
             </div>
           ))}
           {/* Segundo set */}
-          {images.map((src, i) => (
+          {thumbnailImages.map((src, i) => (
             <div
               key={`dup-${i}`}
               onClick={() => setSelectedImage(i)}
@@ -95,6 +124,7 @@ export const Carrusel2 = () => {
                 src={src}
                 alt={`Imagen duplicada ${i + 1}`}
                 fill
+                quality={85}
                 sizes="(max-width: 640px) 224px, (max-width: 768px) 288px, (max-width: 1024px) 320px, 384px"
                 className="object-cover rounded-lg shadow-lg transition-transform duration-300 group-hover:scale-105"
               />
@@ -135,10 +165,11 @@ export const Carrusel2 = () => {
             onClick={(e) => e.stopPropagation()}
           >
             <Image
-              src={images[selectedImage]}
+              src={lightboxImages[selectedImage]}
               alt={`Imagen ${selectedImage + 1}`}
               width={1200}
               height={800}
+              quality={90}
               className="object-contain max-h-[90vh] w-auto h-auto"
             />
           </div>
@@ -156,7 +187,7 @@ export const Carrusel2 = () => {
 
           {/* Contador */}
           <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white text-sm md:text-base">
-            {selectedImage + 1} / {images.length}
+            {selectedImage + 1} / {imagePaths.length}
           </div>
         </div>
       )}

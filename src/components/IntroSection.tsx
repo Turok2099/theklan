@@ -1,6 +1,14 @@
 import Image from "next/image";
+import { getCloudinaryImageUrl } from "@/lib/cloudinary";
 
 export const IntroSection = () => {
+  const introImageUrl = getCloudinaryImageUrl("The%20Klan/hero-image.jpg", {
+    width: 800,
+    height: 600,
+    quality: 85, // Cambiar de q_auto:eco a q_85
+    crop: "fill",
+  });
+
   return (
     <section className="w-full bg-white py-16 px-3 md:px-12 lg:px-24">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
@@ -31,9 +39,10 @@ export const IntroSection = () => {
 
         <div className="relative w-full h-64 md:h-96 lg:h-[500px] order-first md:order-last">
           <Image
-            src="https://res.cloudinary.com/dxbtafe9u/image/upload/f_auto,q_auto:eco,w_600,h_450,c_fill/The%20Klan/hero-image.jpg"
+            src={introImageUrl}
             alt="Entrenamiento de Jiu Jitsu"
             fill
+            quality={85}
             className="object-cover rounded-lg shadow-lg"
             sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 597px"
           />

@@ -2,17 +2,26 @@
 
 import Image from "next/image";
 import { TextMarquee } from "./Carrusel1";
+import { getCloudinaryImageUrl } from "@/lib/cloudinary";
 
 export const Hero = () => {
+  const heroImageUrl = getCloudinaryImageUrl("The%20Klan/hero-image.jpg", {
+    width: 1920,
+    height: 1080,
+    quality: 90, // Calidad alta para imagen principal
+    crop: "fill",
+  });
+
   return (
     <div className="relative w-full h-screen overflow-hidden">
       <Image
-        src="https://res.cloudinary.com/dxbtafe9u/image/upload/The%20Klan/hero-image.jpg"
+        src={heroImageUrl}
         alt="The Klan - Jiu Jitsu Brasileño en CDMX"
         fill
         priority
         fetchPriority="high"
         sizes="100vw"
+        quality={90}
         className="object-cover object-center"
       />
 

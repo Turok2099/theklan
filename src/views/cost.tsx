@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { getCloudinaryImageUrl } from "@/lib/cloudinary";
 
 export const Cost = () => {
   const schedule: Record<string, Array<{ time: string; label: string }>> = {
@@ -137,12 +138,17 @@ export const Cost = () => {
           <div className="max-w-4xl mx-auto">
             <div className="relative w-full h-[auto]">
               <Image
-                src="https://res.cloudinary.com/dxbtafe9u/image/upload/f_auto,q_auto:eco/The%20Klan/static/costos.jpg"
+                src={getCloudinaryImageUrl("The%20Klan/static/costos.jpg", {
+                  width: 1600,
+                  height: 1200,
+                  quality: 85, // Cambiar de q_auto:eco a q_85
+                  crop: "fit",
+                })}
                 alt="Costos - The Klan BJJ"
                 width={1600}
                 height={1200}
                 sizes="(max-width: 768px) 100vw, 800px"
-                quality={75}
+                quality={85}
                 className="w-full h-auto rounded-xl shadow-lg"
                 priority
               />

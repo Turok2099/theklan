@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useState, FormEvent } from "react";
+import { getCloudinaryImageUrl } from "@/lib/cloudinary";
 
 export const Contact = () => {
   const [formData, setFormData] = useState({
@@ -152,11 +153,13 @@ export const Contact = () => {
           <div className="relative w-full min-h-[600px] md:min-h-[640px] rounded-2xl shadow-2xl overflow-hidden">
             {/* Fondo */}
             <Image
-              src="https://res.cloudinary.com/dxbtafe9u/image/upload/f_auto,q_auto:eco/The%20Klan/static/contacto.jpg"
+              src={getCloudinaryImageUrl("The%20Klan/static/contacto.jpg", {
+                quality: 85, // Cambiar de q_auto:eco a q_85
+              })}
               alt="The Klan - Contacto"
               fill
               sizes="100vw"
-              quality={75}
+              quality={85}
               className="absolute inset-0 object-cover"
               priority
             />

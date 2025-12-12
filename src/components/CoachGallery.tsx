@@ -1,12 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   XMarkIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
 } from "@heroicons/react/24/outline";
+import { getCloudinaryImageUrl, extractCloudinaryPath } from "@/lib/cloudinary";
 
 interface CoachGalleryProps {
   images: string[];
@@ -15,6 +16,37 @@ interface CoachGalleryProps {
 
 export const CoachGallery = ({ images, coachName }: CoachGalleryProps) => {
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
+
+  // Optimizar URLs para thumbnails (debe estar antes del early return)
+  const thumbnailImages = useMemo(
+    () => {
+      if (!images || images.length === 0) return [];
+      return images.map((url) => {
+        const path = extractCloudinaryPath(url);
+        return getCloudinaryImageUrl(path, {
+          width: 400,
+          height: 400,
+          quality: 85,
+          crop: "fill",
+        });
+      });
+    },
+    [images]
+  );
+
+  // Optimizar URLs para lightbox (debe estar antes del early return)
+  const lightboxImages = useMemo(
+    () => {
+      if (!images || images.length === 0) return [];
+      return images.map((url) => {
+        const path = extractCloudinaryPath(url);
+        return getCloudinaryImageUrl(path, {
+          quality: 90, // Mayor calidad para lightbox
+        });
+      });
+    },
+    [images]
+  );
 
   if (!images || images.length === 0) return null;
 
@@ -51,7 +83,7 @@ export const CoachGallery = ({ images, coachName }: CoachGalleryProps) => {
   return (
     <>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {images.map((src, i) => (
+        {thumbnailImages.map((src, i) => (
           <div
             key={i}
             onClick={() => setSelectedImage(i)}
@@ -61,6 +93,7 @@ export const CoachGallery = ({ images, coachName }: CoachGalleryProps) => {
               src={src}
               alt={`${coachName} - Imagen ${i + 1}`}
               fill
+              quality={85}
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
               className="object-cover group-hover:scale-110 transition-transform duration-300"
             />
@@ -100,10 +133,11 @@ export const CoachGallery = ({ images, coachName }: CoachGalleryProps) => {
             onClick={(e) => e.stopPropagation()}
           >
             <Image
-              src={images[selectedImage]}
+              src={lightboxImages[selectedImage]}
               alt={`${coachName} - Imagen ${selectedImage + 1}`}
               width={1200}
               height={800}
+              quality={90}
               className="object-contain max-h-[90vh] w-auto h-auto"
             />
           </div>
