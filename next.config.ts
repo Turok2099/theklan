@@ -23,10 +23,7 @@ const nextConfig: NextConfig = {
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",
   },
-  // Optimización de CSS
-  experimental: {
-    optimizeCss: true,
-  },
+  // Optimización de CSS (optimizeCss ya no es experimental en Next.js 15)
   // Optimización de JavaScript moderno - SWC está activado por defecto en Next.js 15
   // Los navegadores modernos soportarán el código sin transpilación innecesaria
 };

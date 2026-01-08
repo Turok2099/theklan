@@ -18,35 +18,29 @@ export const CoachGallery = ({ images, coachName }: CoachGalleryProps) => {
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
 
   // Optimizar URLs para thumbnails (debe estar antes del early return)
-  const thumbnailImages = useMemo(
-    () => {
-      if (!images || images.length === 0) return [];
-      return images.map((url) => {
-        const path = extractCloudinaryPath(url);
-        return getCloudinaryImageUrl(path, {
-          width: 400,
-          height: 400,
-          quality: 85,
-          crop: "fill",
-        });
+  const thumbnailImages = useMemo(() => {
+    if (!images || images.length === 0) return [];
+    return images.map((url) => {
+      const path = extractCloudinaryPath(url);
+      return getCloudinaryImageUrl(path, {
+        width: 400,
+        height: 400,
+        quality: 85,
+        crop: "fill",
       });
-    },
-    [images]
-  );
+    });
+  }, [images]);
 
   // Optimizar URLs para lightbox (debe estar antes del early return)
-  const lightboxImages = useMemo(
-    () => {
-      if (!images || images.length === 0) return [];
-      return images.map((url) => {
-        const path = extractCloudinaryPath(url);
-        return getCloudinaryImageUrl(path, {
-          quality: 90, // Mayor calidad para lightbox
-        });
+  const lightboxImages = useMemo(() => {
+    if (!images || images.length === 0) return [];
+    return images.map((url) => {
+      const path = extractCloudinaryPath(url);
+      return getCloudinaryImageUrl(path, {
+        quality: 90, // Mayor calidad para lightbox
       });
-    },
-    [images]
-  );
+    });
+  }, [images]);
 
   if (!images || images.length === 0) return null;
 
