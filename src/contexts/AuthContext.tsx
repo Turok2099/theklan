@@ -55,17 +55,60 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         console.log("🔄 AuthContext: Iniciando refresh de usuario...");
 
+        // Primero obtener la sesión antes de obtener el usuario
+        // Esto evita el AuthSessionMissingError
+        const {
+          data: { session },
+          error: sessionError,
+        } = await supabase.auth.getSession();
+
+        if (sessionError) {
+          console.log(
+            "ℹ️ AuthContext: No hay sesión activa (esto es normal si no estás autenticado):",
+            sessionError.message
+          );
+          setUser(null);
+          setLoading(false);
+          isRefreshingRef.current = false;
+          return;
+        }
+
+        if (!session) {
+          console.log("👤 AuthContext: No hay sesión, usuario no autenticado");
+          setUser(null);
+          setLoading(false);
+          isRefreshingRef.current = false;
+          return;
+        }
+
+        // Si hay sesión, obtener el usuario
         const {
           data: { user: authUser },
           error: authError,
         } = await supabase.auth.getUser();
 
         if (authError) {
+          // Si el error es AuthSessionMissingError, es porque la sesión expiró
+          if (
+            authError.message?.includes("Auth session missing") ||
+            authError.name === "AuthSessionMissingError"
+          ) {
+            console.log(
+              "ℹ️ AuthContext: Sesión expirada o inválida (esto es normal)"
+            );
+            setUser(null);
+            setLoading(false);
+            isRefreshingRef.current = false;
+            return;
+          }
+
           console.error(
             "❌ AuthContext: Error obteniendo usuario auth:",
             authError
           );
           setUser(null);
+          setLoading(false);
+          isRefreshingRef.current = false;
           return;
         }
 
@@ -139,9 +182,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           console.log("👤 AuthContext: No hay usuario autenticado");
           setUser(null);
         }
-      } catch (error) {
-        console.error("❌ AuthContext: Error refrescando usuario:", error);
-        setUser(null);
+      } catch (error: any) {
+        // Manejar específicamente AuthSessionMissingError
+        if (
+          error?.message?.includes("Auth session missing") ||
+          error?.name === "AuthSessionMissingError"
+        ) {
+          console.log(
+            "ℹ️ AuthContext: No hay sesión activa (esto es normal si no estás autenticado)"
+          );
+          setUser(null);
+        } else {
+          console.error("❌ AuthContext: Error refrescando usuario:", error);
+          setUser(null);
+        }
       } finally {
         isRefreshingRef.current = false;
         setLoading(false);

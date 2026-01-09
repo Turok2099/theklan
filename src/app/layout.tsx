@@ -7,6 +7,7 @@ import WhatsAppButton from "@/components/WhatsAppButton";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { Toaster } from "react-hot-toast";
+import Banner from "@/components/Baner/Banner";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -159,6 +160,7 @@ export default function RootLayout({
 
         <GoogleAnalytics gtmId="GTM-N7LP9GLV" />
         <AuthProvider>
+          <Banner />
           <Navbar />
           {children}
           <Footer />

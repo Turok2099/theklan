@@ -1,5 +1,6 @@
 import { Principal } from "../views/principal";
 import { Hero } from "@/components/Hero";
+import { PromotionBanner } from "@/components/promo/PromotionBanner";
 
 export default function Home() {
   // Schema.org para LocalBusiness y SportsActivityLocation
@@ -142,6 +143,7 @@ export default function Home() {
       />
       <main>
         <Hero />
+        <PromotionBanner />
         <Principal />
       </main>
     </>

@@ -9,49 +9,41 @@ export const Cost = () => {
       { time: "07:00", label: "STK" },
       { time: "08:00", label: "STK" },
       { time: "09:00", label: "Funcional" },
-      { time: "17:00", label: "Clase Privada" },
+      { time: "17:00", label: "BJJ Juniors" },
       { time: "18:00", label: "STK" },
       { time: "19:00", label: "MMA" },
       { time: "20:30", label: "BJJ No Gi" },
     ],
     Martes: [
-      { time: "06:00", label: "BJJ" },
       { time: "07:00", label: "BJJ & Box" },
       { time: "08:00", label: "STK" },
-      { time: "09:00", label: "Funcional" },
+      { time: "10:00", label: "Lucha Olímpica" },
       { time: "17:00", label: "BJJ Kids" },
       { time: "18:00", label: "STK" },
-      { time: "19:00", label: "BJJ" },
+      { time: "19:30", label: "BJJ Principiantes" },
       { time: "20:30", label: "BJJ" },
     ],
     Miércoles: [
-      { time: "06:00", label: "BJJ No Gi" },
       { time: "07:00", label: "STK" },
       { time: "08:00", label: "STK" },
       { time: "09:00", label: "Funcional" },
-      { time: "17:00", label: "Clase Privada" },
+      { time: "17:00", label: "BJJ Juniors" },
       { time: "18:00", label: "STK" },
       { time: "19:00", label: "MMA" },
-      { time: "20:30", label: "BJJ No Gi" },
+      { time: "20:30", label: "Lucha Olímpica" },
     ],
     Jueves: [
-      { time: "06:00", label: "BJJ" },
       { time: "07:00", label: "BJJ & Box" },
       { time: "08:00", label: "STK" },
-      { time: "09:00", label: "Funcional" },
+      { time: "10:00", label: "Lucha Olímpica" },
       { time: "17:00", label: "BJJ Kids" },
       { time: "18:00", label: "STK" },
-      { time: "19:00", label: "BJJ" },
+      { time: "19:30", label: "BJJ Principiantes" },
       { time: "20:30", label: "BJJ" },
-    ],
-    Viernes: [
-      { time: "07:00", label: "STK" },
-      { time: "08:00", label: "STK" },
-      { time: "09:00", label: "Funcional" },
     ],
   };
 
-  const order = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"] as const;
+  const order = ["Lunes", "Martes", "Miércoles", "Jueves"] as const;
 
   return (
     <main className="min-h-screen bg-white py-16 px-6 md:px-12 lg:px-24">
@@ -102,10 +94,10 @@ export const Cost = () => {
             ))}
           </div>
 
-          {/* Escritorio: un solo módulo con 5 columnas */}
+          {/* Escritorio: un solo módulo con 4 columnas */}
           <div className="hidden lg:block">
             <div className="bg-black rounded-2xl shadow p-6 lg:p-8">
-              <div className="grid grid-cols-5 gap-6">
+              <div className="grid grid-cols-4 gap-6">
                 {order.map((day) => (
                   <div key={`desk-${day}`}>
                     <h3 className="text-xl font-bold text-red-600 mb-4 text-center">
@@ -135,23 +127,36 @@ export const Cost = () => {
 
         {/* Costos (imagen) */}
         <section className="mt-12">
-          <div className="max-w-4xl mx-auto">
-            <div className="relative w-full h-[auto]">
-              <Image
-                src={getCloudinaryImageUrl("The%20Klan/static/costos.jpg", {
-                  width: 1600,
-                  height: 1200,
-                  quality: 85, // Cambiar de q_auto:eco a q_85
-                  crop: "fit",
-                })}
-                alt="Costos - The Klan BJJ"
-                width={1600}
-                height={1200}
-                sizes="(max-width: 768px) 100vw, 800px"
-                quality={85}
-                className="w-full h-auto rounded-xl shadow-lg"
-                priority
-              />
+          <div className="max-w-6xl mx-auto">
+            {/* Grid para las dos imágenes de planes */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+              {/* Plan 1 */}
+              <div className="relative w-full">
+                <Image
+                  src="https://res.cloudinary.com/dxbtafe9u/image/upload/v1767977235/plan1_dher9s.jpg"
+                  alt="Plan 1 - The Klan BJJ"
+                  width={800}
+                  height={1200}
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  quality={90}
+                  className="w-full h-auto rounded-xl shadow-lg"
+                  priority
+                />
+              </div>
+
+              {/* Plan 2 */}
+              <div className="relative w-full">
+                <Image
+                  src="https://res.cloudinary.com/dxbtafe9u/image/upload/v1767977236/plan2_yeik7g.jpg"
+                  alt="Plan 2 - The Klan BJJ"
+                  width={800}
+                  height={1200}
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  quality={90}
+                  className="w-full h-auto rounded-xl shadow-lg"
+                  priority
+                />
+              </div>
             </div>
           </div>
         </section>
