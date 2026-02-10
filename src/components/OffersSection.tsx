@@ -21,8 +21,9 @@ export const OffersSection = () => {
     if (!isMounted) return null;
 
     return (
-        <div className={`fixed right-4 top-1/2 -translate-y-1/2 z-40 hidden lg:block transition-all duration-1000 ease-out transform ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-20'}`}>
-            <div className="relative w-64 group">
+        <div className={`fixed z-40 transition-all duration-1000 ease-out transform ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-20'} top-1/2 -translate-y-1/2 right-0 lg:right-4`}>
+            {/* Desktop Version */}
+            <div className="hidden lg:block relative w-64 group">
                 <button
                     onClick={() => {
                         setIsVisible(false);
@@ -72,6 +73,34 @@ export const OffersSection = () => {
 
                 {/* Glow effect */}
                 <div className="absolute inset-0 bg-primary/5 blur-xl -z-10 rounded-xl transition-opacity duration-500 group-hover:bg-primary/10"></div>
+            </div>
+
+            {/* Mobile Version */}
+            <div className="lg:hidden relative">
+                <button
+                    onClick={() => {
+                        setIsVisible(false);
+                        setTimeout(() => setIsMounted(false), 500);
+                    }}
+                    className="absolute -top-3 -left-3 z-50 bg-black border border-white/20 text-white rounded-full p-1 shadow-lg"
+                >
+                    <XMarkIcon className="w-3 h-3" />
+                </button>
+
+                <Link href="https://api.whatsapp.com/send?phone=5215613701366&text=Hola%20The%20Klan%2C%20quiero%20aprovechar%20la%20oferta%202x1" target="_blank" className="block bg-primary border-y border-l border-white/20 rounded-l-xl p-3 shadow-2xl relative overflow-hidden group">
+                    {/* Shine Effect */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-[shimmer_2s_infinite]"></div>
+
+                    <div className="flex flex-col items-center justify-center text-center">
+                        <div className="flex items-baseline gap-1">
+                            <span className="text-2xl font-black italic tracking-tighter text-white leading-none">2x1</span>
+                            <span className="text-xs font-black text-black uppercase tracking-tighter">+ 3 Pases</span>
+                        </div>
+                        <span className="text-[10px] font-bold text-white uppercase tracking-widest bg-black/20 px-2 rounded-full mt-1">
+                            ¡Gratis!
+                        </span>
+                    </div>
+                </Link>
             </div>
         </div>
     );

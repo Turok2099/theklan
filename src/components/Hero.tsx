@@ -30,7 +30,7 @@ export const Hero = () => {
       <div className="absolute inset-0 bg-gradient-to-t from-pure-black via-transparent to-pure-black/40 z-10"></div>
 
       {/* Content */}
-      <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col justify-center">
+      <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col justify-end pb-24 md:justify-center md:pb-0">
         <div className="max-w-4xl animate-fade-in-up">
           <h1 className="font-black text-white leading-[0.85] mb-6 tracking-tighter">
             <span className="block text-7xl md:text-9xl lg:text-[10rem] xl:text-[12rem]">THE</span>
