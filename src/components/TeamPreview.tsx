@@ -10,24 +10,28 @@ export const TeamPreview = () => {
       name: "Francisco Ramírez",
       role: "Head Coach",
       imagePath: "v1759428609/The%20Klan/coaches/francisco-ramirez/paco1.png",
+      belt: "Head Coach",
     },
     {
       name: "Sebastián Gómez",
       role: "Entrenador",
       imagePath:
         "v1759428621/The%20Klan/coaches/sebastian-gomez/WhatsApp-Image-2025-06-05-at-11.jpg",
+      belt: "Entrenador",
     },
     {
       name: "Luis González",
       role: "Entrenador",
       imagePath:
         "v1759428622/The%20Klan/coaches/luis-gonzalez/WhatsApp-Image-2025-06-20-at-12.jpg",
+      belt: "Entrenador",
     },
     {
       name: "Joaquín Lino",
       role: "Entrenador",
       imagePath:
         "v1759428626/The%20Klan/coaches/joaquin-lino/TheKlan-EntregaFinal-13.jpg",
+      belt: "Entrenador",
     },
   ].map((member) => ({
     ...member,
@@ -40,67 +44,48 @@ export const TeamPreview = () => {
   }));
 
   return (
-    <section className="w-full bg-white py-16 px-3 md:px-12 lg:px-24">
-      <div className="max-w-7xl mx-auto">
-        {/* Título */}
+    <section className="py-24 bg-background-dark/50 border-y border-white/5" id="equipo">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <div className="bg-red-600 text-white px-6 py-4 rounded-2xl mb-6 inline-block">
-            <h2 className="text-5xl md:text-6xl lg:text-7xl font-black leading-tight">
-              CONOCE AL EQUIPO
-            </h2>
-          </div>
-          <div className="w-32 h-1.5 bg-red-600 mx-auto mb-6"></div>
-          <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto font-light leading-relaxed">
-            Conoce a nuestro equipo de{" "}
-            <span className="font-bold text-gray-900">
-              instructores profesionales
-            </span>{" "}
-            con años de experiencia
-          </p>
+          <h2 className="text-4xl font-black text-white uppercase tracking-tighter mb-4 italic">
+            Nuestro <span className="text-primary">Staff Técnico</span>
+          </h2>
+          <div className="h-1 w-20 bg-primary mx-auto"></div>
         </div>
-
-        {/* Grid de entrenadores */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {team.map((member) => (
             <div
               key={member.name}
-              className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300"
+              className="group relative overflow-hidden bg-black border border-white/10"
             >
-              {/* Imagen */}
-              <div className="relative aspect-[3/4] overflow-hidden bg-gray-100">
+              <div className="w-full aspect-[3/4] overflow-hidden bg-zinc-900">
                 <Image
                   src={member.image}
                   alt={member.name}
-                  fill
-                  quality={85}
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                  className="object-cover group-hover:scale-110 transition-transform duration-500"
+                  width={400}
+                  height={533}
+                  className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
                 />
-                {/* Capa oscura solo en la parte inferior */}
-                <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-black/90 via-black/60 to-transparent"></div>
               </div>
-
-              {/* Info */}
-              <div className="absolute bottom-0 left-0 right-0 p-6 text-white transform translate-y-0 transition-transform duration-300 z-10">
-                <p className="text-red-500 font-black text-xs md:text-sm uppercase tracking-widest mb-2">
-                  {member.role}
-                </p>
-                <h3 className="text-xl md:text-2xl font-black leading-tight">
+              <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+              <div className="absolute bottom-4 left-4">
+                <h4 className="text-white font-black uppercase text-lg leading-none">
                   {member.name}
-                </h3>
+                </h4>
+                <p className="text-primary font-bold text-xs uppercase tracking-widest">
+                  {member.belt}
+                </p>
               </div>
             </div>
           ))}
         </div>
 
-        {/* Botón CTA */}
         <div className="text-center mt-12">
           <Link
             href="/nuestros-entrenadores"
-            className="inline-flex items-center justify-center bg-red-600 hover:bg-red-700 font-bold px-8 py-4 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg"
-            style={{ color: "#ffffff" }}
+            className="text-white border-2 border-white hover:bg-white hover:text-black px-8 py-3 font-black uppercase tracking-widest transition-all"
           >
-            Ver equipo completo
+            Ver Equipo Completo
           </Link>
         </div>
       </div>

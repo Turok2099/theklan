@@ -1,4 +1,4 @@
-import { CoachesSection } from "@/components/CoachesSection";
+import { Trainers } from "@/views/trainers";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 export default function NuestrosEntrenadores() {
   return (
     <div>
-      <CoachesSection />
+      <Trainers />
     </div>
   );
 }

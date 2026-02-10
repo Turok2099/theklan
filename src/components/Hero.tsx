@@ -1,61 +1,65 @@
 "use client";
 
 import Image from "next/image";
-import { TextMarquee } from "./Carrusel1";
 import { getCloudinaryImageUrl } from "@/lib/cloudinary";
+import Link from "next/link";
+import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 
 export const Hero = () => {
   const heroImageUrl = getCloudinaryImageUrl("The%20Klan/hero-image.jpg", {
     width: 1920,
     height: 1080,
-    quality: 90, // Calidad alta para imagen principal
+    quality: 90,
     crop: "fill",
   });
 
   return (
-    <div className="relative w-full h-screen overflow-hidden">
-      <Image
-        src={heroImageUrl}
-        alt="The Klan - Jiu Jitsu Brasileño en CDMX"
-        fill
-        priority
-        fetchPriority="high"
-        sizes="100vw"
-        quality={90}
-        className="object-cover object-center"
-      />
-
-      {/* Gradiente más oscuro para mayor contraste */}
-      <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/70 to-black/50 z-10" />
-
-      {/* Contenedor principal alineado a la izquierda */}
-      <div className="relative z-20 flex flex-col justify-center h-full px-6 sm:px-8 md:px-12 lg:px-20 xl:px-24">
-        <h1
-          className="
-            !font-black !tracking-tighter drop-shadow-2xl !text-white
-            !text-[3.5rem]            /* Móvil: 56px (30% menor) */
-            sm:!text-[5rem]           /* Tablet: 80px */
-            md:!text-[7rem]           /* Tablet grande: 112px */
-            lg:!text-[10rem]          /* Desktop: 160px */
-            xl:!text-[12.5rem]        /* Desktop grande: 200px */
-            2xl:!text-[14rem]         /* Extra grande: 224px */
-            !leading-[0.85]           /* Muy compacto entre líneas */
-            -mb-4
-          "
-        >
-          <span className="block text-left">THE</span>
-          <span className="block text-left !text-red-600">KLAN</span>
-        </h1>
-
-        {/* Subtítulo opcional */}
-        <p className="!text-white !text-lg sm:!text-xl md:!text-2xl lg:!text-3xl !font-bold mt-8 !tracking-wide drop-shadow-lg max-w-2xl">
-          Jiu Jitsu Brasileño en CDMX
-        </p>
+    <header className="relative h-screen w-full overflow-hidden bg-pure-black">
+      {/* Background Image (Carousel Slide) */}
+      <div className="absolute inset-0 opacity-60">
+        <Image
+          src={heroImageUrl}
+          alt="The Klan BJJ - Sangre y Sudor"
+          fill
+          priority
+          className="object-cover"
+        />
       </div>
 
-      <div className="absolute bottom-0 left-0 w-full z-20">
-        <TextMarquee />
+      {/* Gradient Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-pure-black via-transparent to-pure-black/40 z-10"></div>
+
+      {/* Content */}
+      <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col justify-center">
+        <div className="max-w-4xl animate-fade-in-up">
+          <h1 className="font-black text-white leading-[0.85] mb-6 tracking-tighter">
+            <span className="block text-7xl md:text-9xl lg:text-[10rem] xl:text-[12rem]">THE</span>
+            <span className="block text-7xl md:text-9xl lg:text-[10rem] xl:text-[12rem] text-primary drop-shadow-[0_0_15px_rgba(242,13,13,0.6)]">
+              KLAN
+            </span>
+          </h1>
+          <p className="text-2xl md:text-4xl text-white mb-10 font-bold uppercase tracking-wide drop-shadow-lg max-w-2xl">
+            Jiu Jitsu Brasileño en CDMX
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4">
+            <Link
+              href="#contacto"
+              className="bg-primary hover:bg-red-700 text-white text-center px-10 py-5 font-black uppercase tracking-widest transition-all shadow-2xl shadow-primary/40"
+            >
+              ÚNETE AL EQUIPO
+            </Link>
+            <Link
+              href="#planes"
+              className="bg-black hover:bg-zinc-900 text-white text-center px-10 py-5 font-black uppercase tracking-widest transition-all shadow-lg"
+            >
+              VER PROGRAMAS
+            </Link>
+          </div>
+        </div>
       </div>
-    </div>
+
+      {/* Carousel Controls (Visual only for now as requested by static template look) */}
+
+    </header>
   );
 };

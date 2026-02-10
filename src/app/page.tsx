@@ -1,6 +1,13 @@
-import { Principal } from "../views/principal";
 import { Hero } from "@/components/Hero";
-import { PromotionBanner } from "@/components/promo/PromotionBanner";
+import { IntroSection } from "@/components/IntroSection";
+import { TextMarquee } from "@/components/Carrusel1";
+import { Carrusel2 } from "@/components/Carrusel2";
+import { OffersSection } from "@/components/OffersSection";
+import { HeadCoach } from "@/components/HeadCoach";
+import { TeamPreview } from "@/components/TeamPreview";
+import { PlansSection } from "@/components/PlansSection";
+import { ContactSection } from "@/components/ContactSection";
+import { GoogleReviews } from "@/components/GoogleReviews";
 
 export default function Home() {
   // Schema.org para LocalBusiness y SportsActivityLocation
@@ -130,7 +137,6 @@ export default function Home() {
 
   return (
     <>
-      {/* next/image manejará prioridad del LCP en Hero */}
       {/* Schema.org para LocalBusiness/SportsActivityLocation */}
       <script
         type="application/ld+json"
@@ -141,10 +147,17 @@ export default function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdOrganization) }}
       />
-      <main>
+      <main className="bg-pure-black min-h-screen">
         <Hero />
-        <PromotionBanner />
-        <Principal />
+        <TextMarquee />
+        <IntroSection />
+        <OffersSection />
+        <HeadCoach />
+        <TeamPreview />
+        <PlansSection />
+        <Carrusel2 />
+        <GoogleReviews />
+        <ContactSection />
       </main>
     </>
   );

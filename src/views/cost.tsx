@@ -1,7 +1,6 @@
-"use client";
-
+import { PlansSection } from "@/components/PlansSection";
 import Image from "next/image";
-import { getCloudinaryImageUrl } from "@/lib/cloudinary";
+import { TextMarquee } from "@/components/Carrusel1";
 
 export const Cost = () => {
   const schedule: Record<string, Array<{ time: string; label: string }>> = {
@@ -41,132 +40,106 @@ export const Cost = () => {
       { time: "19:30", label: "BJJ Principiantes" },
       { time: "20:30", label: "BJJ" },
     ],
+    Viernes: [
+      { time: "07:00", label: "STK" },
+      { time: "08:00", label: "STK" },
+      { time: "09:00", label: "Funcional" },
+      { time: "17:00", label: "BJJ Juniors" },
+      { time: "18:00", label: "STK" },
+      { time: "19:00", label: "MMA" },
+      { time: "20:30", label: "Open Mat" },
+    ],
+    Sábado: [
+      { time: "09:00", label: "BJJ Todos los Niveles" },
+      { time: "10:30", label: "Striking" },
+      { time: "12:00", label: "Open Mat" },
+    ]
   };
 
-  const order = ["Lunes", "Martes", "Miércoles", "Jueves"] as const;
+  const order = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"] as const;
 
   return (
-    <main className="min-h-screen bg-white py-16 px-6 md:px-12 lg:px-24">
-      <div className="max-w-7xl mx-auto">
-        {/* Título */}
-        <header className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-3">
-            Costos y Horarios
+    <div className="min-h-screen bg-pure-black text-white">
+      {/* Hero Header */}
+      <section className="relative h-[90vh] w-full overflow-hidden flex items-end justify-center pb-8 top-0">
+        {/* Background Image */}
+        <Image
+          src="https://res.cloudinary.com/dxbtafe9u/image/upload/v1759975321/The%20Klan/static/contacto.jpg" // Using an existing or placeholder image
+          alt="Costos y Horarios Background"
+          fill
+          className="object-cover"
+          priority
+        />
+        {/* Overlays */}
+        <div className="absolute inset-0 bg-black/60" />
+        <div className="absolute inset-0 bg-gradient-to-t from-pure-black via-transparent to-black/40" />
+
+        <div className="relative z-10 max-w-7xl mx-auto px-6 text-center">
+          <h1 className="text-5xl md:text-7xl font-black mb-6 uppercase tracking-tighter text-white drop-shadow-xl">
+            Costos y <span className="text-primary">Horarios</span>
           </h1>
-          <div className="w-24 h-1 bg-red-600 mx-auto" />
-        </header>
 
-        {/* Leyenda (sobre el horario) */}
-        <div className="mb-10">
-          <p className="text-center text-lg md:text-xl font-semibold text-gray-900">
-            STK: Striking • BJJ: Brazilian Jiu Jitsu • No Gi: sin kimono • MMA:
-            Artes Marciales Mixtas
-          </p>
         </div>
+      </section>
 
-        {/* Horario semanal */}
-        <section>
-          <h2 className="sr-only">Horario semanal</h2>
+      <TextMarquee />
 
-          {/* Móvil/Tablet: tarjetas por día */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:hidden">
+      <PlansSection />
+
+      {/* Horarios Section */}
+      <section className="py-24 px-6 md:px-12 lg:px-24 bg-zinc-900 relative border-t border-white/5">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-6xl font-black text-white mb-6 uppercase italic tracking-tighter">
+              Horarios de <span className="text-primary">Clase</span>
+            </h2>
+            <div className="inline-block bg-black/50 border border-white/10 px-6 py-3 rounded-full backdrop-blur-sm">
+              <p className="text-sm md:text-base font-bold text-gray-300">
+                <span className="text-primary">STK:</span> Striking • <span className="text-primary">BJJ:</span> Brazilian Jiu Jitsu • <span className="text-primary">No Gi:</span> Sin Kimono • <span className="text-primary">MMA:</span> Artes Marciales Mixtas
+              </p>
+            </div>
+          </div>
+
+          {/* Grid de Horarios */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {order.map((day) => (
-              <div key={day} className="bg-gray-50 rounded-xl shadow p-6">
-                <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-4">
-                  {day}
-                </h3>
-                <ul className="space-y-2">
-                  {schedule[day].map((slot, i) => (
-                    <li
-                      key={`${day}-${i}`}
-                      className="group flex items-center justify-between bg-white rounded-lg border border-gray-200 px-4 py-2 hover:bg-red-600 transition-colors"
-                    >
-                      <span className="font-semibold text-gray-900 group-hover:text-white">
-                        {slot.time}
-                      </span>
-                      <span className="text-gray-700 group-hover:text-white">
-                        {slot.label}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
+              <div key={day} className="bg-black border border-white/10 rounded-2xl overflow-hidden hover:border-primary/50 transition-all duration-300 group">
+                <div className="bg-white/5 p-4 border-b border-white/10 group-hover:bg-primary/20 transition-colors">
+                  <h3 className="text-xl font-black text-center uppercase tracking-wide text-white">
+                    {day}
+                  </h3>
+                </div>
+                <div className="p-6">
+                  <ul className="space-y-3">
+                    {schedule[day]?.map((slot, i) => (
+                      <li key={`${day}-${i}`} className="flex justify-between items-center border-b border-white/5 pb-2 last:border-0 last:pb-0">
+                        <span className="font-bold text-primary font-mono">{slot.time}</span>
+                        <span className="text-gray-300 text-sm font-medium uppercase tracking-wide text-right">{slot.label}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
             ))}
           </div>
 
-          {/* Escritorio: un solo módulo con 4 columnas */}
-          <div className="hidden lg:block">
-            <div className="bg-black rounded-2xl shadow p-6 lg:p-8">
-              <div className="grid grid-cols-4 gap-6">
-                {order.map((day) => (
-                  <div key={`desk-${day}`}>
-                    <h3 className="text-xl font-bold text-red-600 mb-4 text-center">
-                      {day}
-                    </h3>
-                    <ul className="space-y-2">
-                      {schedule[day].map((slot, i) => (
-                        <li
-                          key={`desk-${day}-${i}`}
-                          className="group bg-white rounded-lg border border-gray-200 px-3 py-2 flex flex-col items-center hover:bg-red-600 transition-colors"
-                        >
-                          <span className="font-semibold text-gray-900 group-hover:text-white">
-                            {slot.time}
-                          </span>
-                          <span className="text-gray-700 text-sm group-hover:text-white">
-                            {slot.label}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
-              </div>
-            </div>
+          <div className="mt-12 text-center">
+            <p className="text-gray-500 text-sm italic">* Los horarios están sujetos a cambios sin previo aviso. Consulta disponibilidad en recepción.</p>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Costos (imagen) */}
-        <section className="mt-12">
-          <div className="max-w-6xl mx-auto">
-            {/* Grid para las dos imágenes de planes */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-              {/* Plan 1 */}
-              <div className="relative w-full">
-                <Image
-                  src="https://res.cloudinary.com/dxbtafe9u/image/upload/v1767977235/plan1_dher9s.jpg"
-                  alt="Plan 1 - The Klan BJJ"
-                  width={800}
-                  height={1200}
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                  quality={90}
-                  className="w-full h-auto rounded-xl shadow-lg"
-                  priority
-                />
-              </div>
-
-              {/* Plan 2 */}
-              <div className="relative w-full">
-                <Image
-                  src="https://res.cloudinary.com/dxbtafe9u/image/upload/v1767977236/plan2_yeik7g.jpg"
-                  alt="Plan 2 - The Klan BJJ"
-                  width={800}
-                  height={1200}
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                  quality={90}
-                  className="w-full h-auto rounded-xl shadow-lg"
-                  priority
-                />
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Nota (oculta, se movió arriba en grande) */}
-        <p className="sr-only">
-          STK: Striking • BJJ: Brazilian Jiu Jitsu • No Gi: sin kimono • MMA:
-          Artes Marciales Mixtas
-        </p>
-      </div>
-    </main>
+      {/* Promociones / Call to Action */}
+      <section className="py-24 px-6 relative overflow-hidden bg-primary text-white">
+        <div className="absolute inset-0 bg-black/20 pattern-grid-lg opacity-30"></div>
+        <div className="max-w-4xl mx-auto text-center relative z-10">
+          <h2 className="text-4xl md:text-6xl font-black mb-8 uppercase italic tracking-tighter">¿Listo para empezar?</h2>
+          <p className="text-xl md:text-2xl mb-10 font-medium">Agenda tu clase de muestra hoy mismo y forma parte de The Klan.</p>
+          <a href="https://wa.me/525613701366" target="_blank" rel="noopener noreferrer" className="bg-white text-primary hover:bg-black hover:text-white px-10 py-5 rounded-full font-black uppercase tracking-widest text-lg transition-all shadow-xl hover:shadow-2xl transform hover:-translate-y-1 inline-block">
+            Agendar Clase Gratis
+          </a>
+        </div>
+      </section>
+    </div>
   );
 };

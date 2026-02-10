@@ -2,50 +2,56 @@ import Image from "next/image";
 import { getCloudinaryImageUrl } from "@/lib/cloudinary";
 
 export const IntroSection = () => {
-  const introImageUrl = getCloudinaryImageUrl("The%20Klan/hero-image.jpg", {
-    width: 800,
+  const introImg = getCloudinaryImageUrl("The%20Klan/hero-image.jpg", {
+    width: 600,
     height: 600,
-    quality: 85, // Cambiar de q_auto:eco a q_85
+    quality: 90,
     crop: "fill",
   });
 
   return (
-    <section className="w-full bg-white py-16 px-3 md:px-12 lg:px-24">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-        <div className="order-last md:order-first">
-          <h2 className="text-hero-title font-black mb-8 text-gray-900">
-            The Klan
-          </h2>
+    <section className="py-24 bg-black overflow-hidden relative">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          {/* Content */}
+          <div className="z-10">
+            <h2 className="text-6xl font-black text-white uppercase tracking-tighter mb-2 italic">
+              THE <span className="text-primary">KLAN</span>
+            </h2>
+            <div className="h-1 w-24 bg-primary mb-8"></div>
 
-          <div className="bg-red-600 text-white px-6 py-4 rounded-2xl mb-8 inline-block">
-            <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold leading-snug">
-              El mejor lugar para entrenar Jiu Jitsu Brasileño en CDMX
+            <h3 className="text-2xl md:text-3xl font-bold text-white uppercase tracking-wide leading-tight mb-8">
+              El mejor lugar para entrenar <br />
+              <span className="text-primary">Jiu Jitsu Brasileño</span> en CDMX
             </h3>
+
+            <p className="text-gray-400 text-lg leading-relaxed font-medium">
+              Somos un estudio privado en la Colonia Del Valle enfocado al Combate y las Artes Marciales.
+              Tenemos más de 20 años dando resultados eficientes y significativos en corto tiempo a todo
+              aquel que entrena con nosotros.
+            </p>
           </div>
 
-          <div className="w-20 h-1 bg-red-600 mb-6"></div>
+          {/* Image */}
+          <div className="relative">
+            <div className="relative aspect-video lg:aspect-square w-full">
+              {/* Gritty border effect */}
+              <div className="absolute -inset-4 border-2 border-white/10 z-0 transform rotate-2"></div>
+              <div className="absolute -inset-4 border-2 border-primary/20 z-0 transform -rotate-1"></div>
 
-          <p className="text-lg md:text-xl leading-relaxed text-gray-700 font-light">
-            Somos un estudio privado en la{" "}
-            <span className="font-semibold text-gray-900">
-              Colonia Del Valle
-            </span>{" "}
-            enfocado al Combate y las Artes Marciales. Tenemos más de{" "}
-            <span className="font-semibold text-gray-900">20 años</span> dando
-            resultados eficientes y significativos en corto tiempo a todo aquel
-            que entrena con nosotros.
-          </p>
-        </div>
+              <div className="relative h-full w-full bg-zinc-900 overflow-hidden shadow-2xl skew-y-0 transform hover:scale-[1.02] transition-transform duration-500">
+                <Image
+                  src={introImg}
+                  alt="The Klan BJJ Studio"
+                  fill
+                  className="object-cover"
+                />
 
-        <div className="relative w-full h-64 md:h-96 lg:h-[500px] order-first md:order-last">
-          <Image
-            src={introImageUrl}
-            alt="Entrenamiento de Jiu Jitsu"
-            fill
-            quality={85}
-            className="object-cover rounded-lg shadow-lg"
-            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 597px"
-          />
+                {/* Gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>

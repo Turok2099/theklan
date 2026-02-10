@@ -7,12 +7,13 @@ import {
   XMarkIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  MagnifyingGlassPlusIcon,
 } from "@heroicons/react/24/outline";
 import { getCloudinaryImageUrl } from "@/lib/cloudinary";
 
 export const Carrusel2 = () => {
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
-  
+
   // Rutas originales de las imágenes
   const imagePaths = [
     "v1759427152/The%20Klan/1.png",
@@ -77,40 +78,48 @@ export const Carrusel2 = () => {
   };
 
   return (
-    <section className="w-full bg-white py-16 px-3 md:px-12 lg:px-24">
+    <section className="w-full bg-zinc-950 py-24 overflow-hidden relative" id="galeria">
+      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+
       {/* Título */}
-      <div className="text-center mb-16">
-        <div className="bg-red-600 text-white px-6 py-4 rounded-2xl mb-6 inline-block">
-          <h2 className="text-5xl md:text-6xl lg:text-7xl font-black leading-tight">
-            GALERÍA
-          </h2>
-        </div>
-        <div className="w-32 h-1.5 bg-red-600 mx-auto mb-6"></div>
-        <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto font-light">
-          Descubre nuestras instalaciones y el ambiente de{" "}
-          <span className="font-bold text-gray-900">entrenamiento</span>
+      <div className="text-center mb-16 relative z-10 px-4">
+        <h2 className="text-5xl md:text-6xl font-black text-white uppercase tracking-tighter mb-4 italic">
+          Nuestra <span className="text-primary">Galería</span>
+        </h2>
+        <div className="w-24 h-1.5 bg-primary mx-auto mb-6 skew-x-[-12deg]"></div>
+        <p className="text-gray-400 uppercase font-bold tracking-widest text-sm max-w-2xl mx-auto">
+          Descubre nuestras instalaciones y el ambiente de entrenamiento
         </p>
       </div>
 
       {/* Carrusel */}
-      <div className="overflow-hidden w-full">
+      <div className="overflow-hidden w-full relative z-10">
+        <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-zinc-950 to-transparent z-20 pointer-events-none"></div>
+        <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-zinc-950 to-transparent z-20 pointer-events-none"></div>
+
         <div className={styles.marqueeRight}>
           {/* Primer set */}
           {thumbnailImages.map((src, i) => (
             <div
               key={i}
               onClick={() => setSelectedImage(i)}
-              className="flex-shrink-0 w-56 sm:w-72 md:w-80 lg:w-96 h-80 sm:h-96 md:h-[28rem] lg:h-[32rem] relative mx-3 cursor-pointer group"
+              className="flex-shrink-0 w-64 md:w-80 h-96 relative mx-4 cursor-pointer group rounded-xl overflow-hidden border border-white/5 hover:border-primary/50 transition-all duration-300"
             >
               <Image
                 src={src}
                 alt={`Imagen ${i + 1}`}
                 fill
                 quality={85}
-                sizes="(max-width: 640px) 224px, (max-width: 768px) 288px, (max-width: 1024px) 320px, 384px"
-                className="object-cover rounded-lg shadow-lg transition-transform duration-300 group-hover:scale-105"
+                sizes="(max-width: 640px) 256px, 320px"
+                className="object-cover transition-transform duration-500 group-hover:scale-110"
               />
-              <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-30 transition-opacity duration-300 rounded-lg" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-300" />
+
+              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <div className="bg-primary/90 text-white p-3 rounded-full transform scale-0 group-hover:scale-100 transition-transform duration-300 delay-100 shadow-lg shadow-primary/30">
+                  <MagnifyingGlassPlusIcon className="w-6 h-6" />
+                </div>
+              </div>
             </div>
           ))}
           {/* Segundo set */}
@@ -118,17 +127,23 @@ export const Carrusel2 = () => {
             <div
               key={`dup-${i}`}
               onClick={() => setSelectedImage(i)}
-              className="flex-shrink-0 w-56 sm:w-72 md:w-80 lg:w-96 h-80 sm:h-96 md:h-[28rem] lg:h-[32rem] relative mx-3 cursor-pointer group"
+              className="flex-shrink-0 w-64 md:w-80 h-96 relative mx-4 cursor-pointer group rounded-xl overflow-hidden border border-white/5 hover:border-primary/50 transition-all duration-300"
             >
               <Image
                 src={src}
                 alt={`Imagen duplicada ${i + 1}`}
                 fill
                 quality={85}
-                sizes="(max-width: 640px) 224px, (max-width: 768px) 288px, (max-width: 1024px) 320px, 384px"
-                className="object-cover rounded-lg shadow-lg transition-transform duration-300 group-hover:scale-105"
+                sizes="(max-width: 640px) 256px, 320px"
+                className="object-cover transition-transform duration-500 group-hover:scale-110"
               />
-              <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-30 transition-opacity duration-300 rounded-lg" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-300" />
+
+              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <div className="bg-primary/90 text-white p-3 rounded-full transform scale-0 group-hover:scale-100 transition-transform duration-300 delay-100 shadow-lg shadow-primary/30">
+                  <MagnifyingGlassPlusIcon className="w-6 h-6" />
+                </div>
+              </div>
             </div>
           ))}
         </div>
@@ -137,13 +152,13 @@ export const Carrusel2 = () => {
       {/* Lightbox Modal */}
       {selectedImage !== null && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-95 z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4 backdrop-blur-md"
           onClick={() => setSelectedImage(null)}
         >
           {/* Botón cerrar */}
           <button
             onClick={() => setSelectedImage(null)}
-            className="absolute top-4 right-4 text-white hover:text-red-600 transition-colors z-10"
+            className="absolute top-4 right-4 text-white hover:text-primary transition-colors z-50 bg-black/50 p-2 rounded-full"
           >
             <XMarkIcon className="w-8 h-8 md:w-10 md:h-10" />
           </button>
@@ -154,14 +169,14 @@ export const Carrusel2 = () => {
               e.stopPropagation();
               handlePrevious();
             }}
-            className="absolute left-4 text-white hover:text-red-600 transition-colors z-10"
+            className="absolute left-4 text-white hover:text-primary transition-colors z-50 bg-black/50 p-3 rounded-full hidden md:block group"
           >
-            <ChevronLeftIcon className="w-8 h-8 md:w-12 md:h-12" />
+            <ChevronLeftIcon className="w-8 h-8 group-active:scale-90 transition-transform" />
           </button>
 
           {/* Imagen */}
           <div
-            className="relative max-w-7xl max-h-[90vh] w-full h-full flex items-center justify-center"
+            className="relative max-w-7xl max-h-[85vh] w-full h-full flex items-center justify-center"
             onClick={(e) => e.stopPropagation()}
           >
             <Image
@@ -170,8 +185,13 @@ export const Carrusel2 = () => {
               width={1200}
               height={800}
               quality={90}
-              className="object-contain max-h-[90vh] w-auto h-auto"
+              className="object-contain max-h-[85vh] w-auto h-auto rounded-lg shadow-2xl"
             />
+            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/60 px-4 py-2 rounded-full backdrop-blur-sm border border-white/10">
+              <span className="text-white text-xs md:text-sm font-bold tracking-widest">
+                {selectedImage + 1} / {imagePaths.length}
+              </span>
+            </div>
           </div>
 
           {/* Botón siguiente */}
@@ -180,15 +200,10 @@ export const Carrusel2 = () => {
               e.stopPropagation();
               handleNext();
             }}
-            className="absolute right-4 text-white hover:text-red-600 transition-colors z-10"
+            className="absolute right-4 text-white hover:text-primary transition-colors z-50 bg-black/50 p-3 rounded-full hidden md:block group"
           >
-            <ChevronRightIcon className="w-8 h-8 md:w-12 md:h-12" />
+            <ChevronRightIcon className="w-8 h-8 group-active:scale-90 transition-transform" />
           </button>
-
-          {/* Contador */}
-          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white text-sm md:text-base">
-            {selectedImage + 1} / {imagePaths.length}
-          </div>
         </div>
       )}
     </section>

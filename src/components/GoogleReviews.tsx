@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import { StarIcon } from "@heroicons/react/24/solid";
 
 interface Review {
   author_name: string;
@@ -23,9 +24,32 @@ export const GoogleReviews = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
 
-  // Configuración del carrusel
-  const reviewsPerView = 1; // Mostrar 1 reseña a la vez (Google solo da 5 máximo)
+  // Responsive: Mostrar 1 reseña en móvil, 2 en tablet, 3 en desktop
+  const getReviewsPerView = () => {
+    if (typeof window !== "undefined") {
+      if (window.innerWidth < 768) return 1;
+      if (window.innerWidth < 1024) return 2;
+      return 3;
+    }
+    return 1;
+  };
+
+  const [reviewsPerView, setReviewsPerView] = useState(1);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setReviewsPerView(getReviewsPerView());
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    // Set initial value
+    handleResize();
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -61,30 +85,30 @@ export const GoogleReviews = () => {
     fetchReviews();
   }, []);
 
-  // Auto-rotate cada 5 segundos
+  // Auto-rotate
   useEffect(() => {
     if (reviews.length === 0) return;
 
     const interval = setInterval(() => {
       setCurrentIndex((prev) => {
-        const maxIndex = reviews.length - reviewsPerView;
+        const maxIndex = Math.max(0, reviews.length - reviewsPerView);
         return prev >= maxIndex ? 0 : prev + 1;
       });
-    }, 5000);
+    }, 6000);
 
     return () => clearInterval(interval);
-  }, [reviews.length]);
+  }, [reviews.length, reviewsPerView]);
 
   const nextReview = () => {
     setCurrentIndex((prev) => {
-      const maxIndex = reviews.length - reviewsPerView;
+      const maxIndex = Math.max(0, reviews.length - reviewsPerView);
       return prev >= maxIndex ? 0 : prev + 1;
     });
   };
 
   const prevReview = () => {
     setCurrentIndex((prev) => {
-      const maxIndex = reviews.length - reviewsPerView;
+      const maxIndex = Math.max(0, reviews.length - reviewsPerView);
       return prev <= 0 ? maxIndex : prev - 1;
     });
   };
@@ -93,179 +117,141 @@ export const GoogleReviews = () => {
     return (
       <div className="flex gap-1">
         {[...Array(5)].map((_, i) => (
-          <svg
+          <StarIcon
             key={i}
-            className={`w-5 h-5 ${
-              i < rating ? "text-yellow-400" : "text-gray-300"
-            }`}
-            fill="currentColor"
-            viewBox="0 0 20 20"
-          >
-            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
+            className={`w-4 h-4 ${i < rating ? "text-primary" : "text-zinc-700"
+              }`}
+          />
         ))}
       </div>
     );
   };
 
-  if (isLoading) {
-    return (
-      <section className="py-16 px-3 md:px-12 lg:px-24 bg-gray-50">
-        <div className="max-w-7xl mx-auto text-center">
-          <p className="text-gray-600">Cargando reseñas...</p>
-        </div>
-      </section>
-    );
-  }
-
-  if (error || reviews.length === 0) {
-    return null; // No mostrar nada si hay error
+  if (isLoading || error || reviews.length === 0) {
+    return null; // Ocultar si hay error o cargando para no romper layout
   }
 
   return (
-    <section className="w-full py-16 px-3 md:px-12 lg:px-24">
-      <div className="max-w-7xl mx-auto bg-black rounded-3xl shadow-2xl overflow-hidden p-10 md:p-16">
-        {/* Título y Rating General */}
+    <section className="py-24 bg-zinc-950 border-t border-white/5 relative overflow-hidden" id="reviews">
+      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent"></div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
         <div className="text-center mb-16">
-          <h2 className="text-hero-title font-black mb-8 text-white">
-            Google Reviews
-          </h2>
-          <div className="w-32 h-1.5 bg-red-600 mx-auto mb-6"></div>
-          {placeInfo && (
-            <div className="flex items-center justify-center gap-4 mb-4">
-              <div className="flex items-center gap-3">
-                <span className="text-6xl md:text-7xl font-black text-red-600">
-                  {placeInfo.rating.toFixed(1)}
-                </span>
-                {renderStars(Math.round(placeInfo.rating))}
-              </div>
+          <div className="inline-flex items-center gap-2 bg-zinc-900/80 border border-white/10 rounded-full px-4 py-1.5 mb-6">
+            <div className="flex -space-x-1">
+              {[...Array(5)].map((_, i) => (
+                <StarIcon key={i} className="w-3 h-3 text-primary" />
+              ))}
             </div>
-          )}
+            <span className="text-white text-xs font-bold uppercase tracking-widest">
+              {placeInfo ? `${placeInfo.rating} / 5.0` : "Excelente"}
+            </span>
+          </div>
+          <h2 className="text-5xl font-black text-white uppercase tracking-tighter mb-4 italic">
+            Lo que dicen <span className="text-primary">de nosotros</span>
+          </h2>
+          <p className="text-gray-400 uppercase font-bold tracking-widest text-sm">
+            La comunidad más fuerte de CDMX
+          </p>
         </div>
 
-        {/* Carrusel de Reseñas */}
+        {/* Reviews Slider */}
         <div className="relative">
-          {/* Contenedor del Carrusel */}
-          <div className="overflow-hidden">
+          <div className="overflow-hidden px-4 md:px-0">
             <div
-              className="flex transition-transform duration-500 ease-in-out"
-              style={{
-                transform: `translateX(-${
-                  currentIndex * (100 / reviewsPerView)
-                }%)`,
-              }}
+              className="flex transition-transform duration-700 cubic-bezier(0.4, 0, 0.2, 1)"
+              style={{ transform: `translateX(-${currentIndex * (100 / reviewsPerView)}%)` }}
             >
               {reviews.map((review, index) => (
-                <div key={index} className="w-full flex-shrink-0 px-3">
-                  <div className="bg-white rounded-2xl shadow-lg p-6 h-full flex flex-col border-t-4 border-red-600">
-                    {/* Header con foto y nombre */}
-                    <div className="flex items-center gap-4 mb-4">
-                      {review.author_photo_url ? (
-                        <Image
-                          src={review.author_photo_url}
-                          alt={review.author_name}
-                          width={48}
-                          height={48}
-                          className="rounded-full ring-2 ring-red-100"
-                        />
-                      ) : (
-                        <div className="w-12 h-12 rounded-full bg-red-600 flex items-center justify-center text-white font-black text-lg">
-                          {review.author_name.charAt(0)}
-                        </div>
-                      )}
+                <div
+                  key={index}
+                  className="flex-shrink-0 px-4"
+                  style={{ width: `${100 / reviewsPerView}%` }}
+                >
+                  <div className="bg-zinc-900 border border-white/5 p-8 h-full flex flex-col rounded-2xl relative group hover:border-primary/30 transition-colors">
+                    <div className="absolute top-6 right-6 opacity-20 group-hover:opacity-40 transition-opacity">
+                      <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor" className="text-primary">
+                        <path d="M14.017 21L14.017 18C14.017 16.8954 14.9124 16 16.017 16H19.017C19.5693 16 20.017 15.5523 20.017 15V9C20.017 8.44772 19.5693 8 19.017 8H15.017C14.4647 8 14.017 8.44772 14.017 9V11C14.017 11.5523 13.5693 12 13.017 12H12.017V5H22.017V15C22.017 18.3137 19.3307 21 16.017 21H14.017ZM5.0166 21L5.0166 18C5.0166 16.8954 5.91203 16 7.0166 16H10.0166C10.5689 16 11.0166 15.5523 11.0166 15V9C11.0166 8.44772 10.5689 8 10.0166 8H6.0166C5.46432 8 5.0166 8.44772 5.0166 9V11C5.0166 11.5523 4.56889 12 4.0166 12H3.0166V5H13.0166V15C13.0166 18.3137 10.3303 21 7.0166 21H5.0166Z" />
+                      </svg>
+                    </div>
+
+                    <div className="flex items-center gap-4 mb-6">
+                      <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-zinc-800 bg-zinc-800 flex-shrink-0">
+                        {review.author_photo_url ? (
+                          <Image
+                            src={review.author_photo_url}
+                            alt={review.author_name}
+                            width={48}
+                            height={48}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-zinc-800 text-white font-bold">
+                            {review.author_name.charAt(0)}
+                          </div>
+                        )}
+                      </div>
                       <div>
-                        <p className="font-bold text-lg text-gray-900">
-                          {review.author_name}
-                        </p>
-                        <p className="text-xs md:text-sm text-gray-500 font-light">
-                          {review.relative_time_description}
-                        </p>
+                        <h4 className="text-white font-bold text-sm tracking-wide">{review.author_name}</h4>
+                        <p className="text-zinc-500 text-xs uppercase font-bold tracking-wider">{review.relative_time_description}</p>
                       </div>
                     </div>
 
-                    {/* Estrellas */}
-                    <div className="mb-3">{renderStars(review.rating)}</div>
+                    <div className="mb-4">
+                      {renderStars(review.rating)}
+                    </div>
 
-                    {/* Texto de la reseña */}
-                    <p className="text-gray-700 text-sm md:text-base leading-relaxed flex-grow line-clamp-6 font-light">
-                      {review.text}
+                    <p className="text-gray-400 text-sm leading-relaxed line-clamp-4 flex-grow">
+                      "{review.text}"
                     </p>
+
+                    <a
+                      href="https://www.google.com/maps/place/The+Klan/@19.3839507,-99.1584908,17z"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-6 text-xs font-bold text-white uppercase tracking-widest hover:text-primary transition-colors flex items-center gap-2"
+                    >
+                      Ver en Google
+                      <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                      </svg>
+                    </a>
                   </div>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Controles de Navegación */}
+          {/* Controls - Left */}
           <button
             onClick={prevReview}
-            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 bg-white rounded-full p-3 shadow-lg hover:bg-red-600 hover:text-white transition-all z-10"
-            aria-label="Reseña anterior"
+            className="absolute top-1/2 -left-4 md:-left-12 -translate-y-1/2 w-10 h-10 border border-white/10 bg-black/50 hover:bg-primary hover:border-primary rounded-full flex items-center justify-center text-white transition-all z-10 hidden md:flex"
           >
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 19l-7-7 7-7"
-              />
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-
+          {/* Controls - Right */}
           <button
             onClick={nextReview}
-            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 bg-white rounded-full p-3 shadow-lg hover:bg-red-600 hover:text-white transition-all z-10"
-            aria-label="Siguiente reseña"
+            className="absolute top-1/2 -right-4 md:-right-12 -translate-y-1/2 w-10 h-10 border border-white/10 bg-black/50 hover:bg-primary hover:border-primary rounded-full flex items-center justify-center text-white transition-all z-10 hidden md:flex"
           >
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 5l7 7-7 7"
-              />
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </button>
         </div>
 
-        {/* Indicadores de posición */}
-        <div className="flex justify-center gap-2 mt-8">
-          {[...Array(reviews.length - reviewsPerView + 1)].map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentIndex(index)}
-              className={`h-2 rounded-full transition-all ${
-                index === currentIndex
-                  ? "w-8 bg-red-600"
-                  : "w-2 bg-gray-500 hover:bg-gray-400"
-              }`}
-              aria-label={`Ir a grupo de reseñas ${index + 1}`}
-            />
-          ))}
-        </div>
-
-        {/* Botón Ver Más en Google */}
-        <div className="text-center mt-10">
+        {/* CTA */}
+        <div className="text-center mt-12">
           <a
-            href="https://www.google.com/maps/place/The+Klan/@19.3839507,-99.1584908,17z/data=!4m18!1m9!3m8!1s0x85d1ffa796af0001:0x2825f997c5e4c604!2sThe+Klan!8m2!3d19.3839507!4d-99.1584908!9m1!1b1!16s%2Fg%2F11j4svv45s!3m7!1s0x85d1ffa796af0001:0x2825f997c5e4c604!8m2!3d19.3839507!4d-99.1584908!9m1!1b1!16s%2Fg%2F11j4svv45s?entry=ttu&g_ep=EgoyMDI1MTAwNi4wIKXMDSoASAFQAw%3D%3D"
+            href="https://search.google.com/local/writereview?placeid=ChIJBCbk9af10YURBMbkxZf5JSg"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 bg-white border-2 border-white text-gray-900 font-bold px-8 py-4 rounded-full hover:bg-red-600 hover:text-white hover:border-red-600 transition-all duration-300 transform hover:scale-105 shadow-md"
+            className="inline-block border border-white/20 hover:border-primary text-white hover:text-primary px-8 py-3 font-bold uppercase tracking-widest text-sm rounded transition-all"
           >
-            <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
-            </svg>
-            Ver todas las reseñas en Google
+            Escribir una reseña
           </a>
         </div>
       </div>

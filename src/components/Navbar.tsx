@@ -11,31 +11,10 @@ export const Navbar = () => {
   const { user, loading, signOut } = useAuth();
   const isAdmin = useIsAdmin();
 
-  // Debug logs para el navbar
-  console.log("🔍 Navbar Debug:", {
-    user: user ? { id: user.id, email: user.email } : null,
-    loading,
-    hasUser: !!user,
-    shouldShowLogin: !loading && !user,
-  });
-
-  const navLinks = [
-    { href: "/", label: "INICIO" },
-    { href: "/nuestros-entrenadores", label: "ENTRENADORES" },
-    {
-      href: "/semblanza-master-francisco-ramirez",
-      label: "MASTER FRANCISCO",
-    },
-    { href: "/costos-y-horarios", label: "COSTOS Y HORARIOS" },
-  ];
-
   const handleSignOut = async () => {
     try {
-      console.log("🚪 Iniciando proceso de logout...");
       await signOut();
-      console.log("✅ Logout completado");
       setIsOpen(false);
-      // Redirigir al home después del logout
       window.location.href = "/";
     } catch (error) {
       console.error("❌ Error durante logout:", error);
@@ -55,199 +34,140 @@ export const Navbar = () => {
   }, [isOpen]);
 
   return (
-    <nav className="bg-black text-white fixed top-0 left-0 right-0 z-[100] shadow-lg">
+    <nav className="fixed top-0 w-full z-50 bg-black/95 backdrop-blur-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between items-center h-20">
           {/* Logo */}
-          <Link href="/" className="flex items-center">
-            <span className="text-xl md:text-2xl font-bold text-red-600">
-              THE KLAN
+          <Link href="/" className="flex items-center gap-2 group">
+            <span className="text-2xl font-black tracking-tighter text-white">
+              THE <span className="text-primary">KLAN</span> BJJ
             </span>
           </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="text-white hover:text-red-600 transition-colors duration-200 font-semibold text-sm"
-              >
-                {link.label}
-              </Link>
-            ))}
+            <Link href="/" className="text-xs font-bold text-gray-300 hover:text-primary transition-colors uppercase tracking-widest">
+              Inicio
+            </Link>
+            <Link href="/nuestros-entrenadores" className="text-xs font-bold text-gray-300 hover:text-primary transition-colors uppercase tracking-widest">
+              Entrenadores
+            </Link>
+            <Link href="/semblanza-master-francisco-ramirez" className="text-xs font-bold text-gray-300 hover:text-primary transition-colors uppercase tracking-widest">
+              Head Coach
+            </Link>
+            <Link href="/costos-y-horarios" className="text-xs font-bold text-gray-300 hover:text-primary transition-colors uppercase tracking-widest">
+              Costos y Horarios
+            </Link>
+
 
             {/* Auth Section */}
-            <div className="flex items-center space-x-4 ml-4 pl-4 border-l border-white/20">
-              {loading ? (
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-              ) : user ? (
-                <div className="flex items-center space-x-3">
-                  <Link
-                    href="/dashboard"
-                    className="text-white hover:text-red-600 transition-colors duration-200 font-semibold text-sm"
-                  >
-                    MI CUENTA
-                  </Link>
-                  {isAdmin && (
-                    <Link
-                      href="/admin"
-                      className="text-white hover:text-red-600 transition-colors duration-200 font-semibold text-sm"
-                    >
-                      ADMIN
-                    </Link>
-                  )}
-                  <button
-                    onClick={handleSignOut}
-                    className="text-white hover:text-red-600 transition-colors duration-200 font-semibold text-sm"
-                  >
-                    SALIR
-                  </button>
-                </div>
-              ) : (
+            {loading ? (
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+            ) : user ? (
+              <div className="flex items-center space-x-4">
                 <Link
-                  href="/auth/login"
-                  className="text-white hover:text-red-600 transition-colors duration-200 font-semibold text-sm"
+                  href="/dashboard"
+                  className="text-xs font-bold text-gray-300 hover:text-primary transition-colors uppercase tracking-widest"
                 >
-                  INICIAR SESIÓN
+                  Mi Cuenta
                 </Link>
-              )}
-            </div>
+                {isAdmin && (
+                  <Link
+                    href="/admin"
+                    className="text-xs font-bold text-primary hover:text-white transition-colors uppercase tracking-widest"
+                  >
+                    Admin
+                  </Link>
+                )}
+                <button
+                  onClick={handleSignOut}
+                  className="text-xs font-bold text-gray-300 hover:text-primary transition-colors uppercase tracking-widest"
+                >
+                  Salir
+                </button>
+              </div>
+            ) : (
+              <Link
+                href="/auth/login"
+                className="text-xs font-bold text-gray-300 hover:text-primary transition-colors uppercase tracking-widest"
+              >
+                Login
+              </Link>
+            )}
+
+            <Link
+              href="#contacto"
+              className="bg-primary hover:bg-red-700 text-white px-6 py-2 font-black uppercase tracking-widest transition-all clip-path-slant"
+            >
+              Entrenar Ahora
+            </Link>
           </div>
 
           {/* Mobile menu button */}
           <div className="md:hidden">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="text-white hover:text-red-600 transition-colors relative z-[60]"
+              className="text-white hover:text-primary transition-colors"
               aria-label="Toggle menu"
             >
               {isOpen ? (
-                <XMarkIcon className="h-6 w-6" />
+                <XMarkIcon className="h-8 w-8" />
               ) : (
-                <Bars3Icon className="h-6 w-6" />
+                <Bars3Icon className="h-8 w-8" />
               )}
             </button>
           </div>
         </div>
       </div>
 
-      {/* Overlay con blur (fondo) */}
+      {/* Mobile Navigation Menu */}
       {isOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 md:hidden"
-          onClick={() => setIsOpen(false)}
-        />
-      )}
+        <div className="fixed inset-0 top-20 bg-black z-40 md:hidden flex flex-col p-8 space-y-6">
+          <Link href="/" onClick={() => setIsOpen(false)} className="text-xl font-black text-white hover:text-primary uppercase tracking-widest">
+            Inicio
+          </Link>
+          <Link href="/nuestros-entrenadores" onClick={() => setIsOpen(false)} className="text-xl font-black text-white hover:text-primary uppercase tracking-widest">
+            Entrenadores
+          </Link>
+          <Link href="/semblanza-master-francisco-ramirez" onClick={() => setIsOpen(false)} className="text-xl font-black text-white hover:text-primary uppercase tracking-widest">
+            Head Coach
+          </Link>
+          <Link href="/costos-y-horarios" onClick={() => setIsOpen(false)} className="text-xl font-black text-white hover:text-primary uppercase tracking-widest">
+            Costos y Horarios
+          </Link>
 
-      {/* Mobile Navigation - Slide from right */}
-      <div
-        className={`fixed top-0 right-0 h-full w-1/2 bg-red-600 shadow-2xl transform transition-transform duration-300 ease-in-out z-50 md:hidden ${
-          isOpen ? "translate-x-0" : "translate-x-full"
-        }`}
-      >
-        <div className="flex flex-col h-full pt-20 px-6">
-          {navLinks.map((link, index) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              onClick={() => setIsOpen(false)}
-              className="text-white hover:text-black transition-colors duration-200 font-bold text-base py-4 border-b border-white/20"
-              style={{
-                animation: isOpen
-                  ? `slideInRight 0.3s ease-out ${index * 0.1}s both`
-                  : "none",
-              }}
-            >
-              {link.label}
-            </Link>
-          ))}
 
-          {/* Auth Section Mobile */}
-          <div className="mt-6 pt-6 border-t border-white/20">
-            {loading ? (
-              <div className="flex justify-center">
-                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
-              </div>
-            ) : user ? (
-              <div className="space-y-4">
-                <Link
-                  href="/dashboard"
-                  onClick={() => setIsOpen(false)}
-                  className="block text-white hover:text-black transition-colors duration-200 font-bold text-base py-4 border-b border-white/20"
-                  style={{
-                    animation: isOpen
-                      ? `slideInRight 0.3s ease-out ${
-                          navLinks.length * 0.1
-                        }s both`
-                      : "none",
-                  }}
-                >
-                  MI CUENTA
-                </Link>
-                {isAdmin && (
-                  <Link
-                    href="/admin"
-                    onClick={() => setIsOpen(false)}
-                    className="block text-white hover:text-black transition-colors duration-200 font-bold text-base py-4 border-b border-white/20"
-                    style={{
-                      animation: isOpen
-                        ? `slideInRight 0.3s ease-out ${
-                            (navLinks.length + 1) * 0.1
-                          }s both`
-                        : "none",
-                    }}
-                  >
-                    ADMIN
-                  </Link>
-                )}
-                <button
-                  onClick={handleSignOut}
-                  className="block w-full text-left text-white hover:text-black transition-colors duration-200 font-bold text-base py-4"
-                  style={{
-                    animation: isOpen
-                      ? `slideInRight 0.3s ease-out ${
-                          (navLinks.length + 2) * 0.1
-                        }s both`
-                      : "none",
-                  }}
-                >
-                  SALIR
-                </button>
-              </div>
-            ) : (
-              <Link
-                href="/auth/login"
-                onClick={() => setIsOpen(false)}
-                className="block text-white hover:text-black transition-colors duration-200 font-bold text-base py-4"
-                style={{
-                  animation: isOpen
-                    ? `slideInRight 0.3s ease-out ${
-                        navLinks.length * 0.1
-                      }s both`
-                    : "none",
-                }}
-              >
-                INICIAR SESIÓN
+          <div className="h-px bg-white/10 my-4" />
+
+          {user ? (
+            <>
+              <Link href="/dashboard" onClick={() => setIsOpen(false)} className="text-lg font-bold text-gray-300 hover:text-primary uppercase tracking-widest">
+                Mi Cuenta
               </Link>
-            )}
-          </div>
-        </div>
-      </div>
+              {isAdmin && (
+                <Link href="/admin" onClick={() => setIsOpen(false)} className="text-lg font-bold text-primary hover:text-white uppercase tracking-widest">
+                  Admin
+                </Link>
+              )}
+              <button onClick={handleSignOut} className="text-lg font-bold text-gray-300 hover:text-primary uppercase tracking-widest text-left">
+                Cerrar Sesión
+              </button>
+            </>
+          ) : (
+            <Link href="/auth/login" onClick={() => setIsOpen(false)} className="text-lg font-bold text-gray-300 hover:text-primary uppercase tracking-widest">
+              Iniciar Sesión
+            </Link>
+          )}
 
-      {/* Animación CSS */}
-      <style jsx>{`
-        @keyframes slideInRight {
-          from {
-            opacity: 0;
-            transform: translateX(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
-        }
-      `}</style>
+          <Link
+            href="#contacto"
+            onClick={() => setIsOpen(false)}
+            className="bg-primary text-white text-center py-4 font-black uppercase tracking-widest text-xl mt-4"
+          >
+            Entrenar Ahora
+          </Link>
+        </div>
+      )}
     </nav>
   );
 };
