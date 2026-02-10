@@ -16,24 +16,21 @@ export const Carrusel2 = () => {
 
   // Rutas originales de las imágenes
   const imagePaths = [
-    "v1759427152/The%20Klan/1.png",
-    "v1759427154/The%20Klan/2.png",
-    "v1759427156/The%20Klan/3.png",
-    "v1759427158/The%20Klan/4.png",
-    "v1759427161/The%20Klan/5.png",
-    "v1759427163/The%20Klan/6.png",
-    "v1759427164/The%20Klan/7.jpg",
-    "v1759427166/The%20Klan/8.jpg",
-    "v1759427169/The%20Klan/9.png",
-    "v1759427171/The%20Klan/10.png",
-    "v1759427173/The%20Klan/12.png",
+    "v1770766481/WhatsApp_Image_2026-02-10_at_4.56.19_PM_2_kcavv6.jpg",
+    "v1770766480/WhatsApp_Image_2026-02-10_at_4.56.19_PM_3_gxqq8j.jpg",
+    "v1770766480/WhatsApp_Image_2026-02-10_at_4.56.19_PM_4_qpkw0j.jpg",
+    "v1770766479/WhatsApp_Image_2026-02-10_at_4.56.19_PM_5_udssxh.jpg",
+    "v1770766478/WhatsApp_Image_2026-02-10_at_4.56.19_PM_6_pdivg0.jpg",
+    "v1770766477/WhatsApp_Image_2026-02-10_at_4.56.19_PM_7_bivpht.jpg",
+    "v1770766476/WhatsApp_Image_2026-02-10_at_4.56.18_PM_cdqzhf.jpg",
+    "v1770766476/WhatsApp_Image_2026-02-10_at_4.56.19_PM_1_gr22rt.jpg",
+    "v1770766476/WhatsApp_Image_2026-02-10_at_4.56.19_PM_igrbob.jpg",
     "v1759427175/The%20Klan/13.png",
-    "v1759427177/The%20Klan/14.jpg",
-    "v1759427179/The%20Klan/15.png",
-    "v1759427181/The%20Klan/16.png",
-    "v1759427182/The%20Klan/17.jpg",
-    "v1759427145/The%20Klan/jiu-jitsu1.png",
-    "v1759427147/The%20Klan/the-klan-bjj-portada.png",
+    "v1759427173/The%20Klan/12.png",
+    "v1759427171/The%20Klan/10.png",
+    "v1759427163/The%20Klan/6.png",
+    "v1759427161/The%20Klan/5.png",
+
   ];
 
   // URLs optimizadas para thumbnails (calidad 85)

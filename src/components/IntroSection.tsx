@@ -2,12 +2,7 @@ import Image from "next/image";
 import { getCloudinaryImageUrl } from "@/lib/cloudinary";
 
 export const IntroSection = () => {
-  const introImg = getCloudinaryImageUrl("The%20Klan/hero-image.jpg", {
-    width: 600,
-    height: 600,
-    quality: 90,
-    crop: "fill",
-  });
+  const introImg = "https://res.cloudinary.com/dxbtafe9u/image/upload/v1770766478/WhatsApp_Image_2026-02-10_at_4.33.04_PM_mysdlj.jpg";
 
   return (
     <section className="py-24 bg-black overflow-hidden relative">

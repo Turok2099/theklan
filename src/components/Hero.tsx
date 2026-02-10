@@ -6,12 +6,7 @@ import Link from "next/link";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 
 export const Hero = () => {
-  const heroImageUrl = getCloudinaryImageUrl("The%20Klan/hero-image.jpg", {
-    width: 1920,
-    height: 1080,
-    quality: 90,
-    crop: "fill",
-  });
+  const heroImageUrl = "https://res.cloudinary.com/dxbtafe9u/image/upload/v1770766478/WhatsApp_Image_2026-02-10_at_4.33.04_PM_mysdlj.jpg";
 
   return (
     <header className="relative h-screen w-full overflow-hidden bg-pure-black">
@@ -22,7 +17,7 @@ export const Hero = () => {
           alt="The Klan BJJ - Sangre y Sudor"
           fill
           priority
-          className="object-cover"
+          className="object-cover object-[50%_30%]"
         />
       </div>
 
