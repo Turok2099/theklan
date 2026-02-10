@@ -14,6 +14,8 @@ export const TextMarquee = () => {
     "•",
     "GRAPPLING",
     "•",
+    "LUCHA OLÍMPICA",
+    "•",
   ];
 
   return (

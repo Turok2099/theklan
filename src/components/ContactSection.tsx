@@ -12,7 +12,7 @@ export const ContactSection = () => {
                             Inicia tu <span className="text-primary">Legado</span>
                         </h2>
                         <p className="text-xl text-gray-400 mb-10 leading-relaxed font-medium">
-                            No importa si buscas defensa personal o el podio mundial. El primer paso es pisar el tatami.
+                            La excelencia a un paso de ti.
                         </p>
                         <div className="space-y-8">
                             <div className="flex items-center gap-6 group">
@@ -67,9 +67,13 @@ export const ContactSection = () => {
                                     Programa
                                 </label>
                                 <select className="w-full bg-black border border-white/10 focus:ring-primary focus:border-primary text-white p-4 font-bold outline-none transition-colors appearance-none">
-                                    <option>Competición Elite</option>
-                                    <option>Foundations</option>
-                                    <option>No-Gi Grappling</option>
+                                    <option>Jiu Jitsu Brasileño</option>
+                                    <option>Artes Marciales Mixtas</option>
+                                    <option>Entrenamiento Funcional</option>
+                                    <option>Defensa Personal</option>
+                                    <option>Kick Boxing</option>
+                                    <option>Grappling</option>
+                                    <option>Lucha Olímpica</option>
                                 </select>
                             </div>
                             <button
