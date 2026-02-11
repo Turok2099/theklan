@@ -6,10 +6,10 @@ export const IntroSection = () => {
 
   return (
     <section className="py-24 bg-black overflow-hidden relative">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-0 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           {/* Content */}
-          <div className="z-10">
+          <div className="z-10 px-4 sm:px-0">
             <h2 className="text-6xl font-black text-white uppercase tracking-tighter mb-2 italic">
               THE <span className="text-primary">KLAN</span>
             </h2>
