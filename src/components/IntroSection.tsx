@@ -29,7 +29,7 @@ export const IntroSection = () => {
 
           {/* Image */}
           <div className="relative">
-            <div className="relative h-[85vh] w-full">
+            <div className="relative aspect-[3/4] md:h-[85vh] md:aspect-auto w-full">
               {/* Gritty border effect */}
               <div className="absolute -inset-4 border-2 border-white/10 z-0 transform rotate-2"></div>
               <div className="absolute -inset-4 border-2 border-primary/20 z-0 transform -rotate-1"></div>
@@ -39,7 +39,7 @@ export const IntroSection = () => {
                   src={introImg}
                   alt="The Klan BJJ Studio"
                   fill
-                  className="object-cover object-right-top"
+                  className="object-cover object-center"
                 />
 
                 {/* Gradient overlay */}
