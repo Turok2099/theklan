@@ -16,6 +16,12 @@ export const Carrusel2 = () => {
 
   // Rutas originales de las imágenes
   const imagePaths = [
+    "v1770769808/WhatsApp_Image_2026-02-10_at_6.21.24_PM_2_nsl2bm.jpg",
+    "v1770769808/WhatsApp_Image_2026-02-10_at_6.20.31_PM_hgurdw.jpg",
+    "v1770769807/WhatsApp_Image_2026-02-10_at_6.21.24_PM_rntehe.jpg",
+    "v1770769806/WhatsApp_Image_2026-02-10_at_6.21.01_PM_lcpziw.jpg",
+    "v1770769805/WhatsApp_Image_2026-02-10_at_6.21.24_PM_1_sta9jx.jpg",
+    "v1770769556/HXXP8682_aimrsq.jpg",
     "v1770766481/WhatsApp_Image_2026-02-10_at_4.56.19_PM_2_kcavv6.jpg",
     "v1770766480/WhatsApp_Image_2026-02-10_at_4.56.19_PM_3_gxqq8j.jpg",
     "v1770766480/WhatsApp_Image_2026-02-10_at_4.56.19_PM_4_qpkw0j.jpg",
@@ -149,13 +155,13 @@ export const Carrusel2 = () => {
       {/* Lightbox Modal */}
       {selectedImage !== null && (
         <div
-          className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4 backdrop-blur-md"
+          className="fixed inset-0 bg-black/95 z-[105] flex items-center justify-center p-4 backdrop-blur-md"
           onClick={() => setSelectedImage(null)}
         >
           {/* Botón cerrar */}
           <button
             onClick={() => setSelectedImage(null)}
-            className="absolute top-4 right-4 text-white hover:text-primary transition-colors z-50 bg-black/50 p-2 rounded-full"
+            className="absolute top-4 right-4 text-white hover:text-primary transition-colors z-[110] bg-black/50 p-2 rounded-full"
           >
             <XMarkIcon className="w-8 h-8 md:w-10 md:h-10" />
           </button>
@@ -166,9 +172,9 @@ export const Carrusel2 = () => {
               e.stopPropagation();
               handlePrevious();
             }}
-            className="absolute left-4 text-white hover:text-primary transition-colors z-50 bg-black/50 p-3 rounded-full hidden md:block group"
+            className="absolute left-2 md:left-4 text-white hover:text-primary transition-colors z-[110] bg-black/50 p-2 md:p-3 rounded-full group"
           >
-            <ChevronLeftIcon className="w-8 h-8 group-active:scale-90 transition-transform" />
+            <ChevronLeftIcon className="w-6 h-6 md:w-8 md:h-8 group-active:scale-90 transition-transform" />
           </button>
 
           {/* Imagen */}
@@ -197,9 +203,9 @@ export const Carrusel2 = () => {
               e.stopPropagation();
               handleNext();
             }}
-            className="absolute right-4 text-white hover:text-primary transition-colors z-50 bg-black/50 p-3 rounded-full hidden md:block group"
+            className="absolute right-2 md:right-4 text-white hover:text-primary transition-colors z-[110] bg-black/50 p-2 md:p-3 rounded-full group"
           >
-            <ChevronRightIcon className="w-8 h-8 group-active:scale-90 transition-transform" />
+            <ChevronRightIcon className="w-6 h-6 md:w-8 md:h-8 group-active:scale-90 transition-transform" />
           </button>
         </div>
       )}

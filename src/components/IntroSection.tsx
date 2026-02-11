@@ -2,7 +2,7 @@ import Image from "next/image";
 import { getCloudinaryImageUrl } from "@/lib/cloudinary";
 
 export const IntroSection = () => {
-  const introImg = "https://res.cloudinary.com/dxbtafe9u/image/upload/v1770766478/WhatsApp_Image_2026-02-10_at_4.33.04_PM_mysdlj.jpg";
+  const introImg = "https://res.cloudinary.com/dxbtafe9u/image/upload/v1770766480/WhatsApp_Image_2026-02-10_at_4.56.19_PM_4_qpkw0j.jpg";
 
   return (
     <section className="py-24 bg-black overflow-hidden relative">
@@ -29,7 +29,7 @@ export const IntroSection = () => {
 
           {/* Image */}
           <div className="relative">
-            <div className="relative aspect-video lg:aspect-square w-full">
+            <div className="relative h-[85vh] w-full">
               {/* Gritty border effect */}
               <div className="absolute -inset-4 border-2 border-white/10 z-0 transform rotate-2"></div>
               <div className="absolute -inset-4 border-2 border-primary/20 z-0 transform -rotate-1"></div>
@@ -39,7 +39,7 @@ export const IntroSection = () => {
                   src={introImg}
                   alt="The Klan BJJ Studio"
                   fill
-                  className="object-cover"
+                  className="object-cover object-right-top"
                 />
 
                 {/* Gradient overlay */}

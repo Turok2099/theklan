@@ -17,7 +17,7 @@ export const Hero = () => {
           alt="The Klan BJJ - Sangre y Sudor"
           fill
           priority
-          className="object-cover object-[50%_30%]"
+          className="object-cover object-right md:object-[50%_30%]"
         />
       </div>
 
