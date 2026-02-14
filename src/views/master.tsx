@@ -5,19 +5,14 @@ import Image from "next/image";
 
 export const Master = () => {
   const images = [
-    "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759428590/The%20Klan/coaches/francisco-ramirez/2.png",
-    "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759428596/The%20Klan/coaches/francisco-ramirez/3.png",
-    "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759428597/The%20Klan/coaches/francisco-ramirez/4.png",
-    "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759428601/The%20Klan/coaches/francisco-ramirez/5.png",
-    "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759428603/The%20Klan/coaches/francisco-ramirez/6.png",
-    "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759428606/The%20Klan/coaches/francisco-ramirez/7.png",
-    "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759428607/The%20Klan/coaches/francisco-ramirez/8.png",
+    "https://res.cloudinary.com/dxbtafe9u/image/upload/v1770769807/WhatsApp_Image_2026-02-10_at_6.21.24_PM_rntehe.jpg",
+    "https://res.cloudinary.com/dxbtafe9u/image/upload/v1770769806/WhatsApp_Image_2026-02-10_at_6.21.01_PM_lcpziw.jpg",
+    "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759427156/The%20Klan/3.png",
+    "https://res.cloudinary.com/dxbtafe9u/image/upload/v1761709455/WhatsApp_Image_2025-10-28_at_6.26.36_PM_hcsyah.jpg",
     "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759429810/The%20Klan/coaches/francisco-ramirez/9.png",
-    "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759429789/The%20Klan/coaches/francisco-ramirez/10.png",
-    "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759428588/The%20Klan/coaches/francisco-ramirez/11.png",
-    "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759429793/The%20Klan/coaches/francisco-ramirez/12.jpg",
-
     "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759429794/The%20Klan/coaches/francisco-ramirez/14.jpg",
+    "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759429793/The%20Klan/coaches/francisco-ramirez/12.jpg",
+    "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759428613/The%20Klan/coaches/francisco-ramirez/WhatsApp%20Image%202025-10-02%20at%2011.jpg",
   ];
 
   return (
@@ -132,26 +127,58 @@ export const Master = () => {
           <div className="bg-gradient-to-br from-black to-zinc-900 p-8 md:p-14 rounded-3xl border border-white/10 shadow-2xl relative overflow-hidden">
             <div className="absolute top-0 right-0 p-32 bg-primary/10 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2"></div>
             <div className="max-w-4xl mx-auto">
-              <ul className="space-y-6 relative z-10">
-                <li className="text-lg md:text-2xl font-bold flex items-center">
-                  <span className="text-primary font-black mr-4 text-3xl">01.</span> Grand Master Ed Parker
-                </li>
-                <li className="text-lg md:text-2xl font-bold flex items-center pl-4 md:pl-8 border-l-2 border-white/10 ml-2 md:ml-3">
-                  Senior Master Ed Parker Jr.
-                </li>
-                <li className="text-lg md:text-2xl font-bold flex items-center pl-4 md:pl-8 border-l-2 border-white/10 ml-2 md:ml-3">
-                  Master Frank Soto
-                </li>
-                <li className="text-lg md:text-2xl font-bold flex items-center pl-4 md:pl-8 border-l-2 border-white/10 ml-2 md:ml-3">
-                  Master Jhon Ward <span className="text-gray-500 text-base font-normal ml-3 hidden md:inline-block">(Cinturón Negro 10° grado, Dublin, Irlanda)</span>
-                </li>
-                <li className="text-lg md:text-2xl font-bold flex items-center pl-4 md:pl-8 border-l-2 border-white/10 ml-2 md:ml-3">
-                  Maestre Juarez Soares <span className="text-gray-500 text-base font-normal ml-3 hidden md:inline-block">(Cinturón Negro 6° grado)</span>
-                </li>
-                <li className="text-lg md:text-2xl font-bold flex items-center pl-4 md:pl-8 border-l-2 border-primary ml-2 md:ml-3">
-                  <span className="text-primary">Maestre Wilson Feu</span> <span className="text-gray-500 text-base font-normal ml-3 hidden md:inline-block">(Cinturón Negro 3° grado)</span>
-                </li>
-              </ul>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
+                {/* Linaje 1: KEMPO */}
+                <div className="space-y-6">
+                  <h3 className="text-2xl font-black text-primary mb-6 flex items-center gap-3 border-b border-white/10 pb-4">
+                    <span className="text-white">Linaje</span> KEMPO
+                  </h3>
+                  <ul className="space-y-4">
+                    {[
+                      "Grand Master Ed Parker",
+                      "Senior Master Ed Parker Jr.",
+                      "Master Frank Soto",
+                      "Master Jhon Ward"
+                    ].map((master, idx) => (
+                      <li key={idx} className="text-lg md:text-xl font-bold flex flex-col group">
+                        <div className="flex items-center">
+                          <span className="text-primary font-black mr-3 text-xl group-hover:scale-110 transition-transform">❖</span>
+                          <span className="text-gray-200 group-hover:text-white transition-colors">{master}</span>
+                        </div>
+                        {master === "Master Jhon Ward" && (
+                          <span className="text-gray-500 text-sm font-normal ml-8 mt-1 block">
+                            (Cinturón Negro 10° grado, Dublin, Irlanda)
+                          </span>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* Linaje 2: JIUJITSU BRASILEÑO */}
+                <div className="space-y-6">
+                  <h3 className="text-2xl font-black text-primary mb-6 flex items-center gap-3 border-b border-white/10 pb-4">
+                    <span className="text-white">Linaje</span> BJJ
+                  </h3>
+                  <ul className="space-y-4">
+                    {[
+                      "Mitsuyo Maeda",
+                      "Luis França",
+                      "Oswaldo Fadda",
+                      "Monir Salomão",
+                      "Juarez Soares",
+                      "Wilson Féu"
+                    ].map((master, idx) => (
+                      <li key={idx} className="text-lg md:text-xl font-bold flex flex-col group">
+                        <div className="flex items-center">
+                          <span className="text-primary font-black mr-3 text-xl group-hover:scale-110 transition-transform">❖</span>
+                          <span className="text-gray-200 group-hover:text-white transition-colors">{master}</span>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
             </div>
           </div>
         </div>

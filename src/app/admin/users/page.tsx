@@ -1,8 +1,24 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
+import useSWR, { mutate } from "swr";
 import { useAuth } from "@/contexts/AuthContext";
 import Link from "next/link";
+import {
+  Users,
+  Search,
+  Edit2,
+  Trash2,
+  Check,
+  X,
+  Shield,
+  Mail,
+  Calendar,
+  FileText,
+  CreditCard,
+  ArrowLeft,
+  Loader2,
+} from "lucide-react";
 
 interface UserData {
   id: string;
@@ -29,11 +45,25 @@ interface UserData {
   } | null;
 }
 
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
 export default function UsersPage() {
   const { user, loading: authLoading } = useAuth();
-  const [users, setUsers] = useState<UserData[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+
+  const { data, error: apiError, isLoading } = useSWR(
+    user?.role === "admin" ? "/api/admin/users" : null,
+    fetcher,
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      dedupingInterval: 60000,
+    }
+  );
+
+  const users: UserData[] = data?.users || [];
+  const error = apiError ? (apiError instanceof Error ? apiError.message : "Error cargando datos") : null;
+  const loading = isLoading;
+
   const [editingField, setEditingField] = useState<{
     userId: string;
     field: "nombre" | "email" | "role";
@@ -43,39 +73,6 @@ export default function UsersPage() {
     email: "",
     role: "",
   });
-
-  const fetchData = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      console.log("🔍 Cargando usuarios...");
-
-      const response = await fetch("/api/admin/users");
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(
-          errorData.error || `Error ${response.status}: ${response.statusText}`
-        );
-      }
-
-      const data = await response.json();
-      console.log("✅ Usuarios obtenidos:", data.totalUsers);
-
-      setUsers(data.users || []);
-    } catch (err) {
-      console.error("Error cargando datos:", err);
-      setError(err instanceof Error ? err.message : "Error desconocido");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (user?.role === "admin") {
-      fetchData();
-    }
-  }, [user, fetchData]);
 
   const handleEditField = (
     userId: string,
@@ -142,13 +139,12 @@ export default function UsersPage() {
       console.log("✅ Usuario actualizado exitosamente");
       alert("Usuario actualizado exitosamente");
 
-      await fetchData();
+      mutate("/api/admin/users");
       handleCancelEdit();
     } catch (error) {
       console.error("❌ Error actualizando usuario:", error);
       alert(
-        `Error al actualizar usuario: ${
-          error instanceof Error ? error.message : "Error desconocido"
+        `Error al actualizar usuario: ${error instanceof Error ? error.message : "Error desconocido"
         }`
       );
     }
@@ -183,14 +179,13 @@ export default function UsersPage() {
 
       console.log("✅ Usuario eliminado exitosamente");
 
-      await fetchData();
+      mutate("/api/admin/users");
 
       alert("Usuario eliminado exitosamente");
     } catch (error) {
       console.error("❌ Error eliminando usuario:", error);
       alert(
-        `Error al eliminar usuario: ${
-          error instanceof Error ? error.message : "Error desconocido"
+        `Error al eliminar usuario: ${error instanceof Error ? error.message : "Error desconocido"
         }`
       );
     }
@@ -199,23 +194,23 @@ export default function UsersPage() {
   const getRoleBadgeColor = (role: string) => {
     switch (role) {
       case "admin":
-        return "bg-blue-100 text-blue-800 border border-blue-300";
+        return "bg-blue-500/20 text-blue-300 border border-blue-500/30";
       case "coach":
-        return "bg-purple-100 text-purple-800 border border-purple-300";
+        return "bg-purple-500/20 text-purple-300 border border-purple-500/30";
       case "student":
-        return "bg-green-100 text-green-800 border border-green-300";
+        return "bg-green-500/20 text-green-300 border border-green-500/30";
       default:
-        return "bg-gray-100 text-gray-800 border border-gray-300";
+        return "bg-gray-500/20 text-gray-300 border border-gray-500/30";
     }
   };
 
   // Mostrar loading mientras el auth se está cargando
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-pure-black flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Verificando permisos...</p>
+          <Loader2 className="h-12 w-12 text-primary animate-spin mx-auto mb-4" />
+          <p className="text-gray-400">Verificando permisos...</p>
         </div>
       </div>
     );
@@ -224,12 +219,13 @@ export default function UsersPage() {
   // Ahora sí verificar el rol después de que terminó de cargar
   if (user?.role !== "admin") {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-pure-black flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          <Shield className="h-16 w-16 text-gray-600 mx-auto mb-4" />
+          <h1 className="text-2xl font-bold text-white mb-2">
             Acceso Denegado
           </h1>
-          <p className="text-gray-600">
+          <p className="text-gray-400">
             No tienes permisos para acceder a esta página.
           </p>
         </div>
@@ -239,10 +235,10 @@ export default function UsersPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-pure-black flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Cargando usuarios...</p>
+          <Loader2 className="h-12 w-12 text-primary animate-spin mx-auto mb-4" />
+          <p className="text-gray-400">Cargando usuarios...</p>
         </div>
       </div>
     );
@@ -250,13 +246,14 @@ export default function UsersPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-pure-black flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-red-600 mb-4">Error</h1>
-          <p className="text-gray-600 mb-4">{error}</p>
+          <X className="h-16 w-16 text-red-500 mx-auto mb-4" />
+          <h1 className="text-2xl font-bold text-white mb-2">Error</h1>
+          <p className="text-gray-400 mb-6">{error}</p>
           <button
-            onClick={fetchData}
-            className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+            onClick={() => mutate("/api/admin/users")}
+            className="bg-primary text-white px-6 py-2 rounded-lg hover:bg-red-700 transition-colors font-bold"
           >
             Reintentar
           </button>
@@ -266,83 +263,72 @@ export default function UsersPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-8">
+    <div className="min-h-screen bg-pure-black text-gray-300">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header con botón de regreso */}
-        <div className="mb-6 md:mb-8">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+        <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-black text-white mb-2 flex items-center gap-3">
+              <Users className="h-8 w-8 text-primary" />
               Gestión de Usuarios
             </h1>
-            <Link
-              href="/admin"
-              className="inline-flex items-center justify-center px-4 py-2 text-sm font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors shadow-sm whitespace-nowrap"
-              style={{
-                color: "#ffffff",
-                backgroundColor: "#dc2626",
-                border: "none",
-                outline: "none",
-              }}
-            >
-              <svg
-                className="w-4 h-4 mr-2"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                style={{ stroke: "#ffffff" }}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                />
-              </svg>
-              <span style={{ color: "#ffffff" }}>Volver al Dashboard</span>
-            </Link>
+            <p className="text-gray-400">
+              Administra los usuarios, roles y estados de suscripción.
+            </p>
           </div>
+          <Link
+            href="/admin"
+            className="inline-flex items-center justify-center px-4 py-2 text-sm font-bold text-white bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-all group"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
+            Volver al Dashboard
+          </Link>
         </div>
 
         {/* Users Table */}
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
-          <div className="px-6 py-5 bg-gradient-to-r from-gray-50 to-white border-b border-gray-200">
-            <h2 className="text-xl font-bold text-gray-900">
+        <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden backdrop-blur-md">
+          <div className="px-6 py-4 border-b border-white/10 flex justify-between items-center bg-black/20">
+            <h2 className="text-lg font-bold text-white flex items-center gap-2">
               Usuarios Registrados
+              <span className="bg-primary/20 text-primary text-xs px-2 py-1 rounded-full border border-primary/30">
+                {users.length}
+              </span>
             </h2>
           </div>
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-800">
+            <table className="min-w-full divide-y divide-white/10">
+              <thead className="bg-black/40">
                 <tr>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">
                     Nombre
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">
                     Correo
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">
                     Rol
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">
                     Suscripción
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">
                     Responsiva
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">
                     Acciones
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-100">
+              <tbody className="divide-y divide-white/5">
                 {users.map((userItem) => (
                   <tr
                     key={userItem.id}
-                    className="hover:bg-gray-50 transition-colors duration-150"
+                    className="hover:bg-white/5 transition-colors duration-150"
                   >
+
                     <td className="px-6 py-5 whitespace-nowrap">
                       {editingField?.userId === userItem.id &&
-                      editingField?.field === "nombre" ? (
+                        editingField?.field === "nombre" ? (
                         <div className="flex items-center gap-2">
                           <input
                             type="text"
@@ -361,37 +347,17 @@ export default function UsersPage() {
                             onClick={() =>
                               handleSaveField(userItem.id, userItem.email)
                             }
-                            className="inline-flex items-center justify-center w-9 h-9 rounded-lg border border-green-300 bg-green-50 text-green-600 hover:bg-green-100 transition-colors"
+                            className="inline-flex items-center justify-center p-2 rounded-lg bg-green-500/10 text-green-500 hover:bg-green-500/20 transition-colors"
                             title="Guardar"
                           >
-                            <svg
-                              className="w-4 h-4"
-                              fill="currentColor"
-                              viewBox="0 0 20 20"
-                            >
-                              <path
-                                fillRule="evenodd"
-                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                clipRule="evenodd"
-                              />
-                            </svg>
+                            <Check className="w-4 h-4" />
                           </button>
                           <button
                             onClick={handleCancelEdit}
-                            className="inline-flex items-center justify-center w-9 h-9 rounded-lg border border-red-300 bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
+                            className="inline-flex items-center justify-center p-2 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors"
                             title="Cancelar"
                           >
-                            <svg
-                              className="w-4 h-4"
-                              fill="currentColor"
-                              viewBox="0 0 20 20"
-                            >
-                              <path
-                                fillRule="evenodd"
-                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                clipRule="evenodd"
-                              />
-                            </svg>
+                            <X className="w-4 h-4" />
                           </button>
                         </div>
                       ) : (
@@ -400,7 +366,7 @@ export default function UsersPage() {
                             {(userItem.nombre || "SN").charAt(0).toUpperCase()}
                           </div>
                           <div className="flex-1">
-                            <div className="text-sm font-semibold text-gray-900">
+                            <div className="text-sm font-semibold text-white">
                               {userItem.nombre || "Sin nombre"}
                             </div>
                           </div>
@@ -412,29 +378,17 @@ export default function UsersPage() {
                                 userItem.nombre || ""
                               )
                             }
-                            className="text-gray-400 hover:text-red-600 transition-colors"
+                            className="text-gray-500 hover:text-primary transition-colors"
                             title="Editar nombre"
                           >
-                            <svg
-                              className="w-5 h-5"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                              />
-                            </svg>
+                            <Edit2 className="w-4 h-4" />
                           </button>
                         </div>
                       )}
                     </td>
                     <td className="px-6 py-5 whitespace-nowrap">
                       <div className="flex items-center gap-2">
-                        <div className="text-sm text-gray-700 truncate max-w-xs">
+                        <div className="text-sm text-gray-400 truncate max-w-xs">
                           {userItem.email}
                         </div>
                         {userItem.email_verified ? (
@@ -470,7 +424,7 @@ export default function UsersPage() {
                     </td>
                     <td className="px-6 py-5 whitespace-nowrap">
                       {editingField?.userId === userItem.id &&
-                      editingField?.field === "role" ? (
+                        editingField?.field === "role" ? (
                         <div className="flex items-center gap-2">
                           <select
                             value={editForm.role}
@@ -541,22 +495,10 @@ export default function UsersPage() {
                                 userItem.role
                               )
                             }
-                            className="text-gray-400 hover:text-red-600 transition-colors"
+                            className="text-gray-500 hover:text-primary transition-colors"
                             title="Editar rol"
                           >
-                            <svg
-                              className="w-5 h-5"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                              />
-                            </svg>
+                            <Edit2 className="w-4 h-4" />
                           </button>
                         </div>
                       )}
@@ -565,11 +507,10 @@ export default function UsersPage() {
                       {userItem.subscription ? (
                         <div className="flex flex-col gap-1">
                           <span
-                            className={`inline-flex items-center px-3 py-1.5 text-xs font-bold rounded-lg ${
-                              userItem.subscription.isActive
-                                ? "bg-green-100 text-green-800 border border-green-300"
-                                : "bg-red-100 text-red-800 border border-red-300"
-                            }`}
+                            className={`inline-flex items-center px-3 py-1.5 text-xs font-bold rounded-lg ${userItem.subscription.isActive
+                              ? "bg-green-500/20 text-green-300 border border-green-500/30"
+                              : "bg-red-500/20 text-red-300 border border-red-500/30"
+                              }`}
                           >
                             {userItem.subscription.plan}
                           </span>
@@ -578,18 +519,17 @@ export default function UsersPage() {
                           </span>
                         </div>
                       ) : (
-                        <span className="inline-flex items-center px-3 py-1.5 text-xs font-bold rounded-lg bg-gray-100 text-gray-600 border border-gray-300">
+                        <span className="inline-flex items-center px-3 py-1.5 text-xs font-bold rounded-lg bg-gray-500/20 text-gray-400 border border-gray-500/30">
                           Sin suscripción
                         </span>
                       )}
                     </td>
                     <td className="px-6 py-5 whitespace-nowrap">
                       <span
-                        className={`inline-flex items-center px-3 py-1.5 text-xs font-bold rounded-lg ${
-                          userItem.responsiva_status?.isCompleted
-                            ? "bg-green-100 text-green-800 border border-green-300"
-                            : "bg-yellow-100 text-yellow-800 border border-yellow-300"
-                        }`}
+                        className={`inline-flex items-center px-3 py-1.5 text-xs font-bold rounded-lg ${userItem.responsiva_status?.isCompleted
+                          ? "bg-green-500/20 text-green-300 border border-green-500/30"
+                          : "bg-yellow-500/20 text-yellow-300 border border-yellow-500/30"
+                          }`}
                       >
                         {userItem.responsiva_status?.isCompleted
                           ? "✓ Completada"
@@ -601,32 +541,10 @@ export default function UsersPage() {
                         onClick={() =>
                           handleDeleteUser(userItem.id, userItem.email)
                         }
-                        className="inline-flex items-center justify-center px-3 py-2 text-xs font-semibold rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors shadow-sm"
-                        style={{
-                          color: "#ffffff",
-                          backgroundColor: "#dc2626",
-                          padding: "0.5rem 0.75rem",
-                          border: "none",
-                          outline: "none",
-                          borderRadius: "0.5rem",
-                          fontWeight: "600",
-                        }}
+                        className="inline-flex items-center justify-center p-2 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors"
+                        title="Eliminar usuario"
                       >
-                        <svg
-                          className="w-4 h-4 mr-1.5"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                          style={{ stroke: "#ffffff" }}
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                          />
-                        </svg>
-                        <span style={{ color: "#ffffff" }}>Eliminar</span>
+                        <Trash2 className="w-4 h-4" />
                       </button>
                     </td>
                   </tr>

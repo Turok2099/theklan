@@ -100,10 +100,9 @@ export default function DashboardPage() {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `responsiva-${
-        responsivaStatus?.responsiva?.nombre?.replace(/\s+/g, "-") ||
+      a.download = `responsiva-${responsivaStatus?.responsiva?.nombre?.replace(/\s+/g, "-") ||
         "documento"
-      }.pdf`;
+        }.pdf`;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
@@ -281,8 +280,7 @@ function SubscriptionStatus() {
 
         if (response.ok && data.success) {
           console.log(
-            `📊 SubscriptionStatus: ${
-              data.payments?.length || 0
+            `📊 SubscriptionStatus: ${data.payments?.length || 0
             } pagos cargados`
           );
           setPayments(data.payments || []);
@@ -469,7 +467,7 @@ function SubscriptionStatus() {
     // Filtrar solo pagos exitosos (suscripciones Y pagos únicos)
     const successfulPayments = payments.filter((p) => {
       const isSucceeded = p.status === "succeeded";
-      
+
       if (!isSucceeded) {
         console.log(`📊 SubscriptionStatus: Pago ${p.id} filtrado por status:`, {
           payment_type: p.payment_type,
@@ -549,7 +547,7 @@ function SubscriptionStatus() {
     // Si hay una suscripción activa, mostrarla
     // Si no, mostrar la suscripción más reciente (aunque esté expirada)
     // Si no hay suscripciones, mostrar el pago único más reciente
-    
+
     let lastPayment: Payment | null = null;
     let paymentType: "subscription" | "one-time" = "subscription";
 
@@ -607,8 +605,8 @@ function SubscriptionStatus() {
       paymentType,
       daysRemaining: isActive
         ? Math.ceil(
-            (expirationDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
-          )
+          (expirationDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+        )
         : 0,
     });
 
@@ -620,8 +618,8 @@ function SubscriptionStatus() {
       paymentType,
       daysRemaining: isActive
         ? Math.ceil(
-            (expirationDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
-          )
+          (expirationDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+        )
         : 0,
       planLabel: getPlanName(lastPayment.amount),
       source: "payments" as const,
@@ -650,42 +648,42 @@ function SubscriptionStatus() {
     source: subscription?.source,
     subscriptionDetails: subscription
       ? {
-          paymentId: subscription.payment.id,
-          amount: subscription.payment.amount,
-          plan: subscription.planLabel,
-          paymentDate: formatDate(subscription.paymentDate),
-          expirationDate: formatDate(subscription.expirationDate),
-          daysRemaining: subscription.daysRemaining,
-        }
+        paymentId: subscription.payment.id,
+        amount: subscription.payment.amount,
+        plan: subscription.planLabel,
+        paymentDate: formatDate(subscription.paymentDate),
+        expirationDate: formatDate(subscription.expirationDate),
+        daysRemaining: subscription.daysRemaining,
+      }
       : null,
   });
 
   // Determinar colores según el estado
   const backgroundColorClass = isActive
-    ? "bg-gradient-to-r from-green-500 to-green-600"
+    ? "bg-gradient-to-r from-green-900/40 to-green-800/40 border border-green-500/20"
     : subscription
-    ? "bg-gradient-to-r from-red-600 to-red-700"
-    : "bg-gradient-to-r from-gray-600 to-gray-700";
+      ? "bg-gradient-to-r from-red-900/40 to-red-800/40 border border-red-500/20"
+      : "bg-white/5 border border-white/10";
 
-  const textLightClass = isActive ? "text-green-50" : "text-gray-100";
+  const textLightClass = "text-white";
 
   return (
-    <div className={`${backgroundColorClass} rounded-lg shadow-lg p-6 mb-6`}>
+    <div className={`${backgroundColorClass} rounded-lg shadow-lg p-6 mb-6 border border-white/5`}>
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div className="text-white">
           {subscription && subscription.isActive ? (
             <div className={textLightClass}>
-              <p className="text-2xl font-bold mb-2">
+              <p className="text-2xl font-bold mb-2 text-white">
                 {subscription.planLabel}
               </p>
-              <p className="text-sm">
+              <p className="text-sm text-gray-300">
                 Activada: {formatDate(subscription.paymentDate)} | Monto:{
-                formatAmount(
-                  subscription.payment.amount,
-                  subscription.payment.currency
-                )}
+                  formatAmount(
+                    subscription.payment.amount,
+                    subscription.payment.currency
+                  )}
               </p>
-              <p className="text-sm">
+              <p className="text-sm text-gray-300">
                 Expira: {formatDate(subscription.expirationDate)} (
                 {subscription.daysRemaining}{" "}
                 {subscription.daysRemaining === 1 ? "día" : "días"} restantes)
@@ -693,15 +691,15 @@ function SubscriptionStatus() {
             </div>
           ) : subscription && !subscription.isActive ? (
             <div className={textLightClass}>
-              <p className="text-2xl font-bold">Suscripción Expirada</p>
-              <p className="text-sm">
+              <p className="text-2xl font-bold text-red-500">Suscripción Expirada</p>
+              <p className="text-sm text-gray-400">
                 Última suscripción: {formatDate(subscription.paymentDate)} |
                 Expiró: {formatDate(subscription.expirationDate)}
               </p>
             </div>
           ) : (
             <div className={textLightClass}>
-              <p className="text-2xl font-bold">
+              <p className="text-2xl font-bold text-gray-400">
                 No tienes una suscripción activa
               </p>
             </div>
@@ -710,7 +708,7 @@ function SubscriptionStatus() {
         {!subscription || !subscription.isActive ? (
           <Link
             href="/suscripcion"
-            className="px-6 py-3 bg-white text-gray-800 font-bold rounded-lg hover:bg-gray-100 transition-colors shadow-md hover:shadow-lg whitespace-nowrap"
+            className="px-6 py-3 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition-colors shadow-md hover:shadow-lg whitespace-nowrap"
           >
             Activar Suscripción
           </Link>
@@ -760,20 +758,20 @@ function DashboardContent({
   submitError: string;
 }) {
   return (
-    <main className="min-h-screen bg-gray-50 py-8 px-4">
+    <main className="min-h-screen bg-pure-black py-8 px-4 pt-32">
       <div className="container mx-auto max-w-4xl">
         {/* Header */}
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+        <div className="bg-neutral-900/50 backdrop-blur-sm border border-white/10 rounded-lg shadow-lg p-6 mb-6">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              <h1 className="text-3xl font-bold text-white mb-2">
                 ¡Bienvenido,{" "}
-                <span className="text-red-600">{getDisplayName()}</span>!
+                <span className="text-red-500">{getDisplayName()}</span>!
               </h1>
             </div>
             <button
               onClick={handleSignOut}
-              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+              className="px-4 py-2 border border-red-600/50 text-red-500 rounded-lg hover:bg-red-600/10 transition-colors"
             >
               Cerrar Sesión
             </button>
@@ -784,11 +782,11 @@ function DashboardContent({
         <SubscriptionStatus />
 
         {/* Información del usuario */}
-        <div className="bg-gradient-to-br from-gray-900 to-black rounded-2xl shadow-xl border border-gray-800 p-8 mb-6 hover:shadow-2xl transition-all duration-300">
-          <div className="mb-8">
-            <h2 
-              className="font-bold text-red-600 mb-1" 
-              style={{ 
+        <div className="bg-neutral-900/50 backdrop-blur-sm border border-white/10 rounded-2xl shadow-xl p-8 mb-6 hover:shadow-2xl transition-all duration-300">
+          <div className="mb-0">
+            <h2
+              className="font-bold text-red-600 mb-1 uppercase tracking-wider"
+              style={{
                 fontSize: '2.25rem',
                 fontWeight: '700',
                 lineHeight: '1.2'
@@ -797,26 +795,27 @@ function DashboardContent({
               Mi Cuenta
             </h2>
           </div>
+          <p className="text-gray-400 mb-8 border-b border-white/10 pb-4">Administra tu información personal y de cuenta.</p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Lado Izquierdo */}
             <div className="space-y-6">
               <div className="min-h-[72px]">
-                <label className="block text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">
+                <label className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
                   Nombre
                 </label>
                 {editingField !== "nombre" ? (
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 group">
                     <p className="text-lg text-white font-medium min-h-[40px] flex items-center flex-1">
                       {getUserName() || (
-                        <span className="text-gray-400 italic">
+                        <span className="text-gray-500 italic">
                           No configurado
                         </span>
                       )}
                     </p>
                     <button
                       onClick={() => setEditingField("nombre")}
-                      className="text-gray-400 hover:text-red-600 transition-colors"
+                      className="text-gray-500 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
                       title="Editar nombre"
                       type="button"
                     >
@@ -835,7 +834,7 @@ function DashboardContent({
                       onChange={(e) =>
                         setEditForm({ ...editForm, nombre: e.target.value })
                       }
-                      className="flex-1 px-4 py-2 text-base border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent"
+                      className="flex-1 px-4 py-2 text-base border border-white/20 bg-white/5 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent placeholder-gray-500"
                       placeholder="Ingresa tu nombre"
                     />
                     <button
@@ -882,17 +881,17 @@ function DashboardContent({
               </div>
 
               <div className="min-h-[72px]">
-                <label className="block text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">
+                <label className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
                   E-mail
                 </label>
                 {editingField !== "email" ? (
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 group">
                     <p className="text-lg text-white font-medium min-h-[40px] flex items-center flex-1">
                       {user?.email}
                     </p>
                     <button
                       onClick={() => setEditingField("email")}
-                      className="text-gray-400 hover:text-red-600 transition-colors"
+                      className="text-gray-500 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
                       title="Editar email"
                       type="button"
                     >
@@ -911,7 +910,7 @@ function DashboardContent({
                       onChange={(e) =>
                         setEditForm({ ...editForm, email: e.target.value })
                       }
-                      className="flex-1 px-4 py-2 text-base border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent"
+                      className="flex-1 px-4 py-2 text-base border border-white/20 bg-white/5 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent placeholder-gray-500"
                       required
                     />
                     <button
@@ -958,7 +957,7 @@ function DashboardContent({
               </div>
 
               <div className="min-h-[72px]">
-                <label className="block text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">
+                <label className="block text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
                   Rol
                 </label>
                 <p className="text-lg text-white font-medium capitalize min-h-[40px] flex items-center">
@@ -984,47 +983,46 @@ function DashboardContent({
                   onClick={() =>
                     downloadResponsiva(responsivaStatus.responsiva?.id)
                   }
-                  className="btn-slide-right inline-flex w-full items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold bg-gray-100 text-gray-900 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg border border-gray-300 relative"
-                  style={{ 
-                    backgroundColor: '#f3f4f6',
+                  className="btn-slide-right inline-flex w-full items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold bg-white/5 border border-white/10 text-white rounded-xl transition-all duration-200 hover:bg-white/10 hover:border-red-500/50 shadow-md hover:shadow-lg relative group"
+                  style={{
                     minHeight: '44px'
                   }}
                   title="Descargar responsiva"
                   aria-label="Descargar responsiva"
                 >
-                  <ArrowDownTrayIcon className="w-5 h-5 text-gray-900 relative z-10" />
-                  <span className="text-gray-900 relative z-10">Responsiva completada</span>
+                  <ArrowDownTrayIcon className="w-5 h-5 text-red-500 relative z-10 group-hover:text-red-400" />
+                  <span className="relative z-10">Responsiva completada</span>
                 </button>
               ) : null}
 
               <Link
                 href="/dashboard/change-password"
-                className="btn-slide-right inline-flex w-full items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold bg-gray-100 text-gray-900 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg border border-gray-300 relative"
+                className="btn-slide-right inline-flex w-full items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold bg-white/5 border border-white/10 text-white rounded-xl transition-all duration-200 hover:bg-white/10 hover:border-red-500/50 shadow-md hover:shadow-lg relative group"
               >
-                <LockClosedIcon className="w-5 h-5 text-gray-900 relative z-10" />
-                <span className="text-gray-900 relative z-10">Cambiar Contraseña</span>
+                <LockClosedIcon className="w-5 h-5 text-red-500 relative z-10 group-hover:text-red-400" />
+                <span className="relative z-10">Cambiar Contraseña</span>
               </Link>
 
               <Link
                 href="/dashboard/payments"
-                className="btn-slide-right inline-flex w-full items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold bg-gray-100 text-gray-900 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg border border-gray-300 relative"
+                className="btn-slide-right inline-flex w-full items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold bg-white/5 border border-white/10 text-white rounded-xl transition-all duration-200 hover:bg-white/10 hover:border-red-500/50 shadow-md hover:shadow-lg relative group"
               >
-                <ClockIcon className="w-5 h-5 text-gray-900 relative z-10" />
-                <span className="text-gray-900 relative z-10">Historial de Pagos</span>
+                <ClockIcon className="w-5 h-5 text-red-500 relative z-10 group-hover:text-red-400" />
+                <span className="relative z-10">Historial de Pagos</span>
               </Link>
 
               <Link
                 href="/suscripcion"
-                className="btn-slide-right inline-flex w-full items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold bg-gray-100 text-gray-900 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg border border-gray-300 relative"
+                className="btn-slide-right inline-flex w-full items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold bg-white/5 border border-white/10 text-white rounded-xl transition-all duration-200 hover:bg-white/10 hover:border-red-500/50 shadow-md hover:shadow-lg relative group"
               >
-                <CreditCardIcon className="w-5 h-5 text-gray-900 relative z-10" />
-                <span className="text-gray-900 relative z-10">Hacer un Nuevo Pago</span>
+                <CreditCardIcon className="w-5 h-5 text-red-500 relative z-10 group-hover:text-red-400" />
+                <span className="relative z-10">Hacer un Nuevo Pago</span>
               </Link>
             </div>
           </div>
 
           {submitError && editingField && (
-            <div className="bg-red-900 border border-red-700 rounded-lg p-4 mt-4">
+            <div className="bg-red-900/50 border border-red-700/50 rounded-lg p-4 mt-4">
               <p className="text-red-200 text-sm font-medium">{submitError}</p>
             </div>
           )}
@@ -1033,16 +1031,16 @@ function DashboardContent({
         {/* Acciones disponibles */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Clases */}
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-3">
+          <div className="bg-neutral-900/50 backdrop-blur-sm border border-white/10 rounded-lg shadow-lg p-6">
+            <h3 className="text-lg font-semibold text-white mb-3">
               🥋 Mis Clases
             </h3>
-            <p className="text-gray-600 mb-4">
+            <p className="text-gray-400 mb-4">
               Consulta tu horario y progreso en las clases
             </p>
             <button
               disabled
-              className="inline-block w-full text-center px-4 py-2 bg-gray-400 text-white rounded-lg cursor-not-allowed"
+              className="inline-block w-full text-center px-4 py-2 bg-white/5 border border-white/10 text-gray-500 rounded-lg cursor-not-allowed"
             >
               Próximamente
             </button>
@@ -1051,11 +1049,11 @@ function DashboardContent({
 
         {/* Mensaje de bienvenida */}
         {!user?.email_verified && (
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mt-6">
+          <div className="bg-yellow-900/20 border border-yellow-700/50 rounded-lg p-4 mt-6">
             <div className="flex">
               <div className="flex-shrink-0">
                 <svg
-                  className="h-5 w-5 text-yellow-400"
+                  className="h-5 w-5 text-yellow-500"
                   viewBox="0 0 20 20"
                   fill="currentColor"
                 >
@@ -1067,10 +1065,10 @@ function DashboardContent({
                 </svg>
               </div>
               <div className="ml-3">
-                <h3 className="text-sm font-medium text-yellow-800">
+                <h3 className="text-sm font-medium text-yellow-500">
                   Verifica tu email
                 </h3>
-                <div className="mt-2 text-sm text-yellow-700">
+                <div className="mt-2 text-sm text-yellow-400/80">
                   <p>
                     Por favor verifica tu dirección de email para acceder a
                     todas las funcionalidades. Revisa tu bandeja de entrada y

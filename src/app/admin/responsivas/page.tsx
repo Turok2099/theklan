@@ -1,8 +1,10 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
+import useSWR, { mutate } from "swr";
 import { useAuth } from "@/contexts/AuthContext";
 import Link from "next/link";
+import { FileText, Download, ArrowLeft, Loader2, Shield, X } from "lucide-react";
 
 interface ResponsivaData {
   id: string;
@@ -22,44 +24,24 @@ interface ResponsivaData {
   user_id?: string;
 }
 
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
 export default function ResponsivasPage() {
   const { user, loading: authLoading } = useAuth();
-  const [responsivas, setResponsivas] = useState<ResponsivaData[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  const fetchData = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      console.log("🔍 Cargando responsivas...");
-
-      const response = await fetch("/api/admin/users");
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(
-          errorData.error || `Error ${response.status}: ${response.statusText}`
-        );
-      }
-
-      const data = await response.json();
-      console.log("✅ Responsivas obtenidas:", data.totalResponsivas);
-
-      setResponsivas(data.responsivas || []);
-    } catch (err) {
-      console.error("Error cargando datos:", err);
-      setError(err instanceof Error ? err.message : "Error desconocido");
-    } finally {
-      setLoading(false);
+  const { data, error: apiError, isLoading } = useSWR(
+    user?.role === "admin" ? "/api/admin/users" : null,
+    fetcher,
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      dedupingInterval: 60000,
     }
-  }, []);
+  );
 
-  useEffect(() => {
-    if (user?.role === "admin") {
-      fetchData();
-    }
-  }, [user, fetchData]);
+  const responsivas: ResponsivaData[] = data?.responsivas || [];
+  const error = apiError ? (apiError instanceof Error ? apiError.message : "Error cargando datos") : null;
+  const loading = isLoading;
 
   const downloadResponsiva = async (responsivaId: string) => {
     try {
@@ -99,10 +81,10 @@ export default function ResponsivasPage() {
   // Mostrar loading mientras el auth se está cargando
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-pure-black flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Verificando permisos...</p>
+          <Loader2 className="h-12 w-12 text-primary animate-spin mx-auto mb-4" />
+          <p className="text-gray-400">Verificando permisos...</p>
         </div>
       </div>
     );
@@ -111,12 +93,13 @@ export default function ResponsivasPage() {
   // Ahora sí verificar el rol después de que terminó de cargar
   if (user?.role !== "admin") {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-pure-black flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          <Shield className="h-16 w-16 text-gray-600 mx-auto mb-4" />
+          <h1 className="text-2xl font-bold text-white mb-2">
             Acceso Denegado
           </h1>
-          <p className="text-gray-600">
+          <p className="text-gray-400">
             No tienes permisos para acceder a esta página.
           </p>
         </div>
@@ -126,10 +109,10 @@ export default function ResponsivasPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-pure-black flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Cargando responsivas...</p>
+          <Loader2 className="h-12 w-12 text-primary animate-spin mx-auto mb-4" />
+          <p className="text-gray-400">Cargando responsivas...</p>
         </div>
       </div>
     );
@@ -137,13 +120,14 @@ export default function ResponsivasPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-pure-black flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-red-600 mb-4">Error</h1>
-          <p className="text-gray-600 mb-4">{error}</p>
+          <X className="h-16 w-16 text-red-500 mx-auto mb-4" />
+          <h1 className="text-2xl font-bold text-white mb-2">Error</h1>
+          <p className="text-gray-400 mb-6">{error}</p>
           <button
-            onClick={fetchData}
-            className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+            onClick={() => mutate("/api/admin/users")}
+            className="bg-primary text-white px-6 py-2 rounded-lg hover:bg-red-700 transition-colors font-bold"
           >
             Reintentar
           </button>
@@ -153,112 +137,100 @@ export default function ResponsivasPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-8">
+    <div className="min-h-screen bg-pure-black text-gray-300">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header con botón de regreso */}
-        <div className="mb-6 md:mb-8">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+        <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-black text-white mb-2 flex items-center gap-3">
+              <FileText className="h-8 w-8 text-primary" />
               Gestión de Responsivas
             </h1>
-            <Link
-              href="/admin"
-              className="inline-flex items-center justify-center px-4 py-2 text-sm font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors shadow-sm whitespace-nowrap"
-              style={{
-                color: "#ffffff",
-                backgroundColor: "#dc2626",
-                border: "none",
-                outline: "none",
-              }}
-            >
-              <svg
-                className="w-4 h-4 mr-2"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                style={{ stroke: "#ffffff" }}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                />
-              </svg>
-              <span style={{ color: "#ffffff" }}>Volver al Dashboard</span>
-            </Link>
+            <p className="text-gray-400">
+              Administra y descarga las cartas responsivas de los usuarios.
+            </p>
           </div>
+          <Link
+            href="/admin"
+            className="inline-flex items-center justify-center px-4 py-2 text-sm font-bold text-white bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-all group"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
+            Volver al Dashboard
+          </Link>
         </div>
 
         {/* Responsivas Table */}
-        <div className="bg-white rounded-lg shadow">
-          <div className="px-4 md:px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900">
+        <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden backdrop-blur-md">
+          <div className="px-6 py-4 border-b border-white/10 flex justify-between items-center bg-black/20">
+            <h2 className="text-lg font-bold text-white flex items-center gap-2">
               Responsivas Registradas
+              <span className="bg-primary/20 text-primary text-xs px-2 py-1 rounded-full border border-primary/30">
+                {responsivas.length}
+              </span>
             </h2>
           </div>
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-white/10">
+              <thead className="bg-black/40">
                 <tr>
-                  <th className="px-3 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">
                     Estudiante
                   </th>
-                  <th className="px-3 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">
                     Email
                   </th>
-                  <th className="px-3 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">
                     Teléfono
                   </th>
-                  <th className="px-3 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">
                     Estado
                   </th>
-                  <th className="px-3 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">
                     Fecha
                   </th>
-                  <th className="px-3 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">
                     Acciones
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="divide-y divide-white/5">
                 {responsivas.map((responsiva) => (
-                  <tr key={responsiva.id}>
-                    <td className="px-3 md:px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900 truncate max-w-xs">
+                  <tr key={responsiva.id} className="hover:bg-white/5 transition-colors duration-150">
+                    <td className="px-6 py-5 whitespace-nowrap">
+                      <div className="text-sm font-bold text-white truncate max-w-xs">
                         {responsiva.nombre} {responsiva.apellido_paterno}
                       </div>
                     </td>
-                    <td className="px-3 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-5 whitespace-nowrap text-sm text-gray-400">
                       <div className="truncate max-w-xs">{responsiva.email}</div>
                     </td>
-                    <td className="px-3 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-5 whitespace-nowrap text-sm text-gray-400">
                       {responsiva.telefono}
                     </td>
-                    <td className="px-3 md:px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-5 whitespace-nowrap">
                       <span
-                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                          responsiva.acepta_terminos &&
-                          responsiva.acepta_aviso_privacidad
-                            ? "bg-green-100 text-green-800"
-                            : "bg-yellow-100 text-yellow-800"
-                        }`}
+                        className={`inline-flex items-center px-3 py-1.5 text-xs font-bold rounded-lg ${responsiva.acepta_terminos &&
+                            responsiva.acepta_aviso_privacidad
+                            ? "bg-green-500/20 text-green-300 border border-green-500/30"
+                            : "bg-yellow-500/20 text-yellow-300 border border-yellow-500/30"
+                          }`}
                       >
                         {responsiva.acepta_terminos &&
-                        responsiva.acepta_aviso_privacidad
+                          responsiva.acepta_aviso_privacidad
                           ? "Completada"
                           : "Pendiente"}
                       </span>
                     </td>
-                    <td className="px-3 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-5 whitespace-nowrap text-sm text-gray-400">
                       {formatDate(responsiva.created_at)}
                     </td>
-                    <td className="px-3 md:px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <td className="px-6 py-5 whitespace-nowrap text-sm font-medium">
                       <button
                         onClick={() => downloadResponsiva(responsiva.id)}
-                        className="text-blue-600 hover:text-blue-900 transition-colors text-xs md:text-sm"
+                        className="inline-flex items-center text-primary hover:text-red-400 transition-colors gap-2 font-bold"
                       >
-                        📄 Descargar PDF
+                        <Download className="w-4 h-4" />
+                        Descargar PDF
                       </button>
                     </td>
                   </tr>

@@ -1,7 +1,16 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import useSWR from "swr";
 import { useAuth } from "@/contexts/AuthContext";
+
+import {
+  Users,
+  FileSignature,
+  CreditCard,
+  ArrowRight,
+  CheckCircle,
+  TrendingUp,
+} from "lucide-react";
 
 interface ResponsivaData {
   id: string;
@@ -47,72 +56,45 @@ interface PaymentData {
   paid_at: string | null;
 }
 
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
 export default function AdminDashboard() {
   const { user, loading: authLoading } = useAuth();
-  const [responsivas, setResponsivas] = useState<ResponsivaData[]>([]);
-  const [users, setUsers] = useState<UserData[]>([]);
-  const [payments, setPayments] = useState<PaymentData[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  const fetchData = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      console.log("🔍 Iniciando carga de datos del admin dashboard...");
+  const {
+    data: usersData,
+    error: usersError,
+    isLoading: usersLoading,
+  } = useSWR(user?.role === "admin" ? "/api/admin/users" : null, fetcher, {
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+    dedupingInterval: 60000, // 1 minute
+  });
 
-      // Obtener usuarios y responsivas
-      const usersResponse = await fetch("/api/admin/users");
-      if (!usersResponse.ok) {
-        const errorData = await usersResponse.json();
-        throw new Error(
-          errorData.error ||
-            `Error ${usersResponse.status}: ${usersResponse.statusText}`
-        );
-      }
-      const usersData = await usersResponse.json();
+  const {
+    data: paymentsData,
+    error: paymentsError,
+    isLoading: paymentsLoading,
+  } = useSWR(user?.role === "admin" ? "/api/admin/payments" : null, fetcher, {
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+    dedupingInterval: 60000, // 1 minute
+  });
 
-      // Obtener pagos
-      const paymentsResponse = await fetch("/api/admin/payments");
-      if (!paymentsResponse.ok) {
-        const errorData = await paymentsResponse.json();
-        throw new Error(
-          errorData.error ||
-            `Error ${paymentsResponse.status}: ${paymentsResponse.statusText}`
-        );
-      }
-      const paymentsData = await paymentsResponse.json();
+  const loading = usersLoading || paymentsLoading;
+  const error = usersError || paymentsError;
 
-      console.log("✅ Datos obtenidos de API:", {
-        totalUsers: usersData.totalUsers,
-        totalResponsivas: usersData.totalResponsivas,
-        totalPayments: paymentsData.totalPayments,
-      });
-
-      setResponsivas(usersData.responsivas || []);
-      setUsers(usersData.users || []);
-      setPayments(paymentsData.payments || []);
-    } catch (err) {
-      console.error("Error cargando datos:", err);
-      setError(err instanceof Error ? err.message : "Error desconocido");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (user?.role === "admin") {
-      fetchData();
-    }
-  }, [user, fetchData]);
+  const users: UserData[] = usersData?.users || [];
+  const responsivas: ResponsivaData[] = usersData?.responsivas || [];
+  const payments: PaymentData[] = paymentsData?.payments || [];
 
   // Mostrar loading mientras el auth se está cargando
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-pure-black flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Verificando permisos...</p>
+          <p className="text-gray-400">Verificando permisos...</p>
         </div>
       </div>
     );
@@ -121,12 +103,12 @@ export default function AdminDashboard() {
   // Ahora sí verificar el rol después de que terminó de cargar
   if (user?.role !== "admin") {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-pure-black flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          <h1 className="text-2xl font-bold text-white mb-4">
             Acceso Denegado
           </h1>
-          <p className="text-gray-600">
+          <p className="text-gray-400">
             No tienes permisos para acceder a esta página.
           </p>
         </div>
@@ -136,10 +118,10 @@ export default function AdminDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-pure-black flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Cargando datos...</p>
+          <p className="text-gray-400">Cargando datos...</p>
         </div>
       </div>
     );
@@ -147,15 +129,15 @@ export default function AdminDashboard() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-pure-black flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-red-600 mb-4">Error</h1>
-          <p className="text-gray-600 mb-4">{error}</p>
+          <p className="text-gray-400 mb-4">Error al cargar los datos. Por favor, intenta de nuevo.</p>
           <button
-            onClick={fetchData}
-            className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+            onClick={() => window.location.reload()}
+            className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors shadow-lg hover:shadow-red-900/20"
           >
-            Reintentar
+            Recargar
           </button>
         </div>
       </div>
@@ -199,58 +181,50 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center">
-      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen bg-pure-black flex items-center pt-32 pb-12">
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Welcome Header */}
         <div className="mb-8 text-center">
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
-            Bienvenido, {getDisplayName()}
+          <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
+            Panel de Administración
           </h1>
+          <p className="text-gray-400 text-lg">
+            Bienvenido, <span className="text-red-500 font-semibold">{getDisplayName()}</span>
+          </p>
         </div>
 
         {/* Grid de Cards de Gestión */}
         <div className="flex justify-center">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 max-w-6xl">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 max-w-6xl w-full">
             {/* Card de Gestión de Usuarios */}
-            <div className="bg-white rounded-lg shadow overflow-hidden">
-              <div className="p-5">
-                <div className="flex items-center justify-between mb-3">
-                  <div>
-                    <h2 className="text-xl font-bold text-gray-900">
-                      Gestión de Usuarios
-                    </h2>
+            <div className="bg-neutral-900/50 backdrop-blur-sm border border-white/10 rounded-xl shadow-xl overflow-hidden hover:border-blue-500/30 transition-all group">
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="p-3 bg-blue-500/10 rounded-xl border border-blue-500/20 group-hover:bg-blue-500/20 transition-colors">
+                    <Users className="w-8 h-8 text-blue-500" />
                   </div>
-                  <div className="hidden md:block">
-                    <svg
-                      className="w-10 h-10 text-blue-500"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"
-                      />
-                    </svg>
-                  </div>
+                  <h2 className="text-xl font-bold text-white text-right">
+                    Gestión de<br />Usuarios
+                  </h2>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 mb-3">
-                  <div className="bg-blue-50 rounded-lg p-3">
-                    <p className="text-xs text-blue-600 font-medium mb-1">
-                      Total de Usuarios
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                  <div className="bg-white/5 border border-white/10 rounded-lg p-3">
+                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1">
+                      Total
                     </p>
-                    <p className="text-xl font-bold text-blue-900">
+                    <p className="text-2xl font-bold text-white">
                       {users.length}
                     </p>
                   </div>
-                  <div className="bg-green-50 rounded-lg p-3">
-                    <p className="text-xs text-green-600 font-medium mb-1">
-                      Emails Verificados
+                  <div className="bg-white/5 border border-white/10 rounded-lg p-3 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 p-1 opacity-20">
+                      <CheckCircle className="w-8 h-8 text-green-500" />
+                    </div>
+                    <p className="text-[10px] text-green-400 font-bold uppercase tracking-widest mb-1">
+                      Verificados
                     </p>
-                    <p className="text-xl font-bold text-green-900">
+                    <p className="text-2xl font-bold text-white">
                       {users.filter((u) => u.email_verified).length}
                     </p>
                   </div>
@@ -258,66 +232,43 @@ export default function AdminDashboard() {
 
                 <a
                   href="/admin/users"
-                  className="inline-flex items-center justify-center w-full px-4 py-2.5 bg-red-600 text-white text-sm font-semibold rounded-lg hover:bg-red-700 transition-colors"
+                  className="flex items-center justify-between w-full px-4 py-3 bg-white/5 hover:bg-blue-600/20 text-gray-300 hover:text-blue-400 border border-white/10 hover:border-blue-500/50 rounded-lg transition-all group/btn"
                 >
-                  <svg
-                    className="w-4 h-4 mr-2"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"
-                    />
-                  </svg>
-                  Ver Todos los Usuarios
+                  <span className="text-sm font-semibold">Ver Todos</span>
+                  <ArrowRight className="w-4 h-4 transform group-hover/btn:translate-x-1 transition-transform" />
                 </a>
               </div>
             </div>
 
             {/* Card de Gestión de Responsivas */}
-            <div className="bg-white rounded-lg shadow overflow-hidden">
-              <div className="p-5">
-                <div className="flex items-center justify-between mb-3">
-                  <div>
-                    <h2 className="text-xl font-bold text-gray-900">
-                      Gestión de Responsivas
-                    </h2>
+            <div className="bg-neutral-900/50 backdrop-blur-sm border border-white/10 rounded-xl shadow-xl overflow-hidden hover:border-yellow-500/30 transition-all group">
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="p-3 bg-yellow-500/10 rounded-xl border border-yellow-500/20 group-hover:bg-yellow-500/20 transition-colors">
+                    <FileSignature className="w-8 h-8 text-yellow-500" />
                   </div>
-                  <div className="hidden md:block">
-                    <svg
-                      className="w-10 h-10 text-yellow-500"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                      />
-                    </svg>
-                  </div>
+                  <h2 className="text-xl font-bold text-white text-right">
+                    Gestión de<br />Responsivas
+                  </h2>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 mb-3">
-                  <div className="bg-yellow-50 rounded-lg p-3">
-                    <p className="text-xs text-yellow-600 font-medium mb-1">
-                      Total de Responsivas
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                  <div className="bg-white/5 border border-white/10 rounded-lg p-3">
+                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1">
+                      Total
                     </p>
-                    <p className="text-xl font-bold text-yellow-900">
+                    <p className="text-2xl font-bold text-white">
                       {responsivas.length}
                     </p>
                   </div>
-                  <div className="bg-green-50 rounded-lg p-3">
-                    <p className="text-xs text-green-600 font-medium mb-1">
-                      Responsivas Firmadas
+                  <div className="bg-white/5 border border-white/10 rounded-lg p-3 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 p-1 opacity-20">
+                      <CheckCircle className="w-8 h-8 text-green-500" />
+                    </div>
+                    <p className="text-[10px] text-green-400 font-bold uppercase tracking-widest mb-1">
+                      Firmadas
                     </p>
-                    <p className="text-xl font-bold text-green-900">
+                    <p className="text-2xl font-bold text-white">
                       {
                         responsivas.filter(
                           (r) => r.acepta_terminos && r.acepta_aviso_privacidad
@@ -329,66 +280,43 @@ export default function AdminDashboard() {
 
                 <a
                   href="/admin/responsivas"
-                  className="inline-flex items-center justify-center w-full px-4 py-2.5 bg-red-600 text-white text-sm font-semibold rounded-lg hover:bg-red-700 transition-colors"
+                  className="flex items-center justify-between w-full px-4 py-3 bg-white/5 hover:bg-yellow-600/20 text-gray-300 hover:text-yellow-400 border border-white/10 hover:border-yellow-500/50 rounded-lg transition-all group/btn"
                 >
-                  <svg
-                    className="w-4 h-4 mr-2"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                    />
-                  </svg>
-                  Ver Todas las Responsivas
+                  <span className="text-sm font-semibold">Ver Todas</span>
+                  <ArrowRight className="w-4 h-4 transform group-hover/btn:translate-x-1 transition-transform" />
                 </a>
               </div>
             </div>
 
             {/* Card de Gestión de Pagos */}
-            <div className="bg-white rounded-lg shadow overflow-hidden">
-              <div className="p-5">
-                <div className="flex items-center justify-between mb-3">
-                  <div>
-                    <h2 className="text-xl font-bold text-gray-900">
-                      Gestión de Pagos
-                    </h2>
+            <div className="bg-neutral-900/50 backdrop-blur-sm border border-white/10 rounded-xl shadow-xl overflow-hidden hover:border-green-500/30 transition-all group">
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="p-3 bg-green-500/10 rounded-xl border border-green-500/20 group-hover:bg-green-500/20 transition-colors">
+                    <CreditCard className="w-8 h-8 text-green-500" />
                   </div>
-                  <div className="hidden md:block">
-                    <svg
-                      className="w-10 h-10 text-green-500"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
-                  </div>
+                  <h2 className="text-xl font-bold text-white text-right">
+                    Gestión de<br />Pagos
+                  </h2>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 mb-3">
-                  <div className="bg-green-50 rounded-lg p-3">
-                    <p className="text-xs text-green-600 font-medium mb-1">
-                      Pagos Este Mes
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                  <div className="bg-white/5 border border-white/10 rounded-lg p-3">
+                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1">
+                      Pagos Mes
                     </p>
-                    <p className="text-xl font-bold text-green-900">
+                    <p className="text-2xl font-bold text-white">
                       {paymentsThisMonth.length}
                     </p>
                   </div>
-                  <div className="bg-blue-50 rounded-lg p-3">
-                    <p className="text-xs text-blue-600 font-medium mb-1">
-                      Ingresos del Mes
+                  <div className="bg-white/5 border border-white/10 rounded-lg p-3 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 p-1 opacity-20">
+                      <TrendingUp className="w-8 h-8 text-green-500" />
+                    </div>
+                    <p className="text-[10px] text-green-400 font-bold uppercase tracking-widest mb-1">
+                      Ingresos
                     </p>
-                    <p className="text-xl font-bold text-blue-900">
+                    <p className="text-xl font-bold text-white truncate" title={formatAmount(totalAmountThisMonth, "mxn")}>
                       {formatAmount(totalAmountThisMonth, "mxn")}
                     </p>
                   </div>
@@ -396,22 +324,10 @@ export default function AdminDashboard() {
 
                 <a
                   href="/admin/pagos"
-                  className="inline-flex items-center justify-center w-full px-4 py-2.5 bg-red-600 text-white text-sm font-semibold rounded-lg hover:bg-red-700 transition-colors"
+                  className="flex items-center justify-between w-full px-4 py-3 bg-white/5 hover:bg-green-600/20 text-gray-300 hover:text-green-400 border border-white/10 hover:border-green-500/50 rounded-lg transition-all group/btn"
                 >
-                  <svg
-                    className="w-4 h-4 mr-2"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
-                    />
-                  </svg>
-                  Ver Todos los Pagos
+                  <span className="text-sm font-semibold">Ver Todos</span>
+                  <ArrowRight className="w-4 h-4 transform group-hover/btn:translate-x-1 transition-transform" />
                 </a>
               </div>
             </div>

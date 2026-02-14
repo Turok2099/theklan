@@ -151,13 +151,13 @@ export const CoachGallery = ({ images, coachName }: CoachGalleryProps) => {
         {/* Carousel Controls */}
         <button
           onClick={prevSlide}
-          className="absolute top-1/2 -left-4 md:-left-12 -translate-y-1/2 w-10 h-10 border border-white/10 bg-black/50 hover:bg-primary hover:border-primary rounded-full flex items-center justify-center text-white transition-all z-10 opacity-0 group-hover/carousel:opacity-100 pointer-events-auto"
+          className="absolute top-1/2 -left-4 md:-left-6 -translate-y-1/2 w-10 h-10 border border-white/10 bg-black/80 hover:bg-primary hover:border-primary rounded-full flex items-center justify-center text-white transition-all z-10 pointer-events-auto shadow-lg"
         >
           <ChevronLeftIcon className="w-6 h-6" />
         </button>
         <button
           onClick={nextSlide}
-          className="absolute top-1/2 -right-4 md:-right-12 -translate-y-1/2 w-10 h-10 border border-white/10 bg-black/50 hover:bg-primary hover:border-primary rounded-full flex items-center justify-center text-white transition-all z-10 opacity-0 group-hover/carousel:opacity-100 pointer-events-auto"
+          className="absolute top-1/2 -right-4 md:-right-6 -translate-y-1/2 w-10 h-10 border border-white/10 bg-black/80 hover:bg-primary hover:border-primary rounded-full flex items-center justify-center text-white transition-all z-10 pointer-events-auto shadow-lg"
         >
           <ChevronRightIcon className="w-6 h-6" />
         </button>

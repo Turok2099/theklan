@@ -12,18 +12,14 @@ export const Trainers = () => {
                 "Fundador y Head Coach. Más de 25 años de experiencia en Artes Marciales, Instructor de kickboxing (Dingolfing, Alemania) Avalado por WAKO Baviera Germany Full-contact, Kung Fu, American Kenpo, Kenpo Kinetico, Jiu-jitsu Brazileño, Universal Submission, Combativs (Alemania), Muay Thai, Boxeo Amateur y Profesional, Especialista en Striking.",
             teaches: ["JIU-JITSU BRASILEÑO", "STRIKING"],
             images: [
-                "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759428590/The%20Klan/coaches/francisco-ramirez/2.png",
-                "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759428596/The%20Klan/coaches/francisco-ramirez/3.png",
-                "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759428597/The%20Klan/coaches/francisco-ramirez/4.png",
-                "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759428601/The%20Klan/coaches/francisco-ramirez/5.png",
-                "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759428603/The%20Klan/coaches/francisco-ramirez/6.png",
-                "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759428606/The%20Klan/coaches/francisco-ramirez/7.png",
-                "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759428607/The%20Klan/coaches/francisco-ramirez/8.png",
+                "https://res.cloudinary.com/dxbtafe9u/image/upload/v1770769807/WhatsApp_Image_2026-02-10_at_6.21.24_PM_rntehe.jpg",
+                "https://res.cloudinary.com/dxbtafe9u/image/upload/v1770769806/WhatsApp_Image_2026-02-10_at_6.21.01_PM_lcpziw.jpg",
+                "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759427156/The%20Klan/3.png",
+                "https://res.cloudinary.com/dxbtafe9u/image/upload/v1761709455/WhatsApp_Image_2025-10-28_at_6.26.36_PM_hcsyah.jpg",
                 "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759429810/The%20Klan/coaches/francisco-ramirez/9.png",
-                "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759429789/The%20Klan/coaches/francisco-ramirez/10.png",
-                "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759428588/The%20Klan/coaches/francisco-ramirez/11.png",
-                "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759429793/The%20Klan/coaches/francisco-ramirez/12.jpg",
                 "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759429794/The%20Klan/coaches/francisco-ramirez/14.jpg",
+                "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759429793/The%20Klan/coaches/francisco-ramirez/12.jpg",
+                "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759428613/The%20Klan/coaches/francisco-ramirez/WhatsApp%20Image%202025-10-02%20at%2011.jpg",
             ],
         },
         {
@@ -62,6 +58,16 @@ export const Trainers = () => {
                 "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759428626/The%20Klan/coaches/joaquin-lino/TheKlan-EntregaFinal-13.jpg",
                 "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759428627/The%20Klan/coaches/joaquin-lino/TheKlan-EntregaFinal-18.jpg",
                 "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759428628/The%20Klan/coaches/joaquin-lino/WhatsApp-Image-2025-06-16-at-5.jpg",
+            ],
+        },
+        {
+            name: 'Luis "El Toro" Zumaya',
+            title: "ENTRENADOR LUCHA OLÍMPICA",
+            description:
+                "Entrenador especializado en Lucha Olímpica. Enfocado en técnicas de derribo, control y grappling para potenciar el juego de pie y suelo.",
+            teaches: ["LUCHA OLÍMPICA"],
+            images: [
+                "https://res.cloudinary.com/dxbtafe9u/image/upload/v1771029402/WhatsApp_Image_2026-02-12_at_9.44.17_AM_s17xmn.jpg",
             ],
         },
     ];

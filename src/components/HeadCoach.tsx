@@ -44,16 +44,15 @@ export const HeadCoach = () => {
 
             <p className="text-gray-300 text-lg leading-relaxed mb-8 font-medium">
               Fundador y Head Coach con más de 25 años de experiencia en Artes Marciales.
-              Instructor de kickboxing avalado por WAKO Baviera Germany, especialista en
-              Striking y Jiu-jitsu Brasileño.
+              Especialista en defensa personal. Instructor de kickboxing avalado por la WAKO Bavaria, Alemania. Striking y competidor nacional de jiu-jitsu brasileño.
             </p>
 
             <ul className="space-y-4 mb-10">
               {[
                 "Cinturón Negro en Jiu Jitsu Brasileño",
                 "Cinturón Negro 6to grado en KENPO",
+                "Competidor internacional Activo IBJJF, FJJB, FNJJB",
                 "Fundador de The Klan CDMX (2004)",
-                "Competidor internacional Activo IBJJF, FJJB, FNJJB"
               ].map((item, index) => (
                 <li key={index} className="flex items-start gap-4">
                   <div className="flex-shrink-0 w-6 h-6 rounded-full bg-primary flex items-center justify-center mt-1">
