@@ -31,27 +31,35 @@ export const VideoBanner = ({ onClose }: VideoBannerProps) => {
 
     return (
         <div className={`fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-md transition-opacity duration-500 ${isVisible ? "opacity-100" : "opacity-0"}`}>
-            <div className="relative w-full max-w-4xl mx-4 aspect-video bg-black rounded-lg shadow-2xl overflow-hidden border border-white/10">
+            <div className="relative w-full max-w-[90vw] md:max-w-[360px] aspect-[9/16]">
                 <button
                     onClick={handleClose}
-                    className="absolute top-4 right-4 z-10 p-2 bg-black/50 text-white rounded-full hover:bg-primary transition-colors hover:scale-110"
+                    className="absolute -top-12 -right-2 z-50 text-white hover:text-primary transition-colors hover:scale-110 flex items-center gap-2 group"
                     aria-label="Cerrar video"
                 >
-                    <XMarkIcon className="w-6 h-6" />
+                    <span className="text-sm font-bold uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">Cerrar</span>
+                    <div className="bg-white/10 p-2 rounded-full border border-white/20 group-hover:border-primary group-hover:bg-primary/20">
+                        <XMarkIcon className="w-6 h-6" />
+                    </div>
                 </button>
 
-                <video
-                    ref={videoRef}
-                    src={videoUrl}
-                    className="w-full h-full object-contain"
-                    controls
-                    autoPlay
-                    muted
-                    playsInline
-                    onEnded={handleClose}
-                >
-                    Tu navegador no soporta la etiqueta de video.
-                </video>
+                <div className="w-full h-full bg-black rounded-2xl shadow-2xl overflow-hidden border border-white/10 relative">
+                    {/* Marco de celular opcional o borde brillante */}
+                    <div className="absolute inset-0 border border-white/5 rounded-2xl pointer-events-none z-10"></div>
+
+                    <video
+                        ref={videoRef}
+                        src={videoUrl}
+                        className="w-full h-full object-cover"
+                        controls
+                        autoPlay
+                        muted
+                        playsInline
+                        onEnded={handleClose}
+                    >
+                        Tu navegador no soporta la etiqueta de video.
+                    </video>
+                </div>
             </div>
         </div>
     );
