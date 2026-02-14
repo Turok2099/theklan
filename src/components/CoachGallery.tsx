@@ -43,9 +43,9 @@ export const CoachGallery = ({ images, coachName }: CoachGalleryProps) => {
     return images.map((url) => {
       const path = extractCloudinaryPath(url);
       return getCloudinaryImageUrl(path, {
-        width: 600,
-        height: 800,
-        quality: 85,
+        width: 1000,
+        height: 1333,
+        quality: 90,
         crop: "fill",
       });
     });

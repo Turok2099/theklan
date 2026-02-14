@@ -43,10 +43,7 @@ export const TeamPreview = () => {
   ].map((member) => ({
     ...member,
     image: getCloudinaryImageUrl(extractCloudinaryPath(member.imagePath), {
-      width: 400,
-      height: 533,
-      quality: 85,
-      crop: "fill",
+      quality: 90,
     }),
   }));
 

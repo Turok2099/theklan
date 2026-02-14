@@ -39,6 +39,8 @@ export const IntroSection = () => {
                   src={introImg}
                   alt="The Klan BJJ Studio"
                   fill
+                  quality={90}
+                  sizes="100vw"
                   className="object-cover object-center"
                 />
 
