@@ -63,6 +63,16 @@ export const CoachesSection = () => {
         "https://res.cloudinary.com/dxbtafe9u/image/upload/v1759428628/The%20Klan/coaches/joaquin-lino/WhatsApp-Image-2025-06-16-at-5.jpg",
       ],
     },
+    {
+      name: 'Luis "El Toro" Zumaya',
+      title: "ENTRENADOR LUCHA OLÍMPICA",
+      description:
+        "Selección de la UNAM. Campeón interno UNAM. Campeón Regional. Olimpiada Nacional 5to lugar. Selección Nacional. Campeón Sick MMA.",
+      teaches: ["LUCHA OLÍMPICA"],
+      images: [
+        "https://res.cloudinary.com/dxbtafe9u/image/upload/v1771029402/WhatsApp_Image_2026-02-12_at_9.44.17_AM_s17xmn.jpg",
+      ],
+    },
   ];
 
   return (

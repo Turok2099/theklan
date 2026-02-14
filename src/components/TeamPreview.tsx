@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { getCloudinaryImageUrl } from "@/lib/cloudinary";
+import { getCloudinaryImageUrl, extractCloudinaryPath } from "@/lib/cloudinary";
 
 export const TeamPreview = () => {
   const team = [
@@ -10,32 +10,39 @@ export const TeamPreview = () => {
       name: "Francisco Ramírez",
       role: "Head Coach",
       imagePath: "v1759428609/The%20Klan/coaches/francisco-ramirez/paco1.png",
-      belt: "Head Coach",
+      disciplines: "Jiu-Jitsu Brasileño • Striking",
     },
     {
       name: "Sebastián Gómez",
       role: "Entrenador",
       imagePath:
         "v1759428621/The%20Klan/coaches/sebastian-gomez/WhatsApp-Image-2025-06-05-at-11.jpg",
-      belt: "Entrenador",
+      disciplines: "MMA • Muay Thai",
     },
     {
       name: "Luis González",
       role: "Entrenador",
       imagePath:
         "v1759428622/The%20Klan/coaches/luis-gonzalez/WhatsApp-Image-2025-06-20-at-12.jpg",
-      belt: "Entrenador",
+      disciplines: "Entrenamiento Funcional",
     },
     {
       name: "Joaquín Lino",
       role: "Entrenador",
       imagePath:
         "v1759428626/The%20Klan/coaches/joaquin-lino/TheKlan-EntregaFinal-13.jpg",
-      belt: "Entrenador",
+      disciplines: "Jiu-Jitsu Infantil",
+    },
+    {
+      name: 'Luis "El Toro" Zumaya',
+      role: "Entrenador",
+      imagePath:
+        "https://res.cloudinary.com/dxbtafe9u/image/upload/v1771029402/WhatsApp_Image_2026-02-12_at_9.44.17_AM_s17xmn.jpg",
+      disciplines: "Lucha Olímpica",
     },
   ].map((member) => ({
     ...member,
-    image: getCloudinaryImageUrl(member.imagePath, {
+    image: getCloudinaryImageUrl(extractCloudinaryPath(member.imagePath), {
       width: 400,
       height: 533,
       quality: 85,
@@ -68,12 +75,12 @@ export const TeamPreview = () => {
                 />
               </div>
               <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
-              <div className="absolute bottom-4 left-4">
-                <h4 className="text-white font-black uppercase text-lg leading-none">
+              <div className="absolute bottom-4 left-4 right-4">
+                <h4 className="text-white font-black uppercase text-lg leading-tight mb-1">
                   {member.name}
                 </h4>
                 <p className="text-primary font-bold text-xs uppercase tracking-widest">
-                  {member.belt}
+                  {member.disciplines}
                 </p>
               </div>
             </div>
