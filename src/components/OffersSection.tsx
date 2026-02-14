@@ -4,11 +4,17 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { XMarkIcon } from "@heroicons/react/24/solid";
 
-export const OffersSection = () => {
+interface OffersSectionProps {
+    startTimer: boolean;
+}
+
+export const OffersSection = ({ startTimer }: OffersSectionProps) => {
     const [isMounted, setIsMounted] = useState(false);
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
+        if (!startTimer) return;
+
         const mountTimer = setTimeout(() => {
             setIsMounted(true);
             // Pequeño delay para permitir que el navegador renderice antes de iniciar la transición
@@ -16,7 +22,7 @@ export const OffersSection = () => {
         }, 6000);
 
         return () => clearTimeout(mountTimer);
-    }, []);
+    }, [startTimer]);
 
     if (!isMounted) return null;
 

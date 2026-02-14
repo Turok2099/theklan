@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import { Hero } from "@/components/Hero";
 import { IntroSection } from "@/components/IntroSection";
 import { TextMarquee } from "@/components/Carrusel1";
@@ -8,8 +11,11 @@ import { TeamPreview } from "@/components/TeamPreview";
 import { PlansSection } from "@/components/PlansSection";
 import { ContactSection } from "@/components/ContactSection";
 import { GoogleReviews } from "@/components/GoogleReviews";
+import { VideoBanner } from "@/components/VideoBanner";
 
 export default function Home() {
+  const [isVideoClosed, setIsVideoClosed] = useState(false);
+
   // Schema.org para LocalBusiness y SportsActivityLocation
   const jsonLdBusiness = {
     "@context": "https://schema.org",
@@ -148,10 +154,11 @@ export default function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdOrganization) }}
       />
       <main className="bg-pure-black min-h-screen">
+        {!isVideoClosed && <VideoBanner onClose={() => setIsVideoClosed(true)} />}
         <Hero />
         <TextMarquee />
         <IntroSection />
-        <OffersSection />
+        <OffersSection startTimer={isVideoClosed} />
         <HeadCoach />
         <TeamPreview />
         <PlansSection />
